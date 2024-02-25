@@ -10,7 +10,7 @@ content_page1 = [
         <p>▪️Dérogation section Militaire</p>
         <br>
         <p>
-        <p>▪️Maitre Taijutsu , Kenjutsu (sans portes ou si possible la première seulement afin ne pas être overcheat, je ne recherche pas cela mais l'exploitation des techniques de base actuelles)</p>
+        <p>▪️Maitre Taijutsu , Kenjutsu (sans portes afin ne pas être overcheat, je ne recherche pas cela mais l'exploitation des techniques de base actuelles)</p>
         <br>
         <p>
         <p>▪️Crée une meilleure organisation des Sections , créer des liens avec les tetes du Village et partager les bonnes idées communes.</p>
