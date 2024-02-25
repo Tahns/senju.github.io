@@ -107,7 +107,7 @@ content_page2 = [
                             <p>Lieux de Résidence : Domaine Senju & Batisse de Okana Yoka</p>
                             <img style="width: auto; height: 5%;" src="https://i.pinimg.com/originals/e7/13/26/e71326af09f28d3e4e272e2cdf997dd5.png" alt="">
       </p>
-        <button onclick="PageSuivante(2)">BackGround</button></div>
+        <button onclick="PageSuivante(2)">Page Suivante</button></div>
     `,
 
     `
