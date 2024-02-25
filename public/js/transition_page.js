@@ -140,8 +140,10 @@ content_page2 = [
     <button onclick="PageSuivante(4)">Page Suivante</button></div>
     `,
     `
-    <p> 
-    Le culte, dans son ensemble, était en train de grandir de manière rapide, mais il y avait une certaine incertitude quant à l'avenir du mouvement. Les factions pacifiques s'inquiétaient du développement de plus en plus agressif de la famille Tsukyama, alors que cette dernière prônait une approche plus déterminée dans leurs relations avec les humains. Cependant, malgré ces tensions, le Culte D'osis continuait de prospérer et de s'étendre, avec de plus en plus de Ghouls se joignant à ses rangs pour trouver refuge et soutien dans ce qui était devenu un véritable mouvement communautaire.
+    <p>
+     <h2> Nindo </h2>
+     <br><br>
+    "Je vise à instauré l'ordre dans mon village, inspiré des livres des temps anciens de Keitaro et Karasuma Senju, par la suite perpétuer sa réputation d'un village sérieux et de danger pour préserver la paix. De plus, j'aspire à devenir un grand maître du Taijutsu et Kenjutsu."
     <br><br>
     Au cours de l'année 2005, la famille Tsukyama a également commencé à explorer de nouvelles opportunités d'affaires et de commerce, cherchant à renforcer leur position financière et économique. Ils ont commencé à investir dans des entreprises et des commerces liés à la restauration, en faisant la promotion de leurs produits auprès des Ghouls les plus influents de la société. Ce fut une période déterminante pour la famille, qui allait continuer de croître et de se développer pour devenir l'une des forces les plus influentes du Culte D'osis.
 
