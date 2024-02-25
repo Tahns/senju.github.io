@@ -14,23 +14,21 @@ content_page1 = [
         <p>Mettre en place un systeme de responssabilités pour chaques hauts gradés
         <p>
         <p>Faire en sorte que les rapports ont une réel utilité et ne pas écrire pour écrire comme crée des missions pour tout les ninjas par grade et ceux ayant rendu un rapport avec tout de réalisé seront récompensé.
-        <p>Mettre en place un systeme d'entrainement régulier pour les combats en groupe , il y a un trop grand écart entre les 2 Villages.
-        <p>Crée un réel systeme économique pas forcement utilisé uniquement les taxes , comme un systeme de rachats des ressources et de revente pour les habitants de Konoha pour les armures des hauts gradés.
-        <p>Ne pas laisser les jeunes ninjas se relâcher et proposer un maximum d'activités utiles pour tous.
-        <p>Surtout un personnage sérieux , strict et leader au devant de tous avec un développement progressif par grade).
         </p>
 
         <button onclick="PageSuivante(1)">Page Précédente</button></div>
     `,
     `
-        <h2> 2000 - l'essor du Culte </h2>
+        <h2> Suite </h2>
 
         <p>
-        L'an 2000 fut marqué par un tournant majeur pour le Culte d'OSIS. Les premières églises virent le jour, offrant une plateforme pour les membres du culte pour partager leurs croyances et leur foi. Cette année vit également la naissance d'un nouveau mouvement au sein du culte, appelé les pacifistes. Ceux-ci prônaient une approche plus douce envers les humains et voulaient éviter tout acte violent.
-        <br><br>
-        Cependant, cela ne plaisait pas à tout le monde, et la division entre les pacifistes et les autres membres du culte s'accentua de plus en plus. Les fondateurs de la famille Tsukyama étaient particulièrement réticents à cette nouvelle vision, considérant que la violence était nécessaire pour protéger les ghouls et les maintenir en sécurité.
-        <br><br>
-        Malgré ces divergences, l'église pacifiste continua de grandir et d'attirer de plus en plus de membres. Les fondateurs de la famille Tsukyama commençaient à s'inquiéter de la tournure que prenait le culte, craignant que leur position de pouvoir ne soit menacée par ce nouveau mouvement.
+        <p>Mettre en place un systeme d'entrainement régulier pour les combats en groupe , il y a un trop grand écart entre les 2 Villages.
+        <p>
+        <p>Crée un réel systeme économique pas forcement utilisé uniquement les taxes , comme un systeme de rachats des ressources et de revente pour les habitants de Konoha pour les armures des hauts gradés.
+        <p>
+        <p>Ne pas laisser les jeunes ninjas se relâcher et proposer un maximum d'activités utiles pour tous.
+        <p>
+        <p>Surtout un personnage sérieux , strict et leader au devant de tous avec un développement progressif par grade).
  </p>
     
         <button onclick="PageSuivante(2)">Page Précédente</button></div>
