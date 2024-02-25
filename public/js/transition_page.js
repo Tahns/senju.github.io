@@ -1,5 +1,5 @@
 content_page1 = [
-    `<h2><strong>Fiche Personnage</strong></h2><img src="https://ideogram.ai/api/images/direct/a4XlYue-Q-u7AoyfpIRHjQ.jpg" style="width: auto;height: 100%;" alt="">`,
+    `<h2><strong>Fiche Personnage</strong></h2><img src="https://ideogram.ai/api/images/direct/a4XlYue-Q-u7AoyfpIRHjQ.jpg" style="width: auto;height: 80%;" alt="">`,
     `
         <h2> 1978 - Création du Culte</h2>
         <p>
