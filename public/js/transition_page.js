@@ -127,7 +127,7 @@ content_page2 = [
     <br><br>
     "Je vise à instauré l'ordre dans mon village, inspiré des livres des temps anciens de Keitaro et Karasuma Senju, par la suite perpétuer sa réputation d'un village sérieux et de danger pour préserver la paix. De plus, j'aspire à devenir un grand maître du Taijutsu et Kenjutsu."
     <br><br>
-
+    <img style="width: auto; height: 30%;" src="https://mir-s3-cdn-cf.behance.net/projects/404/7ab5dd151197789.Y3JvcCwxMDgwLDg0NCwwLDExNw.png" alt="">
     </p>
     `,
     `
