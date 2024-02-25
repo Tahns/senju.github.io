@@ -93,14 +93,17 @@ content_page2 = [
                             <p>Lieux de Naissance: Konoha</p>
                             <p>Taille : 142cm</p>
                             <p>Age: 21 ans</p>
+                            <p>Natures de chakra : Suiton & Kiminari</p>
+                            <p>Qualités : Tête penssante, Agit au lieu de parler, Strict avec lui meme et les autres, Autonome, Comportement de leader, Attentif</p>
+                            <p>Défauts : Égoïste, Trop sérieux, aime tout controler, A du mal à comprendre les sentiments des personnes</p>
                             <br>
                             <br>
                             <p>Nom Mère : Okana Yoka</p>
                             <p>Nom Père : Shunsui Senju</p>
                             <br>
                             <br>
-                            <p>Lieux de Résidence: Domaine Senju ; Batisse de Okana Yoka</p>
-                            <img style="width: auto; height: 30%;" src="https://i.pinimg.com/originals/e7/13/26/e71326af09f28d3e4e272e2cdf997dd5.png" alt="">
+                            <p>Lieux de Résidence : Domaine Senju & Batisse de Okana Yoka</p>
+                            <img style="width: auto; height: 5%;" src="https://i.pinimg.com/originals/e7/13/26/e71326af09f28d3e4e272e2cdf997dd5.png" alt="">
       </p>
         <button onclick="PageSuivante(2)">BackGround</button></div>
     `,
