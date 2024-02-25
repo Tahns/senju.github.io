@@ -25,19 +25,11 @@ content_page1 = [
         <button onclick="PageSuivante(1)">Page Précédente</button></div>
     `,
     `
-        <h2> Suite </h2>
+        <h2> BackGround </h2>
 
         <p>
-        <p>Mettre en place un systeme d'entrainement régulier pour les combats en groupe , il y a un trop grand écart entre les 2 Villages.</p>
-        <p>
-        <br>
-        <p>Crée un réel systeme économique pas forcement utilisé uniquement les taxes , comme un systeme de rachats des ressources et de revente pour les habitants de Konoha pour les armures des hauts gradés.</p>
-        <p>
-        <br>
-        <p>Ne pas laisser les jeunes ninjas se relâcher et proposer un maximum d'activités utiles pour tous.</p>
-        <p>
-        <br>
-        <p>Surtout un personnage sérieux , strict et leader au devant de tous avec un développement progressif par grade).</p>
+        <p>Hoko, un jeune enfant du clan Senju, a grandi sans la présence de son père qui l'a abandonné après sa naissance. Peut-être a-t-il pris peur ou ressenti trop de responsabilités liées à son importance au village, personne ne le sait. Depuis sa naissance, il a été élevé par sa mère, qui malgré le fait d'être seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé se sens d'autonomie. 
+Vivant dans une simple bâtisse au Village de Konoha, sa mère lui avait parlé de l'apparence de son père, mais Hoko n'y prêtait pas attention car il ne l'avait jamais connu, jamais vu et pour lui, ne pas avoir de père était normal. Dès son plus jeune âge, Hoko avait une passion qui relevait d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait vraiment dur au corps à corps, observant discrètement les entraînements au taijutsu et au kenjutsu des shinobis. Tout cet apprentissage avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt, ils furent agressés par deux ninjas du village d'Ame qui avaient franchi les frontières. Ils avaient dépouillé et humilié sa mère en la frappant devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde. Cela l'avait transformé d'un enfant joyeux en un jeune sérieux, déterminé à protéger sa mère et ses concitoyens, afin que ce qu'il avait durement vécu ne se reproduise plus. 
  </p>
     
         <button onclick="PageSuivante(2)">Page Précédente</button></div>
