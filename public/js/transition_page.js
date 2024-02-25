@@ -4,22 +4,22 @@ content_page1 = [
         <h2> Ambitions </h2>
         <p>
         <p>
-        <p>▪️Chef Section Policière
+        <p>▪️Chef Section Policière</p>
         <br>
         <p>
-        <p>▪️Dérogation section Militaire
+        <p>▪️Dérogation section Militaire</p>
         <br>
         <p>
-        <p>▪️Maitre Taijutsu , Kenjutsu (sans portes ou si possible la première seulement afin ne pas être overcheat, je ne recherche pas cela mais l'exploitation des techniques de base actuelles)
+        <p>▪️Maitre Taijutsu , Kenjutsu (sans portes ou si possible la première seulement afin ne pas être overcheat, je ne recherche pas cela mais l'exploitation des techniques de base actuelles)</p>
         <br>
         <p>
-        <p>▪️Crée une meilleure organisation des Sections , créer des liens avec les tetes du Village et partager les bonnes idées communes.
+        <p>▪️Crée une meilleure organisation des Sections , créer des liens avec les tetes du Village et partager les bonnes idées communes.</p>
         <br>
         <p>
-        <p>▪️Mettre en place un systeme de responssabilités pour chaques hauts gradés
+        <p>▪️Mettre en place un systeme de responssabilités pour chaques hauts gradés</p>
         <br>
         <p>
-        <p>▪️Faire en sorte que les rapports ont une réel utilité et ne pas écrire pour écrire comme crée des missions pour tout les ninjas par grade et ceux ayant rendu un rapport avec tout de réalisé seront récompensé.
+        <p>▪️Faire en sorte que les rapports ont une réel utilité et ne pas écrire pour écrire comme crée des missions pour tout les ninjas par grade et ceux ayant rendu un rapport avec tout de réalisé seront récompensé.</p>
         </p>
 
         <button onclick="PageSuivante(1)">Page Précédente</button></div>
