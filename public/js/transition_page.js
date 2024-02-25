@@ -43,7 +43,7 @@ content_page1 = [
         <p>
         <h2> Suite </h2>
         <br>
-        <p>Au fil de ses lectures, pris de passion étant jeune, il s'imaginer à la place de ces personne avec force avec le temps, un objectif est né en lui : laisser son nom dans les mémoires et accomplir des exploits dignes des plus grands de Konoha. 
+        <p>Au fil de ses lectures, pris de passion étant jeune, il s'imaginer à la place de ces personnes avec force et avec le temps, un objectif est né en lui : laisser son nom dans les mémoires et accomplir des exploits dignes des plus grands de Konoha. 
         Hoko était néanmoins encore un enfant lors de ces événements. 
         On pourrait estimer qu'il avait environ 8 ans lors de l'agression dans la forêt et qu'il avait 12 ans lorsqu'il fut présenté au domaine du clan Senju et commença à se plonger dans les récits de sa lignée. 
         L'étape qui viendra par la suite est la liaison avec les membres du clan. C'est à ce moment qu'il exprimera toute sa motivation et ses ambitions.
