@@ -94,8 +94,6 @@ content_page2 = [
                             <br>
                             <br>
                             <p>Lieux de Résidence: Batisse de la Mère ; Domaine Senju</p>
-                            <p>Evenement Notable:</p>
-                            <dd> - C'est le seul survivant de sa famille</dd>
                             <img style="width: auto; height: 30%;" src="https://static.vecteezy.com/ti/vecteur-libre/p3/26620795-konoha-symbole-cache-feuille-naruto-gratuit-vectoriel.jpg" alt="">
         <button onclick="PageSuivante(2)">Page Suivante</button></div>
     `,
