@@ -121,16 +121,16 @@ content_page2 = [
        <h2> Suite </h2>
 
         <p>
-        <p>Mettre en place un systeme d'entrainement régulier pour les combats en groupe , il y a un trop grand écart entre les 2 Villages.</p>
+        <p>▪️Mettre en place un systeme d'entrainement régulier pour les combats en groupe , il y a un trop grand écart entre les 2 Villages.</p>
         <p>
         <br>
-        <p>Crée un réel systeme économique pas forcement utilisé uniquement les taxes , comme un systeme de rachats des ressources et de revente pour les habitants de Konoha pour les armures des hauts gradés.</p>
+        <p>▪️Crée un réel systeme économique pas forcement utilisé uniquement les taxes , comme un systeme de rachats des ressources et de revente pour les habitants de Konoha pour les armures des hauts gradés.</p>
         <p>
         <br>
-        <p>Ne pas laisser les jeunes ninjas se relâcher et proposer un maximum d'activités utiles pour tous.</p>
+        <p>▪️Ne pas laisser les jeunes ninjas se relâcher et proposer un maximum d'activités utiles pour tous.</p>
         <p>
         <br>
-        <p>Surtout un personnage sérieux , strict et leader au devant de tous avec un développement progressif par grade).</p>
+        <p>▪️Surtout un personnage sérieux , strict et leader au devant de tous avec un développement progressif par grade).</p>
  </p>
     <button onclick="PageSuivante(3)">Page Suivante</button></div>
     </p>
