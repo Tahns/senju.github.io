@@ -70,7 +70,7 @@ content_page2 = [
                             <br>
                             <p>Lieux de Naissance: Konoha</p>
                             <p>Taille : 142cm</p>
-                            <p>Age: 21 ans</p>
+                            <p>Age: 12 ans</p>
                             <p>Natures de chakra : Suiton & Kiminari</p>
                             <br>
                             <p>Qualités : Tête penssante, Agit au lieu de parler, Strict avec lui meme et les autres, Autonome, Comportement de leader</p>
