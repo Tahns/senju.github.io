@@ -75,10 +75,27 @@ content_page1 = [
 ];
 content_page2 = [
     `
-        <h2> Introduction </h2>
-       <p> 
-        Le Culte d'OSIS est un groupe religieux ayant été fondé en 1978 par plusieurs familles, dont les Tsukyama.  <br> <br> Ce culte était à l'origine divisé en deux factions: une qui prônait une approche pacifique avec les humains, et une autre qui était plus violente. Au fil des années, la faction violente a pris de l'ascendant et a éliminé les membres de la faction pacifique. En 2017, la famille Tsukyama a créé un groupe appelé Rosenwald qui gérait un restaurant chic pour les ghouls nobles. En 2020, les Rosenwald ont été dissous et la famille Tsukyama a pris le contrôle du Culte d'OSIS en éliminant toutes les factions pacifiques. En 2021, ils ont créé un groupe au sein du culte appelé Costume Blanc, qui est devenu le groupe le plus violent et influent au sein du culte. La situation actuelle du culte d'OSIS reste incertaine.
-        </p>
+        <h2> Identité </h2>
+                            <br>
+                            <br>
+                            <p>Nom: Senju</p>
+                            <p>Prenom: Hoko</p>
+                            <br>
+                            <p>Lieux de Naissance: Konoha</p>
+                            <p>Date de Naissance: 13 Avril XXX</p>
+                            <p>Age: 21 ans</p>
+                            <br>
+                            <br>
+                            <p>Numéro D'identité: 4929 1049 6131 4085</p>
+                            <p>Nombre de frère et soeurs: Fils Unique Orphelin</p>
+                            <br>
+                            <br>
+                            <p>Lieux de Résidence: Trost</p>
+                            <p>Evenement Notable:</p>
+                            <dd> - Il a réussi a survivre de Shiganshina</dd>
+                            <dd> - C'est le seul survivant de sa famille</dd>
+                            <img style="width: auto; height: 30%;" src="public/img/Tampon-BS.jpg" alt="">
+      </p>
         <button onclick="PageSuivante(2)">Page Suivante</button></div>
     `,
 
