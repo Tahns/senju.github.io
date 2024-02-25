@@ -41,6 +41,10 @@ content_page1 = [
     `,
     `
         <p>
+        <h2> Suite </h2>
+        <br>
+        <p>Au fil de ses lectures, pris de passion étant jeune, il s'imaginer à la place de ces personne avec force avec le temps, un objectif est né en lui : laisser son nom dans les mémoires et accomplir des exploits dignes des plus grands de Konoha. 
+        Hoko était néanmoins encore un enfant lors de ces événements. 
         On pourrait estimer qu'il avait environ 8 ans lors de l'agression dans la forêt et qu'il avait 12 ans lorsqu'il fut présenté au domaine du clan Senju et commença à se plonger dans les récits de sa lignée. 
         L'étape qui viendra par la suite est la liaison avec les membres du clan. C'est à ce moment qu'il exprimera toute sa motivation et ses ambitions.
 
@@ -105,14 +109,13 @@ content_page2 = [
     `,
     `
     <p>
+    <h2> Suite </h2>
     <p>Cela l'avait transformé d'un enfant joyeux en un jeune sérieux, déterminé à protéger sa mère et ses concitoyens, afin que ce qu'il avait durement vécu ne se reproduise plus. 
     À un moment donné, sa mère l'avait emmené au domaine du clan Senju, ce à quoi il ne s'attendait pas, pour discuter en privé avec les membres de la situation entre la mère, le père et Hoko. 
          Les membres du clan ont expliqué que son père qui avait prévu cette venu ne serait pas présent pour lui. En revanche, étant donné sa lignée liée à Hashirama, il était le bienvenu au sein du domaine et du clan. 
          Sa mère, après une grande discussion avec Hoko, mettant en avant la valeur du clan et expliquant sa position financière difficile, avait ensuite proposé de le laisser au domaine en toute confiance, lui assurant qu'il pouvait venir la voir quand il le souhaitait. 
          Hoko accepta par compassion envers sa mère. 
          Une fois installé au domaine, Hoko était assez distant avec ce monde inconnu et chercher sa place. Il se visite et se réfugia dans la bibliothèque du clan, développant une passion petit à petit pour les histoires concernant son clan. 
-         Au fil de ses lectures, pris de passion étant jeune, il s'imaginer à la place de ces personne avec force avec le temps, un objectif est né en lui : laisser son nom dans les mémoires et accomplir des exploits dignes des plus grands de Konoha. 
-         Hoko était néanmoins encore un enfant lors de ces événements. 
          <p>
 
     <button onclick="PageSuivante(4)">Page Suivante</button></div>
