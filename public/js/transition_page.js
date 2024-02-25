@@ -4,7 +4,7 @@ content_page1 = [
         <h2> Ambitions </h2>
         <p>
         <p>Chef Section Policière
-        <p>
+        <p> 
         <p>Dérogation section Militaire
         <p>
         <p>Maitre Taijutsu , Kenjutsu (sans portes ou si possible la première seulement afin ne pas être overcheat, je ne recherche pas cela mais l'exploitation des techniques de base actuelles)
