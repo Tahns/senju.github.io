@@ -1,7 +1,7 @@
 content_page1 = [
     `<h2><strong>Culte Osis</strong></h2><img src="https://i.pinimg.com/236x/dd/b5/03/ddb503632f448aa53f629a22068bbacf.jpg" style="width: auto;height: 60%;" alt="">`,
     `
-        <h2> </h2>
+        <h2> 1978 - Création du Culte</h2>
         <p>
         L'année 1978 fut marquée par la fondation du Culte d'OSIS. Ce culte, dirigé par une poignée de familles, fut créé dans le but de réunir les Ghouls et de les protéger des persécutions humaines. La famille Tsukyama, dont je suis issu, était parmi les fondateurs de ce Culte.
         <br><br>
