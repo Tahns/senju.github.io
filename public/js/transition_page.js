@@ -82,19 +82,16 @@ content_page2 = [
                             <p>Prenom: Hoko</p>
                             <br>
                             <p>Lieux de Naissance: Konoha</p>
-                            <p>Date de Naissance: 13 Avril XXX</p>
+                            <p>Taille : 142cm</p>
                             <p>Age: 21 ans</p>
                             <br>
                             <br>
-                            <p>Numéro D'identité: 4929 1049 6131 4085</p>
-                            <p>Nombre de frère et soeurs: Fils Unique Orphelin</p>
+                            <p>Nom Mère : Okana Yoka</p>
+                            <p>Nom Père : Shunsui Senju</p>
                             <br>
                             <br>
-                            <p>Lieux de Résidence: Trost</p>
-                            <p>Evenement Notable:</p>
-                            <dd> - Il a réussi a survivre de Shiganshina</dd>
-                            <dd> - C'est le seul survivant de sa famille</dd>
-                            <img style="width: auto; height: 30%;" src="public/img/Tampon-BS.jpg" alt="">
+                            <p>Lieux de Résidence: Domaine Senju ; Batisse de Okana Yoka</p>
+                            <img style="width: auto; height: 10%;" src="https://i.pinimg.com/originals/e7/13/26/e71326af09f28d3e4e272e2cdf997dd5.png" alt="">
       </p>
         <button onclick="PageSuivante(2)">Page Suivante</button></div>
     `,
