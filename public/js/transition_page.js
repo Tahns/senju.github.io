@@ -121,6 +121,8 @@ content_page2 = [
         <p>
         <p>▪️Mettre en place un systeme d'entrainement régulier pour les combats en groupe , il y a un trop grand écart entre les 2 Villages.</p>
         <p>
+        <p>▪️Récupéré l'épée de sa lignée.</p>
+        <p>
         <br>
         <p>▪️Crée un réel systeme économique pas forcement utilisé uniquement les taxes , comme un systeme de rachats des ressources et de revente pour les habitants de Konoha pour les armures des hauts gradés.</p>
         <p>
