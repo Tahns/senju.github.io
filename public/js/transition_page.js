@@ -11,9 +11,7 @@ Mettre en place un systeme de responssabilités pour chaques hauts gradés
 Faire en sorte que les rapports ont une réel utilité et ne pas écrire pour écrire comme crée des missions pour tout les ninjas par grade et ceux ayant rendu un rapport avec tout de réalisé seront récompensé.
 Mettre en place un systeme d'entrainement régulier pour les combats en groupe , il y a un trop grand écart entre les 2 Villages.
 Crée un réel systeme économique pas forcement utilisé uniquement les taxes , comme un systeme de rachats des ressources et de revente pour les habitants de Konoha pour les armures des hauts gradés.
-
 Ne pas laisser les jeunes ninjas se relâcher et proposer un maximum d'activités utiles pour tous.
-
 Surtout un personnage sérieux , strict et leader au devant de tous avec un développement progressif par grade).
         <br><br>
         À ses débuts, le Culte d'OSIS n'était qu'un petit regroupement de Ghouls en quête de sécurité et de reconnaissance. Cependant, les fondateurs, y compris ma famille, avaient en tête une vision plus grande, une vision d'un futur où les Ghouls auraient une place digne dans la société. Ils croyaient en l'unité et en la coopération pour atteindre ce but.
