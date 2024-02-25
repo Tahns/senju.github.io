@@ -105,7 +105,7 @@ content_page2 = [
                             <br>
                             <p>Qualités : Tête penssante, Agit au lieu de parler, Strict avec lui meme et les autres, Autonome, Comportement de leader</p>
                             <br>
-                            <p>Défauts : Égoïste, Trop sérieux, aime tout controler, Mauvais compréhension des sentiments</p>
+                            <p>Défauts : Égoïste, Trop sérieux, aime tout controler, Mauvaise compréhension des sentiments</p>
                             <br>
                             <br>
                             <p>Nom Mère : Okana Yoka</p>
