@@ -1,4 +1,4 @@
-content_page1 = [
+ucontent_page1 = [
     `<h2><strong>Fiche Personnage</strong></h2><img src="https://ideogram.ai/api/images/direct/a4XlYue-Q-u7AoyfpIRHjQ.jpg" style="width: auto;height: 80%;" alt="">`,
     `
         <h2> 1978 - Création du Culte</h2>
@@ -80,23 +80,23 @@ content_page2 = [
        <h1>Identité</h1>
                             <br>
                             <br>
-                            <p>Nom: Gessner</p>
-                            <p>Prenom: Konrad</p>
+                            <p>Nom: Senju</p>
+                            <p>Prenom: Hoko</p>
                             <br>
-                            <p>Lieux de Naissance: Shiganshina</p>
-                            <p>Date de Naissance: 13 Avril XXX</p>
-                            <p>Age: 21 ans</p>
+                            <p>Lieux de Naissance: Konoha</p>
+                            <p>Taille:  142cm</p>
+                            <p>Age: 12 ans</p>
                             <br>
                             <br>
-                            <p>Numéro D'identité: 4929 1049 6131 4085</p>
                             <p>Nombre de frère et soeurs: Fils Unique Orphelin</p>
+                            <p>Nom Père : Shunsui Senju
+                            <p>Nom Mère : Okana Yute
                             <br>
                             <br>
-                            <p>Lieux de Résidence: Trost</p>
+                            <p>Lieux de Résidence: Batisse de la Mère ; Domaine Senju</p>
                             <p>Evenement Notable:</p>
-                            <dd> - Il a réussi a survivre de Shiganshina</dd>
                             <dd> - C'est le seul survivant de sa famille</dd>
-                            <img style="width: auto; height: 30%;" src="public/img/Tampon-BS.jpg" alt="">
+                            <img style="width: auto; height: 30%;" src="https://static.vecteezy.com/ti/vecteur-libre/p3/26620795-konoha-symbole-cache-feuille-naruto-gratuit-vectoriel.jpg" alt="">
         <button onclick="PageSuivante(2)">Page Suivante</button></div>
     `,
 
