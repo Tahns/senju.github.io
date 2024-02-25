@@ -1,5 +1,5 @@
 content_page1 = [
-    `<h2><strong>Culte Osis</strong></h2><img src="https://i.pinimg.com/236x/dd/b5/03/ddb503632f448aa53f629a22068bbacf.jpg" style="width: auto;height: 60%;" alt="">`,
+    `<h2><strong>Fiche Personnage</strong></h2><img src="https://ideogram.ai/api/images/direct/a4XlYue-Q-u7AoyfpIRHjQ.jpg" style="width: auto;height: 60%;" alt="">`,
     `
         <h2> 1978 - Création du Culte</h2>
         <p>
