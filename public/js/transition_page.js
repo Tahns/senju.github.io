@@ -34,10 +34,6 @@ content_page1 = [
         Dès son plus jeune âge, Hoko avait une passion qui relevait d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait vraiment dur au corps à corps, observant discrètement les entraînements au kenjutsu des shinobis présent dans le Village de Takemi car oui , ce village était l'essence meme des sabres du à l'artisana présent.
         Tout cet apprentissage jusqu'à metrisais meme le battojutsu , l'aido et le kendo parfaitement dès ses 10ans avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt nagé dans des centaines de rivières, ils furent agressés par deux ninjas du village d'Ame qui avaient franchi les frontières et volé des artisans à quete de ressources sur leurs chemins. 
         Ils avaient dépouillé et humilié sa mère s'était faite frapper devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde et il a vite pris conscience que l'art de se défendre était neccessaire.
-        Ils commencé à suplier sa mère l'artisante de lui fabriquer un sabre, sa mère avait craqué par peur qu'il ne se blesse , elle pris la décision de lui apprendre comment métriser son chakra , un message de Okana mère avait était envoyé en direction de Konoha via un oiseau indiquant à Ikken que le jour était venu.
-        Pendant se temps sa mère lui fesait le test de la feuille , cette feuille s'étais comme noyé dans l'eau , étant descendant du 2ème Hokage et vivant dans le Pays des rivières , la nature avait bien choisi les choses.
-        Puis un jour Ikken Senju arriva , son père vétu comme un marchand comme si il voulais se faire discrait. 
-        Salua son fils et enlace Okana , après une longue discution entre le deux qui rester assez flou , Okana explique à Hoko qu'il devait partir avec son père faire son devoir du Fils du clan Senju et qu'il pouvait revenir voir sa mère quand il le souhaiter car elle n'allais pas rester.
         <p>
  </p>
     
@@ -116,12 +112,10 @@ content_page2 = [
     `
     <p>
     <h2> Suite </h2>
-    <p>Cela l'avait transformé d'un enfant joyeux en un jeune sérieux, déterminé à protéger sa mère et ses concitoyens, afin que ce qu'il avait durement vécu ne se reproduise plus. 
-    À un moment donné, sa mère l'avait emmené au domaine du clan Senju, ce à quoi il ne s'attendait pas, pour discuter en privé avec les membres de la situation entre la mère, le père et Hoko. 
-         Les membres du clan ont expliqué que son père qui avait prévu cette venu ne serait pas présent pour lui. En revanche, étant donné sa lignée liée à Hashirama, il était le bienvenu au sein du domaine et du clan. 
-         Sa mère, après une grande discussion avec Hoko, mettant en avant la valeur du clan et expliquant sa position financière difficile, avait ensuite proposé de le laisser au domaine en toute confiance, lui assurant qu'il pouvait venir la voir quand il le souhaitait. 
-         Hoko accepta par compassion envers sa mère. 
-         Une fois installé au domaine, Hoko était assez distant avec ce monde inconnu et chercher sa place. Il se visite et se réfugia dans la bibliothèque du clan, développant une passion petit à petit pour les histoires concernant son clan. 
+    <p> Ils commencé à suplier sa mère l'artisante de lui fabriquer un sabre, sa mère avait craqué par peur qu'il ne se blesse , elle pris la décision de lui apprendre comment métriser son chakra , un message de Okana mère avait était envoyé en direction de Konoha via un oiseau indiquant à Ikken que le jour était venu.
+        Pendant se temps sa mère lui fesait le test de la feuille , cette feuille s'étais comme noyé dans l'eau , étant descendant du 2ème Hokage et vivant dans le Pays des rivières , la nature avait bien choisi les choses.
+        Puis un jour Ikken Senju arriva , son père vétu comme un marchand comme si il voulais se faire discrait. 
+        Salua son fils et enlace Okana , après une longue discution entre le deux qui rester assez flou , Okana explique à Hoko qu'il devait partir avec son père faire son devoir du Fils du clan Senju et qu'il pouvait revenir voir sa mère quand il le souhaiter car elle n'allais pas rester.
          <p>
 
     <button onclick="PageSuivante(4)">Page Suivante</button></div>
