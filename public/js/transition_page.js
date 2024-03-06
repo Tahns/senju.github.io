@@ -27,14 +27,15 @@ content_page1 = [
     `
         <h2> BackGround </h2>
          <br>
-        <p>Hoko, un jeune enfant du clan Senju, a grandi sans la présence quotidienne de son père, qui l'avait laissé auprès de sa mère, une ancienne Ninja de Takemi. Il semble que son père accordait une importance excessive à son rôle dans le village de Konoha, l'empêchant ainsi d'être présent pour son fils.Depuis sa naissance, il a été élevé par sa mère, qui malgré le fait d'être seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé un sens d'autonomie.Vivant dans une simple bâtisse au Village de Takemi, village des artisans situé au Pays des Rivières, sa mère lui avait souvent parlé de son père. Cependant, Hoko n'y prêtait pas attention, habitué à l'absence paternelle dans sa vie. Pour lui, ne pas voir son père était normal.Dès son plus jeune âge, Hoko avait une passion qui semblait relever d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait intensément au corps à corps, observant discrètement les entraînements au kenjutsu des shinobis présents dans le Village de Takemi, car ce village était réputé pour son expertise dans l'art des sabres, grâce à l'artisanat local.Tout cet apprentissage, jusqu'à maîtriser même le battojutsu, l'aïdo et le kendo parfaitement dès ses 10 ans, avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt, ils furent agressés par deux ninjas du village d'Ame. Ces derniers avaient franchi les frontières et volaient des artisans à la recherche de ressources sur leur chemin.</p>
+        <p>Hoko, un jeune enfant du clan Senju, a grandi sans la présence quotidienne de son père, qui l'avait laissé auprès de sa mère, une ancienne Ninja de Takemi. Il semble que son père accordait une importance excessive à son rôle dans le village de Konoha, l'empêchant ainsi d'être présent pour son fils.Depuis sa naissance, il a été élevé par sa mère, qui malgré le fait d'être seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé un sens d'autonomie.Vivant dans une simple bâtisse au Village de Takemi, village des artisans situé au Pays des Rivières, sa mère lui avait souvent parlé de son père. Cependant, Hoko n'y prêtait pas attention, habitué à l'absence paternelle dans sa vie. Pour lui, ne pas voir son père était normal.Dès son plus jeune âge, Hoko avait une passion qui semblait relever d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait intensément au corps à corps, observant discrètement les entraînements au kenjutsu des shinobis présents dans le Village de Takemi, car ce village était réputé pour son expertise dans l'art des sabres, grâce à l'artisanat local.Tout cet apprentissage, jusqu'à maîtriser même le battojutsu, l'aïdo et le kendo parfaitement dès ses 10 ans, avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt, ils furent agressés par deux ninjas du village d'Ame.</p>
         <button onclick="PageSuivante(2)">Page Précédente</button></div>
     `,
     `
         <p>
         <h2> Suite </h2>
         <br>
-        <p>Confus et triste, il accepta la demande de sa mère à contrecoeur. Cinq jours plus tard, ils rentrèrent tous deux directement au village puis au domaine. Son père, Ikken, le présenta aux quelques membres présents. Après cette visite, Hoko s'isola dans la bibliothèque.
+        <p>Ikken Senju arriva, son père vêtu comme un marchand, comme s'il voulait se faire discret. Il salua son fils et enlaça Okana. Après une longue discussion entre les deux qui restait assez floue, Okana expliqua à Hoko qu'il devait partir avec son père pour accomplir son devoir en tant que fils du clan Senju, et qu'il pouvait revenir voir sa mère quand il le souhaiterait car elle n'allait pas rester.
+        Confus et triste, il accepta la demande de sa mère à contrecoeur. Cinq jours plus tard, ils rentrèrent tous deux directement au village puis au domaine. Son père, Ikken, le présenta aux quelques membres présents. Après cette visite, Hoko s'isola dans la bibliothèque.
 
 Il prit un livre...
 
@@ -105,13 +106,14 @@ content_page2 = [
     `
     <p>
     <h2> Suite </h2>
-    <p> Ils avaient dépouillé et humilié sa mère, qui s'était faite frapper devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde, et il avait vite pris conscience que l'art de se défendre était nécessaire.
+    <p>Ces derniers avaient franchi les frontières et volaient des artisans à la recherche de ressources sur leur chemin.
+    Ils avaient dépouillé et humilié sa mère, qui s'était faite frapper devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde, et il avait vite pris conscience que l'art de se défendre était nécessaire.
 
 Il commença à supplier sa mère, l'artisane, de lui fabriquer un sabre, mais sa mère craignait qu'il ne se blesse. Elle avait craqué et pris alors la décision de lui apprendre comment maîtriser son chakra. Un message de la part d'Okana, sa mère, fut envoyé en direction de Konoha via un oiseau, indiquant à Ikken que le jour était venu.
 
 Pendant ce temps, sa mère lui faisait passer le test de la feuille. Cette feuille semblait comme noyée dans l'eau . Étant descendant du 2ème Hokage et vivant dans le Pays des Rivières, la nature avait bien choisi les choses.
 
-Puis un jour pendant un entrainement au Kenjutsu de Hoko, Ikken Senju arriva, son père vêtu comme un marchand, comme s'il voulait se faire discret. Il salua son fils et enlaça Okana. Après une longue discussion entre les deux qui restait assez floue, Okana expliqua à Hoko qu'il devait partir avec son père pour accomplir son devoir en tant que fils du clan Senju, et qu'il pouvait revenir voir sa mère quand il le souhaiterait car elle n'allait pas rester.
+Puis un jour pendant un entrainement au Kenjutsu de Hoko,
          <p>
 
     <button onclick="PageSuivante(4)">Page Suivante</button></div>
