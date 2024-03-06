@@ -33,7 +33,6 @@ content_page1 = [
         Vivant dans une simple bâtisse au Village de Takemi *village des artisans* qui se situe au Pays des Rivières, sa mère lui avait parlé souvent de son père, mais Hoko n'y prêtait pas attention car il s'étais habitué au faite de ne pas avoir d'esprit paternelle dans sa vie, pour lui ne pas voir son père était normal. 
         Dès son plus jeune âge, Hoko avait une passion qui relevait d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait vraiment dur au corps à corps, observant discrètement les entraînements au kenjutsu des shinobis présent dans le Village de Takemi car oui , ce village était l'essence meme des sabres du à l'artisana présent.
         Tout cet apprentissage jusqu'à metrisais meme le battojutsu , l'aido et le kendo parfaitement dès ses 10ans avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt nagé dans des centaines de rivières, ils furent agressés par deux ninjas du village d'Ame qui avaient franchi les frontières et volé des artisans à quete de ressources sur leurs chemins. 
-        Ils avaient dépouillé et humilié sa mère s'était faite frapper devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde et il a vite pris conscience que l'art de se défendre était neccessaire.
         <p>
  </p>
     
@@ -112,7 +111,8 @@ content_page2 = [
     `
     <p>
     <h2> Suite </h2>
-    <p> Ils commencé à suplier sa mère l'artisante de lui fabriquer un sabre, sa mère avait craqué par peur qu'il ne se blesse , elle pris la décision de lui apprendre comment métriser son chakra , un message de Okana mère avait était envoyé en direction de Konoha via un oiseau indiquant à Ikken que le jour était venu.
+    <p> Ils avaient dépouillé et humilié sa mère s'était faite frapper devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde et il a vite pris conscience que l'art de se défendre était neccessaire.
+        Ils commencé à suplier sa mère l'artisante de lui fabriquer un sabre, sa mère avait craqué par peur qu'il ne se blesse , elle pris la décision de lui apprendre comment métriser son chakra , un message de Okana mère avait était envoyé en direction de Konoha via un oiseau indiquant à Ikken que le jour était venu.
         Pendant se temps sa mère lui fesait le test de la feuille , cette feuille s'étais comme noyé dans l'eau , étant descendant du 2ème Hokage et vivant dans le Pays des rivières , la nature avait bien choisi les choses.
         Puis un jour Ikken Senju arriva , son père vétu comme un marchand comme si il voulais se faire discrait. 
         Salua son fils et enlace Okana , après une longue discution entre le deux qui rester assez flou , Okana explique à Hoko qu'il devait partir avec son père faire son devoir du Fils du clan Senju et qu'il pouvait revenir voir sa mère quand il le souhaiter car elle n'allais pas rester.
