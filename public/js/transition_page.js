@@ -28,11 +28,11 @@ content_page1 = [
         <h2> BackGround </h2>
 
         <p>
-        <p>Hoko, un jeune enfant du clan Senju, a grandi sans une grande présence de son père qui l'a laissé d'en un village au près de sa mère une ancienne Ninja de Takemi. Possiblement une trop grande importance à son grade pour village qui l'empêched'etre présent pour son fils.
-        Depuis sa naissance, il a été élevé par sa mère, qui malgré le fait d'être seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé se sens d'autonomie.
-        Vivant dans une simple bâtisse au Village de Takemi *village des artisans* qui se situe au Pays des Rivières, sa mère lui avait parlé souvent de son père, mais Hoko n'y prêtait pas attention car il s'étais habitué au faite de ne pas avoir d'esprit paternelle dans sa vie, pour lui ne pas voir son père était normal. 
-        Dès son plus jeune âge, Hoko avait une passion qui relevait d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait vraiment dur au corps à corps, observant discrètement les entraînements au kenjutsu des shinobis présent dans le Village de Takemi car oui , ce village était l'essence meme des sabres du à l'artisana présent.
-        Tout cet apprentissage jusqu'à metrisais meme le battojutsu , l'aido et le kendo parfaitement dès ses 10ans avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt nagé dans des centaines de rivières, ils furent agressés par deux ninjas du village d'Ame qui avaient franchi les frontières et volé des artisans à quete de ressources sur leurs chemins. 
+        <pHoko, un jeune enfant du clan Senju, a grandi sans la présence quotidienne de son père, qui l'avait laissé auprès de sa mère, une ancienne Ninja de Takemi. Il semble que son père accordait une importance excessive à son rôle dans le village de Konoha, l'empêchant ainsi d'être présent pour son fils.
+              Depuis sa naissance, il a été élevé par sa mère, qui malgré le fait d'être seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé un sens d'autonomie.
+              Vivant dans une simple bâtisse au Village de Takemi, village des artisans situé au Pays des Rivières, sa mère lui avait souvent parlé de son père. Cependant, Hoko n'y prêtait pas attention, habitué à l'absence paternelle dans sa vie. Pour lui, ne pas voir son père était normal.
+              Dès son plus jeune âge, Hoko avait une passion qui semblait relever d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait intensément au corps à corps, observant discrètement les entraînements au kenjutsu des shinobis présents dans le Village de Takemi, car ce village était réputé pour son expertise dans l'art des sabres, grâce à l'artisanat local.
+              Tout cet apprentissage, jusqu'à maîtriser même le battojutsu, l'aïdo et le kendo parfaitement dès ses 10 ans, avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt, ils furent agressés par deux ninjas du village d'Ame. Ces derniers avaient franchi les frontières et volaient des artisans à la recherche de ressources sur leur chemin. 
         <p>
  </p>
     
@@ -42,13 +42,15 @@ content_page1 = [
         <p>
         <h2> Suite </h2>
         <br>
-        <p>Confu et triste , il accepta la demande de sa mère contre son grès , 5 jours plus tards , ils rentraient tout deux directement au Village puis au Domaine , son père Ikken, le présenta au peu de membres présent , Hoko après sa visite , s'isola dans la bibliothèque,
-        il pris un livre ...
-        Puis au fil de ses lectures et de temps, pris de passion étant jeune, il s'imaginer à la place des grandes personnes venant de son clan, un objectif était né en lui : laisser son nom dans les mémoires et accomplir des exploits dignes des plus grands de Konoha. 
-        Hoko était néanmoins encore un enfant lors de ces événements. 
-        On pourrait estimer qu'il avait environ 8 ans lors de l'agression dans la forêt , et qu'il avait 12 ans lorsqu'il fut présenté au domaine du clan Senju et commença à se plonger dans les récits de sa lignée. 
-        L'étape qui viendra par la suite est la liaison avec les membres du clan. C'est à ce moment qu'il exprimera toute sa motivation et ses ambitions parlant étonament comme un enfant mature , sérieux et pret.
+        <p>Confus et triste, il accepta la demande de sa mère à contrecoeur. Cinq jours plus tard, ils rentrèrent tous deux directement au village puis au domaine. Son père, Ikken, le présenta aux quelques membres présents. Après cette visite, Hoko s'isola dans la bibliothèque.
 
+Il prit un livre...
+
+Au fil de ses lectures et du temps qui passait, pris de passion étant jeune, il s'imaginait à la place des grandes personnes de son clan. Un objectif était né en lui : laisser son nom dans les mémoires et accomplir des exploits dignes des plus grands de Konoha.
+
+Hoko était néanmoins encore un enfant lors de ces événements. On pourrait estimer qu'il avait environ 8 ans lors de l'agression dans la forêt et qu'il en avait 12 lorsqu'il fut présenté au domaine du clan Senju et commença à se plonger dans les récits de sa lignée.
+
+L'étape qui viendra par la suite est la liaison avec les membres du clan. C'est à ce moment qu'il exprimera toute sa motivation et ses ambitions, parlant étonnamment comme un enfant mature, sérieux et prêt.
         <button onclick="PageSuivante(3)">Page Précédente</button></div>
     `,
     `
@@ -111,11 +113,13 @@ content_page2 = [
     `
     <p>
     <h2> Suite </h2>
-    <p> Ils avaient dépouillé et humilié sa mère s'était faite frapper devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde et il a vite pris conscience que l'art de se défendre était neccessaire.
-        Ils commencé à suplier sa mère l'artisante de lui fabriquer un sabre, sa mère avait craqué par peur qu'il ne se blesse , elle pris la décision de lui apprendre comment métriser son chakra , un message de Okana mère avait était envoyé en direction de Konoha via un oiseau indiquant à Ikken que le jour était venu.
-        Pendant se temps sa mère lui fesait le test de la feuille , cette feuille s'étais comme noyé dans l'eau , étant descendant du 2ème Hokage et vivant dans le Pays des rivières , la nature avait bien choisi les choses.
-        Puis un jour Ikken Senju arriva , son père vétu comme un marchand comme si il voulais se faire discrait. 
-        Salua son fils et enlace Okana , après une longue discution entre le deux qui rester assez flou , Okana explique à Hoko qu'il devait partir avec son père faire son devoir du Fils du clan Senju et qu'il pouvait revenir voir sa mère quand il le souhaiter car elle n'allais pas rester.
+    <p> Ils avaient dépouillé et humilié sa mère, qui s'était faite frapper devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde, et il avait vite pris conscience que l'art de se défendre était nécessaire.
+
+Il commença à supplier sa mère, l'artisane, de lui fabriquer un sabre, mais sa mère craignait qu'il ne se blesse. Elle avait craqué et pris alors la décision de lui apprendre comment maîtriser son chakra. Un message de la part d'Okana, sa mère, fut envoyé en direction de Konoha via un oiseau, indiquant à Ikken que le jour était venu.
+
+Pendant ce temps, sa mère lui faisait passer le test de la feuille. Cette feuille semblait comme noyée dans l'eau . Étant descendant du 2ème Hokage et vivant dans le Pays des Rivières, la nature avait bien choisi les choses.
+
+Puis un jour pendant un entrainement au Kenjutsu de Hoko, Ikken Senju arriva, son père vêtu comme un marchand, comme s'il voulait se faire discret. Il salua son fils et enlaça Okana. Après une longue discussion entre les deux qui restait assez floue, Okana expliqua à Hoko qu'il devait partir avec son père pour accomplir son devoir en tant que fils du clan Senju, et qu'il pouvait revenir voir sa mère quand il le souhaiterait car elle n'allait pas rester.
          <p>
 
     <button onclick="PageSuivante(4)">Page Suivante</button></div>
