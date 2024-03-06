@@ -28,12 +28,16 @@ content_page1 = [
         <h2> BackGround </h2>
 
         <p>
-        <p>Hoko, un jeune enfant du clan Senju, a grandi sans la présence de son père qui l'a abandonné après sa naissance. Peut-être a-t-il pris peur ou ressenti trop de responsabilités liées à son importance au village, personne ne le sait. 
-        Depuis sa naissance, il a été élevé par sa mère, qui malgré le fait d'être seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé se sens d'autonomie. 
-        Vivant dans une simple bâtisse au Village de Konoha, sa mère lui avait parlé de l'apparence de son père, mais Hoko n'y prêtait pas attention car il ne l'avait jamais connu, jamais vu et pour lui, ne pas avoir de père était normal. 
-        Dès son plus jeune âge, Hoko avait une passion qui relevait d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait vraiment dur au corps à corps, observant discrètement les entraînements au taijutsu et au kenjutsu des shinobis. 
-        Tout cet apprentissage avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt, ils furent agressés par deux ninjas du village d'Ame qui avaient franchi les frontières. 
-        Ils avaient dépouillé et humilié sa mère en la frappant devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde. 
+        <p>Hoko, un jeune enfant du clan Senju, a grandi sans une grande présence de son père qui l'a laissé d'en un village au près de sa mère une ancienne Ninja de Takemi. Possiblement une trop grande importance à son grade pour village qui l'empêched'etre présent pour son fils.
+        Depuis sa naissance, il a été élevé par sa mère, qui malgré le fait d'être seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé se sens d'autonomie.
+        Vivant dans une simple bâtisse au Village de Takemi *village des artisans* qui se situe au Pays des Rivières, sa mère lui avait parlé souvent de son père, mais Hoko n'y prêtait pas attention car il s'étais habitué au faite de ne pas avoir d'esprit paternelle dans sa vie, pour lui ne pas voir son père était normal. 
+        Dès son plus jeune âge, Hoko avait une passion qui relevait d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait vraiment dur au corps à corps, observant discrètement les entraînements au kenjutsu des shinobis présent dans le Village de Takemi car oui , ce village était l'essence meme des sabres du à l'artisana présent.
+        Tout cet apprentissage jusqu'à metrisais meme le battojutsu , l'aido et le kendo parfaitement dès ses 10ans avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt nagé dans des centaines de rivières, ils furent agressés par deux ninjas du village d'Ame qui avaient franchi les frontières et volé des artisans à quete de ressources sur leurs chemins. 
+        Ils avaient dépouillé et humilié sa mère s'était faite frapper devant lui, laissant Hoko choqué et impuissant. Il était figé, incapable de bouger ou de parler. Cette agression l'avait profondément marqué, lui ouvrant enfin les yeux sur la violence de ce monde et il a vite pris conscience que l'art de se défendre était neccessaire.
+        Ils commencé à suplier sa mère l'artisante de lui fabriquer un sabre, sa mère avait craqué par peur qu'il ne se blesse , elle pris la décision de lui apprendre comment métriser son chakra , un message de Okana mère avait était envoyé en direction de Konoha via un oiseau indiquant à Ikken que le jour était venu.
+        Pendant se temps sa mère lui fesait le test de la feuille , cette feuille s'étais comme noyé dans l'eau , étant descendant du 2ème Hokage et vivant dans le Pays des rivières , la nature avait bien choisi les choses.
+        Puis un jour Ikken Senju arriva , son père vétu comme un marchand comme si il voulais se faire discrait. 
+        Salua son fils et enlace Okana , après une longue discution entre le deux qui rester assez flou , Okana explique à Hoko qu'il devait partir avec son père faire son devoir du Fils du clan Senju et qu'il pouvait revenir voir sa mère quand il le souhaiter car elle n'allais pas rester.
         <p>
  </p>
     
@@ -43,10 +47,12 @@ content_page1 = [
         <p>
         <h2> Suite </h2>
         <br>
-        <p>Au fil de ses lectures, pris de passion étant jeune, il s'imaginer à la place de ces personnes avec force et avec le temps, un objectif est né en lui : laisser son nom dans les mémoires et accomplir des exploits dignes des plus grands de Konoha. 
+        <p>Confu et triste , il accepta la demande de sa mère contre son grès , 5 jours plus tards , ils rentraient tout deux directement au Village puis au Domaine , son père Ikken, le présenta au peu de membres présent , Hoko après sa visite , s'isola dans la bibliothèque,
+        il pris un livre ...
+        Puis au fil de ses lectures et de temps, pris de passion étant jeune, il s'imaginer à la place des grandes personnes venant de son clan, un objectif était né en lui : laisser son nom dans les mémoires et accomplir des exploits dignes des plus grands de Konoha. 
         Hoko était néanmoins encore un enfant lors de ces événements. 
-        On pourrait estimer qu'il avait environ 8 ans lors de l'agression dans la forêt et qu'il avait 12 ans lorsqu'il fut présenté au domaine du clan Senju et commença à se plonger dans les récits de sa lignée. 
-        L'étape qui viendra par la suite est la liaison avec les membres du clan. C'est à ce moment qu'il exprimera toute sa motivation et ses ambitions.
+        On pourrait estimer qu'il avait environ 8 ans lors de l'agression dans la forêt , et qu'il avait 12 ans lorsqu'il fut présenté au domaine du clan Senju et commença à se plonger dans les récits de sa lignée. 
+        L'étape qui viendra par la suite est la liaison avec les membres du clan. C'est à ce moment qu'il exprimera toute sa motivation et ses ambitions parlant étonament comme un enfant mature , sérieux et pret.
 
         <button onclick="PageSuivante(3)">Page Précédente</button></div>
     `,
@@ -68,7 +74,7 @@ content_page2 = [
                             <p>Nom: Senju</p>
                             <p>Prenom: Hoko</p>
                             <br>
-                            <p>Lieux de Naissance: Konoha</p>
+                            <p>Lieux de Naissance: Village de Takemi</p>
                             <p>Taille : 142cm</p>
                             <p>Age: 12 ans</p>
                             <p>Natures de chakra : Suiton & Kiminari</p>
@@ -79,9 +85,9 @@ content_page2 = [
                             <br>
                             <br>
                             <p>Nom Mère : Okana Yoka</p>
-                            <p>Nom Père : Shunsui Senju</p>
+                            <p>Nom Père : Ikken Senju</p>
                             <br>
-                            <p>Lieux de Résidence : Domaine Senju & Batisse de Okana Yoka</p>
+                            <p>Lieux de Résidence : Domaine Senju</p>
                             <img style="width: auto; height: 5%;" src="https://i.pinimg.com/originals/e7/13/26/e71326af09f28d3e4e272e2cdf997dd5.png" alt="">
       </p>
         <button onclick="PageSuivante(2)">Page Suivante</button></div>
