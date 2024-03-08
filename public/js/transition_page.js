@@ -27,7 +27,7 @@ content_page1 = [
     `
         <h2> BackGround </h2>
          <br>
-        <p>Hoko, un jeune enfant du clan Senju, a grandi sans la présence quotidienne de son père, qui l'avait laissé auprès de sa mère, une ancienne Ninja de Takemi. Il semble que son père accordait une importance excessive à son rôle dans le village de Konoha, l'empêchant ainsi d'être présent pour son fils.Depuis sa naissance, il a été élevé par sa mère, qui malgré le fait d'être seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé un sens d'autonomie.Vivant dans une simple bâtisse au Village de Takemi, village des artisans situé au Pays des Rivières, sa mère lui avait souvent parlé de son père. Cependant, Hoko n'y prêtait pas attention, habitué à l'absence paternelle dans sa vie. Pour lui, ne pas voir son père était normal.Dès son plus jeune âge, Hoko avait une passion qui semblait relever d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait intensément au corps à corps, observant discrètement les entraînements au kenjutsu des shinobis présents dans le Village de Takemi, car ce village était réputé pour son expertise dans l'art des sabres, grâce à l'artisanat local.Tout cet apprentissage, jusqu'à maîtriser même le battojutsu, l'aïdo et le kendo parfaitement dès ses 10 ans, avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt, ils furent agressés par deux ninjas du village d'Ame.</p>
+        <p>Hoko, un jeune enfant du clan Senju, a grandi sans la présence quotidienne de son père, qui l'avait laissé auprès de sa mère, une ancienne Ninja de Takumi. Il semble que son père accordait une importance excessive à son rôle dans le village de Konoha, l'empêchant ainsi d'être présent pour son fils.Depuis sa naissance, il a été élevé par sa mère, qui malgré le fait d'être seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé un sens d'autonomie.Vivant dans une simple bâtisse au Village de Takumi, village des artisans situé au Pays des Rivières, sa mère lui avait souvent parlé de son père. Cependant, Hoko n'y prêtait pas attention, habitué à l'absence paternelle dans sa vie. Pour lui, ne pas voir son père était normal.Dès son plus jeune âge, Hoko avait une passion qui semblait relever d'un traumatisme : les combats contre les autres enfants de son âge. Il s'entraînait intensément au corps à corps, observant discrètement les entraînements au kenjutsu des shinobis présents dans le Village de Takumi, car ce village était réputé pour son expertise dans l'art des sabres, grâce à l'artisanat local.Tout cet apprentissage, jusqu'à maîtriser même le battojutsu, l'aïdo et le kendo parfaitement dès ses 10 ans, avait une cause : un jour, alors qu'il se promenait avec sa mère dans la forêt, ils furent agressés par deux ninjas du village d'Ame.</p>
         <button onclick="PageSuivante(2)">Page Précédente</button></div>
     `,
     `
@@ -64,7 +64,7 @@ content_page2 = [
                             <p>Nom: Senju</p>
                             <p>Prenom: Hoko</p>
                             <br>
-                            <p>Lieux de Naissance: Village de Takemi</p>
+                            <p>Lieux de Naissance: Village de Takumi</p>
                             <p>Taille : 142cm</p>
                             <p>Age: 12 ans</p>
                             <p>Natures de chakra : Suiton & Kiminari</p>
