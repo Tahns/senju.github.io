@@ -75,7 +75,7 @@ content_page2 = [
                             <br>
                             <br>
                             <p>Nom Mère : Okana Yoka</p>
-                            <p>Nom Père : Ikken Senju</p>
+                            <p>Nom Père : </p>
                             <br>
                             <p>Lieux de Résidence : Domaine Senju</p>
                             <img style="width: auto; height: 5%;" src="https://i.pinimg.com/originals/e7/13/26/e71326af09f28d3e4e272e2cdf997dd5.png" alt="">
