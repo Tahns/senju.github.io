@@ -1,5 +1,5 @@
 content_page1 = [
-    `<h2><strong>Fiche Personnage</strong></h2><img src="https://i.ibb.co/PDJ0Gzz/Untitled-1.png" style="width: auto;height: 90%;" alt="">`,
+    `<h2><strong>Fiche Personnage</strong></h2><img src="https://i.ibb.co/PDJ0Gzz/Untitled-1.png" style="width: auto;height: 80%;" alt="">`,
     `
         <h2> Ambitions </h2>
         <p>
