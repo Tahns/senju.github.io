@@ -77,7 +77,7 @@ content_page2 = [
                             <p>Nom Mère : Okana Yoka</p>
                             <p>Nom Père : </p>
                             <br>
-                            <p>Lieux de Résidence : Domaine Senju</p>
+                            <p>𝓛𝓲𝓮𝓾𝔁 𝓭𝓮 𝓡e𝓼𝓲𝓭𝓮𝓷𝓬𝓮 : Domaine Senju</p>
                             <img style="width: auto; height: 5%;" src="https://i.pinimg.com/originals/e7/13/26/e71326af09f28d3e4e272e2cdf997dd5.png" alt="">
       </p>
         <button onclick="PageSuivante(2)">Page Suivante</button></div>
