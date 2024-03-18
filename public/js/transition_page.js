@@ -74,8 +74,8 @@ content_page2 = [
                             <p>Défauts : Égoïste, Trop sérieux, aime tout controler, Mauvaise compréhension des sentiments</p>
                             <br>
                             <br>
-                            <p>Nom Mère : Okana Yoka</p>
-                            <p>Nom Père : </p>
+                            <p>𝓝𝓸𝓶 𝓜𝓮𝓻𝓮 : 𝒪𝓀𝒶𝓃𝒶 𝒴𝑜𝓀𝒶</p>
+                            <p>𝓝𝓸𝓶 𝓟𝓮𝓻𝓮 : </p>
                             <br>
                             <p>𝓛𝓲𝓮𝓾𝔁 𝓭𝓮 𝓡e𝓼𝓲𝓭𝓮𝓷𝓬𝓮 : Domaine Senju</p>
                             <img style="width: auto; height: 5%;" src="https://i.pinimg.com/originals/e7/13/26/e71326af09f28d3e4e272e2cdf997dd5.png" alt="">
