@@ -61,7 +61,7 @@ content_page2 = [
         <h2> Identité </h2>
                             <br>
                             <br>
-                            <h1>Nom: Senju</h1>
+                            <p>Nom: Senju</p>
                             <p>Prenom: Hoko</p>
                             <br>
                             <p>Lieux de Naissance: Village de Takumi</p>
