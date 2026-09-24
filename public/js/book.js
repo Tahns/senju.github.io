@@ -429,23 +429,23 @@
         const canFullscreen = document.fullscreenEnabled || document.webkitFullscreenEnabled;
         if (!canFullscreen) fullscreenBtn.hidden = true;
 
-        // Léger basculement du livre qui suit le pointeur.
+        // Le livre s'incline vers la souris, comme sur la version d'origine.
         if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
             let frame = 0;
-            stage.addEventListener('pointermove', (e) => {
-                if (reducedMotion.matches || frame) return;
+            const tilt = (x, y) => {
+                stage.style.setProperty('--tilt-x', (8 - y * 22).toFixed(2) + 'deg');
+                stage.style.setProperty('--tilt-y', (x * 26).toFixed(2) + 'deg');
+                stage.style.setProperty('--tilt-z', (-2 - x * 4).toFixed(2) + 'deg');
+            };
+            document.addEventListener('pointermove', (e) => {
+                if (reducedMotion.matches || frame || e.pointerType !== 'mouse') return;
                 frame = requestAnimationFrame(() => {
                     frame = 0;
-                    const x = e.clientX / window.innerWidth - 0.5;
-                    const y = e.clientY / window.innerHeight - 0.5;
-                    stage.style.setProperty('--tilt-x', (-y * 4).toFixed(2) + 'deg');
-                    stage.style.setProperty('--tilt-y', (x * 5).toFixed(2) + 'deg');
+                    tilt(e.clientX / window.innerWidth - 0.5, e.clientY / window.innerHeight - 0.5);
                 });
             });
-            stage.addEventListener('pointerleave', () => {
-                stage.style.setProperty('--tilt-x', '0deg');
-                stage.style.setProperty('--tilt-y', '0deg');
-            });
+            document.documentElement.addEventListener('mouseleave', () => tilt(0, 0));
+            if (!reducedMotion.matches) tilt(0, 0);
         }
     }
 
