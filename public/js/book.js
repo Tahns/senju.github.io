@@ -959,10 +959,15 @@
     bindEvents();
     if (sceneMode) {
         setShown(false);
-        // Si la scène 3D ne démarre pas (module non chargé), on affiche le carnet.
+        // Si la scène 3D ne peut pas se charger (navigateur trop ancien), on
+        // affiche le carnet. Une erreur de chargement l'affiche aussi (voir
+        // index.html), et une connexion très lente finit par y renoncer.
+        setTimeout(() => {
+            if (!window.SceneLoading) standalone();
+        }, 1500);
         setTimeout(() => {
             if (!window.SceneStarted) standalone();
-        }, 8000);
+        }, 45000);
     } else {
         setShown(true);
         fallingLeaves();

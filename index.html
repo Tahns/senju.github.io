@@ -531,7 +531,9 @@
 
     <script src="public/js/book.js"></script>
     <script type="importmap">{ "imports": { "three": "./public/vendor/three.module.min.js" } }</script>
-    <script type="module" src="public/js/scene/main.js"></script>
+    <!-- Si le navigateur gère les modules, la scène se charge ; sinon, ou en cas d'erreur, le carnet s'affiche seul. -->
+    <script type="module">window.SceneLoading = true;</script>
+    <script type="module" src="public/js/scene/main.js" onerror="window.Carnet && window.Carnet.standalone()"></script>
 </body>
 
 </html>
