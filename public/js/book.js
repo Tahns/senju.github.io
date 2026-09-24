@@ -234,9 +234,9 @@
 
         closeBtn.disabled = flipped === 0;
 
-        if (history.replaceState) {
+        try {
             history.replaceState(null, '', page === 0 ? location.pathname + location.search : '#page-' + page);
-        }
+        } catch (e) { /* page intégrée (iframe) : on garde l'adresse telle quelle */ }
 
         if (announce) {
             announcer.textContent = numbers.length
