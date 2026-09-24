@@ -14,7 +14,8 @@
     const TURN_MS = 900; // doit correspondre à --turn-duration dans style.css
     const SINGLE_QUERY = '(max-width: 760px), (orientation: portrait) and (max-width: 1100px)';
 
-    const source = document.getElementById('book-source');
+    const sources = Array.from(document.querySelectorAll('.book-source'));
+    let source = sources[0];
     const stage = document.getElementById('stage');
     const book = document.getElementById('book');
     const toolbar = document.getElementById('toolbar');
@@ -27,11 +28,25 @@
     const soundBtn = document.getElementById('sound');
     const fullscreenBtn = document.getElementById('fullscreen');
     const closeBtn = document.getElementById('close');
+    const shelveBtn = document.getElementById('shelve');
     const announcer = document.getElementById('announcer');
 
-    const pages = Array.from(source.querySelectorAll(':scope > .page'));
-    const lastPage = pages.length - 1;
-    const innerPages = pages.length - 2; // sans les deux couvertures
+    let pages = [];
+    let lastPage = 0;
+    let innerPages = 0; // sans les deux couvertures
+
+    function usePages(from) {
+        source = from;
+        pages = Array.from(from.querySelectorAll(':scope > .page'));
+        lastPage = pages.length - 1;
+        innerPages = pages.length - 2;
+    }
+    usePages(source);
+
+    // Mode « scène » : le carnet est pris dans la bibliothèque par la scène 3D
+    // (public/js/scene/) au lieu d'être affiché directement.
+    const sceneMode = document.documentElement.classList.contains('has-scene');
+    let shown = !sceneMode;
 
     const singleMedia = window.matchMedia(SINGLE_QUERY);
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -355,6 +370,7 @@
     }
 
     function go(target) {
+        if (!shown) return;
         target = Math.max(0, Math.min(maxFlipped(), target));
         if (target === flipped) return;
 
@@ -442,9 +458,11 @@
 
         closeBtn.disabled = flipped === 0;
 
-        try {
-            history.replaceState(null, '', page === 0 ? location.pathname + location.search : '#page-' + page);
-        } catch (e) { /* page intégrée (iframe) : on garde l'adresse telle quelle */ }
+        if (!sceneMode) {
+            try {
+                history.replaceState(null, '', page === 0 ? location.pathname + location.search : '#page-' + page);
+            } catch (e) { /* page intégrée (iframe) : on garde l'adresse telle quelle */ }
+        }
 
         if (announce) {
             announcer.textContent = numbers.length
@@ -454,6 +472,7 @@
     }
 
     function buildTocMenu() {
+        tocMenu.textContent = '';
         pages.forEach((section, p) => {
             const li = document.createElement('li');
             const a = document.createElement('a');
@@ -536,6 +555,16 @@
         document.addEventListener('click', (e) => {
             if (!tocMenu.hidden && !e.target.closest('.toolbar__center')) setTocOpen(false);
         });
+
+        // « Refermer le carnet » (fin du livre) et « Ranger le livre » (scène).
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href="#fin"], a[href="#ranger"]');
+            if (!link) return;
+            e.preventDefault();
+            if (link.getAttribute('href') === '#fin') go(maxFlipped());
+            else shelve();
+        });
+        if (shelveBtn) shelveBtn.addEventListener('click', shelve);
 
         // Liens internes (sommaire du carnet et menu).
         document.addEventListener('click', (e) => {
@@ -634,7 +663,7 @@
         stage.addEventListener('pointercancel', release);
 
         document.addEventListener('keydown', (e) => {
-            if (e.altKey || e.ctrlKey || e.metaKey) return;
+            if (!shown || e.altKey || e.ctrlKey || e.metaKey) return;
             if (e.target.closest && e.target.closest('input, textarea, select')) return;
             switch (e.key) {
                 case 'ArrowRight':
@@ -718,7 +747,10 @@
     /* Feuilles qui tombent                                                */
     /* ------------------------------------------------------------------ */
 
+    let leavesStarted = false;
     function fallingLeaves() {
+        if (leavesStarted) return;
+        leavesStarted = true;
         const canvas = document.getElementById('leaves');
         const ctx = canvas.getContext && canvas.getContext('2d');
         if (!ctx) return;
@@ -824,18 +856,117 @@
     /* Démarrage                                                           */
     /* ------------------------------------------------------------------ */
 
+    /* ------------------------------------------------------------------ */
+    /* Commandes pour la scène 3D                                          */
+    /* ------------------------------------------------------------------ */
+
+    // Change de carnet : les pages du carnet actuel retournent à leur source.
+    function load(name) {
+        const wanted = sources.find((el) => el.dataset.book === name) || sources[0];
+        if (wanted === source && leaves.length) return;
+        pages.forEach((section) => source.appendChild(section));
+        usePages(wanted);
+        stage.dataset.book = wanted.dataset.book;
+        page = 0;
+        buildTocMenu();
+        build();
+    }
+
+    let onShelve = null;
+    let shelving = false;
+
+    function setShown(value) {
+        shown = value;
+        stage.hidden = false;
+        toolbar.hidden = false;
+        document.documentElement.classList.toggle('book-open', value);
+        stage.inert = !value;
+        toolbar.inert = !value;
+    }
+
+    // Ouvre un carnet (fermé, sur sa couverture). `done` est appelé quand le
+    // lecteur le range.
+    function open(name, done) {
+        load(name);
+        if (flipped !== 0) {
+            page = 0;
+            build();
+        }
+        onShelve = done || null;
+        shelving = false;
+        setShown(true);
+        update(false);
+        announcer.textContent = titleOf(0) + ' : ' + (pages[0].querySelector('h1') || {}).textContent;
+    }
+
+    // Referme le carnet s'il est ouvert, puis le rend à la scène.
+    function shelve() {
+        if (!shown || shelving) return;
+        shelving = true;
+        setTocOpen(false);
+        const opened = flipped !== 0 && flipped !== leaves.length;
+        const turns = opened ? flipped : 0;
+        if (opened) go(0);
+        const delay = opened ? TURN_MS + Math.min(160, 800 / turns) * (turns - 1) + 150 : 0;
+        setTimeout(() => {
+            setShown(false);
+            shelving = false;
+            const done = onShelve;
+            onShelve = null;
+            if (done) done();
+        }, delay);
+    }
+
+    // Sans scène (lien « Aller directement au carnet », ou WebGL indisponible).
+    function standalone() {
+        document.documentElement.classList.remove('has-scene');
+        load(sources[0].dataset.book);
+        onShelve = null;
+        setShown(true);
+        update(false);
+        fallingLeaves();
+    }
+
+    function setSound(on) {
+        soundOn = on;
+        store.set('senju-sound', on ? 'on' : 'off');
+        renderSound();
+    }
+
+    window.Carnet = {
+        open,
+        shelve,
+        standalone,
+        setSound,
+        get sound() { return soundOn; },
+        get isOpen() { return shown; },
+        get isClosed() { return flipped === 0 || flipped === leaves.length; }
+    };
+
+    /* ------------------------------------------------------------------ */
+    /* Démarrage                                                           */
+    /* ------------------------------------------------------------------ */
+
     // Le carnet s'ouvre toujours fermé, sur sa couverture. Un lien direct
     // (#page-5) l'ouvre ensuite à la bonne page, en tournant les feuilles.
     const initial = /^#page-(\d+)$/.exec(location.hash);
     page = 0;
 
-    stage.hidden = false;
-    toolbar.hidden = false;
+    stage.dataset.book = source.dataset.book;
     buildTocMenu();
     build();
     renderSound();
     bindEvents();
-    fallingLeaves();
+    if (sceneMode) {
+        setShown(false);
+        // Si la scène 3D ne démarre pas (module non chargé), on affiche le carnet.
+        setTimeout(() => {
+            if (!window.SceneStarted) standalone();
+        }, 8000);
+    } else {
+        setShown(true);
+        fallingLeaves();
+    }
     requestAnimationFrame(() => document.documentElement.classList.add('is-ready'));
-    if (initial) setTimeout(() => goToPage(parseInt(initial[1], 10)), 1100);
+    if (initial && !sceneMode) setTimeout(() => goToPage(parseInt(initial[1], 10)), 1100);
 })();
