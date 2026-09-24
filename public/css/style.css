@@ -238,7 +238,7 @@ html:not(.js) .js-only {
     transform-style: preserve-3d;
     transform: rotateY(0deg);
     transition: transform var(--turn-duration) var(--turn-ease);
-    cursor: pointer;
+    cursor: grab;
 }
 
 .leaf.is-flipped {
@@ -264,6 +264,63 @@ html:not(.js) .js-only {
 
 .face--back {
     transform: rotateY(180deg);
+}
+
+/* Feuille en train de tourner : bandes imbriquées qui courbent la page */
+.leaf.no-anim {
+    transition: none !important;
+}
+
+.ghost {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transform-style: preserve-3d;
+    pointer-events: none;
+}
+
+.ghost__strip {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.ghost__shade {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    will-change: transform;
+    pointer-events: none;
+}
+
+/* Ombre portée par la page soulevée sur la page du dessous */
+.cast {
+    --at: 100%;
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.cast--right {
+    left: 50%;
+    background: linear-gradient(90deg, rgba(25, 12, 0, .5) calc(var(--at) - 1%), rgba(25, 12, 0, .28) var(--at), rgba(25, 12, 0, .08) calc(var(--at) + 12%), transparent calc(var(--at) + 28%));
+}
+
+.cast--left {
+    left: 0;
+    background: linear-gradient(90deg, transparent calc(var(--at) - 28%), rgba(25, 12, 0, .08) calc(var(--at) - 12%), rgba(25, 12, 0, .28) var(--at), rgba(25, 12, 0, .5) calc(var(--at) + 1%));
+}
+
+.stage[data-mode="single"] .cast--right {
+    left: 0;
+    width: 100%;
 }
 
 /* Papier */
@@ -372,11 +429,10 @@ html:not(.js) .js-only {
     padding: 7cqh 10cqi 9cqh;
     overflow-y: auto;
     overscroll-behavior: contain;
+    touch-action: pan-y; /* le glissé horizontal tourne la page */
     font-size: clamp(12.5px, 2.75cqi, 17.5px);
     scrollbar-width: thin;
     scrollbar-color: rgba(91, 70, 48, .35) transparent;
-    user-select: text;
-    -webkit-user-select: text;
 }
 
 .face--back .paper > .page {
@@ -1167,12 +1223,10 @@ html:not(.js) .js-only {
     padding: 4px;
     translate: -50% 0;
     color: var(--gold-light);
-    background: rgba(24, 14, 9, .82);
+    background: rgba(24, 14, 9, .94);
     border: 1px solid rgba(214, 179, 94, .28);
     border-radius: 999px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     font-family: var(--font-title);
 }
 
