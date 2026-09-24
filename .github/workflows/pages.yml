@@ -1,0 +1,22 @@
+# Republie le site GitHub Pages à chaque modification de main,
+# même quand la modification vient d'une app (ex. fusion faite par Claude),
+# ce que l'ancien système de publication ne fait pas tout seul.
+name: Publier le site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Demander une nouvelle publication à GitHub Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${{ github.repository }}/pages/builds"
