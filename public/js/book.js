@@ -14,7 +14,8 @@
     const TURN_MS = 900; // doit correspondre à --turn-duration dans style.css
     const SINGLE_QUERY = '(max-width: 760px), (orientation: portrait) and (max-width: 1100px)';
 
-    const source = document.getElementById('book-source');
+    const sources = Array.from(document.querySelectorAll('.book-source'));
+    let source = sources[0];
     const stage = document.getElementById('stage');
     const book = document.getElementById('book');
     const toolbar = document.getElementById('toolbar');
@@ -27,11 +28,25 @@
     const soundBtn = document.getElementById('sound');
     const fullscreenBtn = document.getElementById('fullscreen');
     const closeBtn = document.getElementById('close');
+    const shelveBtn = document.getElementById('shelve');
     const announcer = document.getElementById('announcer');
 
-    const pages = Array.from(source.querySelectorAll(':scope > .page'));
-    const lastPage = pages.length - 1;
-    const innerPages = pages.length - 2; // sans les deux couvertures
+    let pages = [];
+    let lastPage = 0;
+    let innerPages = 0; // sans les deux couvertures
+
+    function usePages(from) {
+        source = from;
+        pages = Array.from(from.querySelectorAll(':scope > .page'));
+        lastPage = pages.length - 1;
+        innerPages = pages.length - 2;
+    }
+    usePages(source);
+
+    // Mode « scène » : le carnet est pris dans la bibliothèque par la scène 3D
+    // (public/js/scene/) au lieu d'être affiché directement.
+    const sceneMode = document.documentElement.classList.contains('has-scene');
+    let shown = !sceneMode;
 
     const singleMedia = window.matchMedia(SINGLE_QUERY);
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -86,8 +101,11 @@
     function build() {
         single = singleMedia.matches;
         stage.dataset.mode = single ? 'single' : 'spread';
+        anims.forEach((anim) => cancelAnimationFrame(anim.frame));
+        anims.clear();
         book.textContent = '';
         leaves = [];
+        makeCasts();
 
         const count = single ? pages.length : Math.ceil(pages.length / 2);
         for (let i = 0; i < count; i++) {
@@ -135,9 +153,224 @@
 
     /* ------------------------------------------------------------------ */
     /* Feuilletage                                                         */
+    /*                                                                     */
+    /* Pendant qu'elle tourne, une feuille est remplacée par un « fantôme » */
+    /* découpé en fines bandes verticales imbriquées : chaque bande tourne */
+    /* un peu plus que la précédente, ce qui courbe la page comme du vrai  */
+    /* papier. Le bord libre part en premier, la reliure suit.             */
     /* ------------------------------------------------------------------ */
 
+    const CURL = 1.75; // plus c'est grand, plus la page se courbe
+    const anims = new Set();
+    let castRight = null;
+    let castLeft = null;
+
+    function makeCasts() {
+        castRight = document.createElement('div');
+        castRight.className = 'cast cast--right';
+        castLeft = document.createElement('div');
+        castLeft.className = 'cast cast--left';
+        book.append(castRight, castLeft);
+    }
+
+    function makeGhost(leaf, strips) {
+        const width = leaf.offsetWidth;
+        const height = leaf.offsetHeight;
+        const stripWidth = width / strips;
+        const ghost = document.createElement('div');
+        ghost.className = 'ghost';
+        ghost.setAttribute('aria-hidden', 'true');
+        ghost.style.left = leaf.offsetLeft + 'px';
+        ghost.style.width = width + 'px';
+
+        const sides = Array.from(leaf.children); // [recto, verso]
+        const parts = [];
+        let parent = ghost;
+        for (let i = 0; i < strips; i++) {
+            const strip = document.createElement('div');
+            strip.className = 'ghost__strip';
+            strip.style.left = (i === 0 ? 0 : stripWidth) + 'px';
+            strip.style.width = stripWidth + 2 + 'px'; // +2px : pas de jour entre les bandes
+            const shades = sides.map((face, side) => {
+                const slice = face.cloneNode(false);
+                slice.removeAttribute('role');
+                slice.removeAttribute('aria-label');
+                slice.classList.remove('is-visible');
+                const paper = face.querySelector('.paper').cloneNode(true);
+                paper.style.inset = 'auto';
+                paper.style.top = '0';
+                paper.style.width = width + 'px';
+                paper.style.height = height + 'px';
+                // Le verso est vu en miroir : sa bande n° i part de l'autre bord.
+                paper.style.left = -(side === 0 ? i : strips - 1 - i) * stripWidth + 'px';
+                const shade = document.createElement('div');
+                shade.className = 'ghost__shade';
+                slice.append(paper, shade);
+                strip.appendChild(slice);
+                return shade;
+            });
+            parent.appendChild(strip);
+            parent = strip;
+            parts.push({ strip, shades });
+        }
+        book.appendChild(ghost);
+        return { ghost, parts, stripWidth, width };
+    }
+
+    function angles(t, wasFlipped) {
+        t = Math.max(0, Math.min(1, t));
+        const from = wasFlipped ? -180 : 0;
+        const span = wasFlipped ? 180 : -180;
+        return {
+            spine: from + span * Math.pow(t, CURL),
+            edge: from + span * (1 - Math.pow(1 - t, CURL))
+        };
+    }
+
+    // Position horizontale du bord libre (en largeurs de page, depuis la reliure)
+    // quand la page courbée est à l'avancement t.
+    function reachAt(t, wasFlipped) {
+        const { spine, edge } = angles(t, wasFlipped);
+        const a = spine * Math.PI / 180;
+        const b = edge * Math.PI / 180;
+        return Math.abs(b - a) < 1e-4 ? Math.cos(a) : (Math.sin(b) - Math.sin(a)) / (b - a);
+    }
+
+    // Inverse de reachAt : quel avancement place le bord libre en r ?
+    function tForReach(r, wasFlipped) {
+        let lo = 0;
+        let hi = 1;
+        for (let k = 0; k < 22; k++) {
+            const mid = (lo + hi) / 2;
+            const past = wasFlipped ? reachAt(mid, true) < r : reachAt(mid, false) > r;
+            if (past) lo = mid; else hi = mid;
+        }
+        return (lo + hi) / 2;
+    }
+
+    function darkness(angle, lift) {
+        const light = Math.abs(Math.cos(angle * Math.PI / 180));
+        return 0.55 * Math.pow(1 - light, 1.25) + 0.05 * lift;
+    }
+
+    // Dessine la feuille à l'avancement anim.t (0 = à sa place, 1 = tournée).
+    function pose(anim) {
+        const t = Math.max(0, Math.min(1, anim.t));
+        const { spine, edge } = angles(t, anim.wasFlipped);
+        const n = anim.parts.length;
+        const bend = (edge - spine) / n;
+        const lift = Math.sin(Math.PI * t);
+
+        anim.parts.forEach((part, i) => {
+            const a0 = spine + bend * i;
+            part.strip.style.transform = 'rotateY(' + (i === 0 ? spine : bend).toFixed(3) + 'deg)';
+            // Dégradé continu d'une bande à l'autre : pas d'effet de marches.
+            const d0 = darkness(a0, lift).toFixed(3);
+            const d1 = darkness(a0 + bend, lift).toFixed(3);
+            part.shades[0].style.background = 'linear-gradient(90deg, rgba(28,15,5,' + d0 + '), rgba(28,15,5,' + d1 + '))';
+            part.shades[1].style.background = 'linear-gradient(270deg, rgba(28,15,5,' + d0 + '), rgba(28,15,5,' + d1 + '))';
+        });
+        anim.ghost.style.transform = 'translateZ(' + (lift * 14).toFixed(1) + 'px)';
+
+        // Ombre portée par la page soulevée sur la page du dessous.
+        const reach = reachAt(t, anim.wasFlipped);
+        const strength = (lift * 0.9).toFixed(3);
+        const at = Math.abs(reach) * 100;
+        if (reach >= 0) {
+            castRight.style.opacity = strength;
+            castRight.style.setProperty('--at', at + '%');
+            castLeft.style.opacity = 0;
+        } else {
+            castLeft.style.opacity = single ? 0 : strength;
+            castLeft.style.setProperty('--at', 100 - at + '%');
+            castRight.style.opacity = 0;
+        }
+    }
+
+    function setLeafState(leaf, i, isFlipped) {
+        leaf.classList.add('no-anim');
+        leaf.classList.toggle('is-flipped', isFlipped);
+        settleLeaf(leaf, i);
+        void leaf.offsetWidth;
+        leaf.classList.remove('no-anim');
+    }
+
+    function finishAnim(anim) {
+        cancelAnimationFrame(anim.frame);
+        anims.delete(anim);
+        anim.ghost.remove();
+        anim.leaf._anim = null;
+        anim.leaf.style.visibility = '';
+        setLeafState(anim.leaf, anim.index, anim.target === 1 ? !anim.wasFlipped : anim.wasFlipped);
+        if (!anims.size) {
+            castRight.style.opacity = 0;
+            castLeft.style.opacity = 0;
+        }
+    }
+
+    function startAnim(leaf, i, strips) {
+        const anim = Object.assign(makeGhost(leaf, strips), {
+            leaf,
+            index: i,
+            wasFlipped: leaf.classList.contains('is-flipped'),
+            t: 0,
+            target: 1,
+            dragging: false,
+            frame: 0,
+            last: 0
+        });
+        anim.ghost.style.zIndex = 1000 + (anim.wasFlipped ? leaves.length - i : i);
+        leaf._anim = anim;
+        leaf.style.visibility = 'hidden';
+        anims.add(anim);
+        pose(anim);
+        return anim;
+    }
+
+    // Fait avancer la feuille vers sa cible (0 ou 1), lentement au départ et à
+    // l'arrivée, plus vite au milieu — comme une vraie page qui retombe.
+    function run(anim) {
+        cancelAnimationFrame(anim.frame);
+        anim.last = performance.now();
+        const step = (now) => {
+            if (!anim.ghost.isConnected) return anims.delete(anim);
+            const dt = Math.min(120, now - anim.last);
+            anim.last = now;
+            const speed = (0.4 + 0.94 * Math.sin(Math.PI * Math.max(0.02, Math.min(0.98, anim.t)))) / TURN_MS;
+            anim.t += (anim.target > anim.t ? 1 : -1) * speed * dt;
+            if ((anim.target === 1 && anim.t >= 1) || (anim.target === 0 && anim.t <= 0)) {
+                anim.t = anim.target;
+                pose(anim);
+                finishAnim(anim);
+                return;
+            }
+            pose(anim);
+            anim.frame = requestAnimationFrame(step);
+        };
+        anim.frame = requestAnimationFrame(step);
+    }
+
+    function turnLeaf(i, strips) {
+        const leaf = leaves[i];
+        const shouldFlip = i < flipped;
+        const anim = leaf._anim;
+        if (anim) {
+            // Feuille déjà en mouvement : elle repart simplement dans l'autre sens.
+            anim.target = shouldFlip !== anim.wasFlipped ? 1 : 0;
+            anim.dragging = false;
+            run(anim);
+            return;
+        }
+        if (leaf.classList.contains('is-flipped') === shouldFlip) return;
+        if (reducedMotion.matches) {
+            setLeafState(leaf, i, shouldFlip);
+            return;
+        }
+        run(startAnim(leaf, i, strips));
+    }
+
     function go(target) {
+        if (!shown) return;
         target = Math.max(0, Math.min(maxFlipped(), target));
         if (target === flipped) return;
 
@@ -150,27 +383,18 @@
         }
 
         flipped = target;
-        const instant = reducedMotion.matches;
-        const stagger = instant ? 0 : Math.min(140, 700 / turning.length);
+        const many = turning.length > 1;
+        const stagger = reducedMotion.matches ? 0 : Math.min(160, 800 / turning.length);
 
         turning.forEach((i, order) => {
             const leaf = leaves[i];
             clearTimeout(leaf._start);
-            leaf._start = setTimeout(() => {
-                // L'état cible est relu au moment de tourner : si l'utilisateur a
-                // changé de page entre-temps, la feuille rejoint le bon côté.
-                const shouldFlip = i < flipped;
-                if (leaf.classList.contains('is-flipped') === shouldFlip) return;
-                leaf.style.zIndex = 1000 + (forward ? i : leaves.length - i);
-                leaf.classList.add('is-turning');
-                leaf.classList.toggle('is-flipped', shouldFlip);
-                if (order === 0 || order === turning.length - 1) rustle();
-                clearTimeout(leaf._end);
-                leaf._end = setTimeout(() => {
-                    leaf.classList.remove('is-turning');
-                    settleLeaf(leaf, i);
-                }, instant ? 0 : TURN_MS);
-            }, order * stagger);
+            // L'état cible est relu au moment de tourner : si l'utilisateur a
+            // changé de page entre-temps, la feuille rejoint le bon côté.
+            const start = () => turnLeaf(i, many ? 6 : single ? 18 : 16);
+            if (order === 0) start();
+            else leaf._start = setTimeout(start, order * stagger);
+            if (order === 0 || order === turning.length - 1) rustle();
         });
 
         update(true);
@@ -234,9 +458,11 @@
 
         closeBtn.disabled = flipped === 0;
 
-        try {
-            history.replaceState(null, '', page === 0 ? location.pathname + location.search : '#page-' + page);
-        } catch (e) { /* page intégrée (iframe) : on garde l'adresse telle quelle */ }
+        if (!sceneMode) {
+            try {
+                history.replaceState(null, '', page === 0 ? location.pathname + location.search : '#page-' + page);
+            } catch (e) { /* page intégrée (iframe) : on garde l'adresse telle quelle */ }
+        }
 
         if (announce) {
             announcer.textContent = numbers.length
@@ -246,6 +472,7 @@
     }
 
     function buildTocMenu() {
+        tocMenu.textContent = '';
         pages.forEach((section, p) => {
             const li = document.createElement('li');
             const a = document.createElement('a');
@@ -309,7 +536,7 @@
     /* Évènements                                                          */
     /* ------------------------------------------------------------------ */
 
-    let swiped = false;
+    let dragged = false;
 
     function bindEvents() {
         prevBtn.addEventListener('click', prev);
@@ -329,6 +556,16 @@
             if (!tocMenu.hidden && !e.target.closest('.toolbar__center')) setTocOpen(false);
         });
 
+        // « Refermer le carnet » (fin du livre) et « Ranger le livre » (scène).
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href="#fin"], a[href="#ranger"]');
+            if (!link) return;
+            e.preventDefault();
+            if (link.getAttribute('href') === '#fin') go(maxFlipped());
+            else shelve();
+        });
+        if (shelveBtn) shelveBtn.addEventListener('click', shelve);
+
         // Liens internes (sommaire du carnet et menu).
         document.addEventListener('click', (e) => {
             const link = e.target.closest('a[href^="#page-"]');
@@ -342,7 +579,7 @@
 
         // Clic sur une page : droite = suivante, gauche = précédente.
         book.addEventListener('click', (e) => {
-            if (swiped || e.target.closest('a, button, input, textarea, select')) return;
+            if (dragged || e.target.closest('a, button, input, textarea, select')) return;
             if (window.getSelection && String(window.getSelection())) return;
             const face = e.target.closest('.face');
             if (!face) return;
@@ -358,29 +595,75 @@
             }
         });
 
-        // Glisser au doigt / à la souris.
-        let start = null;
+        // Attraper une page et la tourner à la main (souris ou doigt).
+        let grab = null;
         stage.addEventListener('pointerdown', (e) => {
             if (e.pointerType === 'mouse' && e.button !== 0) return;
-            start = { x: e.clientX, y: e.clientY, t: Date.now() };
-            swiped = false;
+            dragged = false;
+            const face = e.target.closest('.face.is-visible');
+            if (!face || e.target.closest('a, button')) return;
+            grab = { x: e.clientX, y: e.clientY, face, id: e.pointerId, anim: null, history: [] };
         });
-        stage.addEventListener('pointerup', (e) => {
-            if (!start) return;
-            const dx = e.clientX - start.x;
-            const dy = e.clientY - start.y;
-            const quick = Date.now() - start.t < 800;
-            start = null;
-            if (quick && Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-                swiped = true;
-                dx < 0 ? next() : prev();
-                setTimeout(() => { swiped = false; }, 50);
+
+        stage.addEventListener('pointermove', (e) => {
+            if (!grab || e.pointerId !== grab.id) return;
+            const dx = e.clientX - grab.x;
+            if (!grab.anim) {
+                if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(e.clientY - grab.y)) return;
+                const forward = dx < 0;
+                const onFront = grab.face.classList.contains('face--front');
+                // Page de droite → vers la gauche ; page de gauche → vers la droite.
+                if (!single && forward !== onFront) { grab = null; return; }
+                const index = forward ? flipped : flipped - 1;
+                if (index < 0 || (forward && flipped >= maxFlipped()) || !leaves[index] || leaves[index]._anim || reducedMotion.matches) {
+                    grab = null;
+                    return;
+                }
+                const leaf = leaves[index];
+                grab.anim = startAnim(leaf, index, single ? 18 : 16);
+                grab.anim.dragging = true;
+                grab.forward = forward;
+                const rect = leaf.getBoundingClientRect();
+                grab.spine = forward ? rect.left : rect.right;
+                grab.width = rect.width;
+                // Décalage entre le doigt et le bord libre de la page.
+                grab.offset = forward ? rect.right - grab.x : rect.left - grab.x;
+                dragged = true;
+                try { stage.setPointerCapture(e.pointerId); } catch (err) { /* ignoré */ }
+                rustle();
             }
+            // Le bord libre de la page reste sous le pointeur.
+            const r = Math.max(-1, Math.min(1, (e.clientX + grab.offset - grab.spine) / grab.width));
+            grab.anim.t = tForReach(r, grab.anim.wasFlipped);
+            pose(grab.anim);
+            grab.history.push({ x: e.clientX, time: performance.now() });
+            if (grab.history.length > 5) grab.history.shift();
         });
-        stage.addEventListener('pointercancel', () => { start = null; });
+
+        const release = (e) => {
+            if (!grab || e.pointerId !== grab.id) return;
+            const { anim, history, forward } = grab;
+            grab = null;
+            if (!anim) return;
+            const first = history[0];
+            const last = history[history.length - 1];
+            const velocity = first && last && last.time > first.time ? (last.x - first.x) / (last.time - first.time) : 0;
+            const flick = forward ? velocity < -0.35 : velocity > 0.35;
+            const back = forward ? velocity > 0.35 : velocity < -0.35;
+            anim.dragging = false;
+            anim.target = e.type !== 'pointercancel' && !back && (anim.t > 0.4 || flick) ? 1 : 0;
+            if (anim.target === 1) {
+                flipped += forward ? 1 : -1;
+                update(true);
+            }
+            run(anim);
+            setTimeout(() => { dragged = false; }, 60);
+        };
+        stage.addEventListener('pointerup', release);
+        stage.addEventListener('pointercancel', release);
 
         document.addEventListener('keydown', (e) => {
-            if (e.altKey || e.ctrlKey || e.metaKey) return;
+            if (!shown || e.altKey || e.ctrlKey || e.metaKey) return;
             if (e.target.closest && e.target.closest('input, textarea, select')) return;
             switch (e.key) {
                 case 'ArrowRight':
@@ -429,23 +712,23 @@
         const canFullscreen = document.fullscreenEnabled || document.webkitFullscreenEnabled;
         if (!canFullscreen) fullscreenBtn.hidden = true;
 
-        // Léger basculement du livre qui suit le pointeur.
+        // Le livre s'incline vers la souris, comme sur la version d'origine.
         if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
             let frame = 0;
-            stage.addEventListener('pointermove', (e) => {
-                if (reducedMotion.matches || frame) return;
+            const tilt = (x, y) => {
+                stage.style.setProperty('--tilt-x', (8 - y * 22).toFixed(2) + 'deg');
+                stage.style.setProperty('--tilt-y', (x * 26).toFixed(2) + 'deg');
+                stage.style.setProperty('--tilt-z', (-2 - x * 4).toFixed(2) + 'deg');
+            };
+            document.addEventListener('pointermove', (e) => {
+                if (reducedMotion.matches || frame || e.pointerType !== 'mouse') return;
                 frame = requestAnimationFrame(() => {
                     frame = 0;
-                    const x = e.clientX / window.innerWidth - 0.5;
-                    const y = e.clientY / window.innerHeight - 0.5;
-                    stage.style.setProperty('--tilt-x', (-y * 4).toFixed(2) + 'deg');
-                    stage.style.setProperty('--tilt-y', (x * 5).toFixed(2) + 'deg');
+                    tilt(e.clientX / window.innerWidth - 0.5, e.clientY / window.innerHeight - 0.5);
                 });
             });
-            stage.addEventListener('pointerleave', () => {
-                stage.style.setProperty('--tilt-x', '0deg');
-                stage.style.setProperty('--tilt-y', '0deg');
-            });
+            document.documentElement.addEventListener('mouseleave', () => tilt(0, 0));
+            if (!reducedMotion.matches) tilt(0, 0);
         }
     }
 
@@ -464,7 +747,10 @@
     /* Feuilles qui tombent                                                */
     /* ------------------------------------------------------------------ */
 
+    let leavesStarted = false;
     function fallingLeaves() {
+        if (leavesStarted) return;
+        leavesStarted = true;
         const canvas = document.getElementById('leaves');
         const ctx = canvas.getContext && canvas.getContext('2d');
         if (!ctx) return;
@@ -529,6 +815,11 @@
             if (!running) return;
             const dt = Math.min(0.05, (now - last) / 1000 || 0);
             last = now;
+            // Pause pendant qu'une page tourne : toute la puissance va à la page.
+            if (anims.size) {
+                requestAnimationFrame(frame);
+                return;
+            }
             ctx.clearRect(0, 0, width, height);
             items.forEach((l, i) => {
                 l.phase += dt;
@@ -565,18 +856,117 @@
     /* Démarrage                                                           */
     /* ------------------------------------------------------------------ */
 
+    /* ------------------------------------------------------------------ */
+    /* Commandes pour la scène 3D                                          */
+    /* ------------------------------------------------------------------ */
+
+    // Change de carnet : les pages du carnet actuel retournent à leur source.
+    function load(name) {
+        const wanted = sources.find((el) => el.dataset.book === name) || sources[0];
+        if (wanted === source && leaves.length) return;
+        pages.forEach((section) => source.appendChild(section));
+        usePages(wanted);
+        stage.dataset.book = wanted.dataset.book;
+        page = 0;
+        buildTocMenu();
+        build();
+    }
+
+    let onShelve = null;
+    let shelving = false;
+
+    function setShown(value) {
+        shown = value;
+        stage.hidden = false;
+        toolbar.hidden = false;
+        document.documentElement.classList.toggle('book-open', value);
+        stage.inert = !value;
+        toolbar.inert = !value;
+    }
+
+    // Ouvre un carnet (fermé, sur sa couverture). `done` est appelé quand le
+    // lecteur le range.
+    function open(name, done) {
+        load(name);
+        if (flipped !== 0) {
+            page = 0;
+            build();
+        }
+        onShelve = done || null;
+        shelving = false;
+        setShown(true);
+        update(false);
+        announcer.textContent = titleOf(0) + ' : ' + (pages[0].querySelector('h1') || {}).textContent;
+    }
+
+    // Referme le carnet s'il est ouvert, puis le rend à la scène.
+    function shelve() {
+        if (!shown || shelving) return;
+        shelving = true;
+        setTocOpen(false);
+        const opened = flipped !== 0 && flipped !== leaves.length;
+        const turns = opened ? flipped : 0;
+        if (opened) go(0);
+        const delay = opened ? TURN_MS + Math.min(160, 800 / turns) * (turns - 1) + 150 : 0;
+        setTimeout(() => {
+            setShown(false);
+            shelving = false;
+            const done = onShelve;
+            onShelve = null;
+            if (done) done();
+        }, delay);
+    }
+
+    // Sans scène (lien « Aller directement au carnet », ou WebGL indisponible).
+    function standalone() {
+        document.documentElement.classList.remove('has-scene');
+        load(sources[0].dataset.book);
+        onShelve = null;
+        setShown(true);
+        update(false);
+        fallingLeaves();
+    }
+
+    function setSound(on) {
+        soundOn = on;
+        store.set('senju-sound', on ? 'on' : 'off');
+        renderSound();
+    }
+
+    window.Carnet = {
+        open,
+        shelve,
+        standalone,
+        setSound,
+        get sound() { return soundOn; },
+        get isOpen() { return shown; },
+        get isClosed() { return flipped === 0 || flipped === leaves.length; }
+    };
+
+    /* ------------------------------------------------------------------ */
+    /* Démarrage                                                           */
+    /* ------------------------------------------------------------------ */
+
     // Le carnet s'ouvre toujours fermé, sur sa couverture. Un lien direct
     // (#page-5) l'ouvre ensuite à la bonne page, en tournant les feuilles.
     const initial = /^#page-(\d+)$/.exec(location.hash);
     page = 0;
 
-    stage.hidden = false;
-    toolbar.hidden = false;
+    stage.dataset.book = source.dataset.book;
     buildTocMenu();
     build();
     renderSound();
     bindEvents();
-    fallingLeaves();
+    if (sceneMode) {
+        setShown(false);
+        // Si la scène 3D ne démarre pas (module non chargé), on affiche le carnet.
+        setTimeout(() => {
+            if (!window.SceneStarted) standalone();
+        }, 8000);
+    } else {
+        setShown(true);
+        fallingLeaves();
+    }
     requestAnimationFrame(() => document.documentElement.classList.add('is-ready'));
-    if (initial) setTimeout(() => goToPage(parseInt(initial[1], 10)), 1100);
+    if (initial && !sceneMode) setTimeout(() => goToPage(parseInt(initial[1], 10)), 1100);
 })();
