@@ -1,104 +1,333 @@
-<html data-wf-page="5aa72055900db2422fa27355" data-wf-site="5aa72055900db2ba27a27354">
+<!DOCTYPE html>
+<html lang="fr">
 
 <head>
     <meta charset="utf-8">
-    <title>Hoko Senju (base Akuma Github)</title>
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <meta content="Webflow" name="generator">
-    <link href="css/normalize.css" rel="stylesheet" type="text/css">
-    <link href="css/webflow.css" rel="stylesheet" type="text/css">
-    <link href="css/book-project-css.webflow.css" rel="stylesheet" type="text/css">
+    <script>document.documentElement.classList.add('js');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Hoko Senju — Fiche Personnage</title>
+    <meta name="description" content="Le carnet de Hoko Senju, jeune shinobi du clan Senju : identité, ambitions, histoire et nindo.">
+    <meta name="theme-color" content="#140d09">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Hoko Senju — Fiche Personnage">
+    <meta property="og:description" content="Le carnet de Hoko Senju, jeune shinobi du clan Senju : identité, ambitions, histoire et nindo.">
+    <meta property="og:url" content="https://tahns.github.io/senju.github.io/">
+    <link rel="icon" href="public/img/favicon.svg" type="image/svg+xml">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap&text=%E5%8D%83%E6%89%8B%E5%BF%8D%E9%81%93%E6%B0%B4%E9%81%81%E7%81%AB%E6%84%8F%E5%BF%97">
     <link rel="stylesheet" href="public/css/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        WebFont.load({
-            google: {
-                families: ["PT Sans:400,400italic,700,700italic"]
-            }
-        });
-    </script>
-    <!-- [if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif] -->
-    <script type="text/javascript">
-        ! function(o, c) {
-            var n = c.documentElement,
-                t = " w-mod-";
-            n.className += t + "js", ("ontouchstart" in o || o.DocumentTouch && c instanceof DocumentTouch) && (n.className += t + "touch")
-        }(window, document);
-    </script>
-    <link href="https://daks2k3a4ib2z.cloudfront.net/img/webclip.png" rel="apple-touch-icon">
 </head>
 
 <body>
-    <script src="public/js/transition_page.js"></script>
-    <div class="scene">
-        <div class="book-wrap">
-            <div class="left-side">
-                <div class="book-cover-left"></div>
-                <div class="layer1">
-                    <div class="page-left"></div>
-                </div>
-                <div class="layer2">
-                    <div class="page-left"></div>
-                </div>
-                <div class="layer3">
-                    <div class="page-left"></div>
-                </div>
-                <div class="layer4">
-                    <div class="page-left"></div>
-                </div>
-                <div class="layer-text">
-                    <div class="page-left-2">
-                        <div class="corner"></div>
-                        <div class="corner2"></div>
-                        <div class="corner-fold"></div>
-                        <div id="page1" class="page-text w-richtext">
-                            <h3><strong>Hoko</strong></h3>
-                            <img src="public/img/Apparence.jpg" style="width: auto;height: 75%;" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="center"></div>
-            <div class="right-side">
-                <div class="book-cover-right"></div>
-                <div class="layer1">
-                    <div class="page-right"></div>
-                </div>
-                <div class="layer2 right">
-                    <div class="page-right"></div>
-                </div>
-                <div class="layer3 right">
-                    <div class="page-right"></div>
-                </div>
-                <div class="layer4 right">
-                    <div class="page-right"></div>
-                </div>
-                <div class="layer-text right">
-                    <div class="page-right-2">
-                        <div id="page2" class="page-text w-richtext">
+    <!-- Emblème de Konoha, réutilisé partout via <use href="#konoha"> -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="konoha" viewBox="-4 -4 108 100">
+            <path fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" d="M95 8 L84 20 C58 8 24 22 16 50 C12 62 8 70 3 78 C22 86 44 88 60 87 C80 86 94 72 94 55 C94 37 79 25 62 25 C45 25 34 37 34 51 C34 64 45 72 57 72 C69 72 77 64 77 54 C77 45 70 39 62 39 C55 39 50 44 50 51 C50 57 55 60 60 60 C65 60 67 56 66 53" />
+        </symbol>
+        <symbol id="ornament" viewBox="0 0 240 20">
+            <g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+                <path d="M4 10 H96" />
+                <path d="M144 10 H236" />
+                <path d="M100 10 C106 2 114 2 120 10 C126 18 134 18 140 10" />
+                <path d="M100 10 C106 18 114 18 120 10 C126 2 134 2 140 10" />
+            </g>
+            <circle cx="120" cy="10" r="2.4" fill="currentColor" />
+        </symbol>
+    </svg>
 
-                            <h1>Identité</h1>
-                            <br>
-                            <br>
-                            <p>.</p>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <dd></dd>
-                            <div class="flex-box">
-                                <button onclick="PageSuivante(2)">Page Suivante</button>
-                            </div>
-                        </div>
+    <canvas id="leaves" aria-hidden="true"></canvas>
+
+    <!--
+        Contenu du carnet.
+        Chaque <section class="page"> devient une page du livre, dans l'ordre.
+        Sur grand écran, les pages sont affichées deux par deux :
+        page 1 à gauche / page 2 à droite, page 3 / page 4, etc.
+        Garde un nombre pair de pages entre la couverture et la 4e de couverture.
+    -->
+    <main id="book-source" class="source">
+
+        <!-- Couverture -->
+        <section class="page page--cover" data-toc="Couverture">
+            <div class="cover">
+                <div class="cover__frame">
+                    <p class="cover__kicker">Clan Senju · Konoha</p>
+                    <svg class="cover__emblem" aria-hidden="true"><use href="#konoha" /></svg>
+                    <h1 class="cover__title">Hoko <span>Senju</span></h1>
+                    <p class="cover__subtitle">Fiche Personnage</p>
+                    <p class="cover__seal" aria-hidden="true">千手</p>
+                </div>
+                <p class="cover__hint js-only">Ouvrir le carnet <span aria-hidden="true">⟶</span></p>
+            </div>
+        </section>
+
+        <!-- 1 · Sommaire -->
+        <section class="page page--toc" data-toc="Sommaire">
+            <header class="page__head">
+                <h2>Sommaire</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <nav class="toc" aria-label="Sommaire du carnet">
+                <ol>
+                    <li><a href="#page-2"><span>Apparence</span><i></i><b>2</b></a></li>
+                    <li><a href="#page-3"><span>Identité</span><i></i><b>3</b></a></li>
+                    <li><a href="#page-4"><span>Personnalité</span><i></i><b>4</b></a></li>
+                    <li><a href="#page-5"><span>Ambitions</span><i></i><b>5</b></a></li>
+                    <li><a href="#page-7"><span>Histoire</span><i></i><b>7</b></a></li>
+                    <li><a href="#page-11"><span>Nindo</span><i></i><b>11</b></a></li>
+                    <li><a href="#page-12"><span>Chronologie</span><i></i><b>12</b></a></li>
+                </ol>
+            </nav>
+            <div class="exlibris">
+                <svg aria-hidden="true"><use href="#konoha" /></svg>
+                <p>Ce carnet appartient à</p>
+                <p class="signature">Hoko Senju</p>
+            </div>
+        </section>
+
+        <!-- 2 · Apparence -->
+        <section class="page page--portrait" data-toc="Apparence">
+            <header class="page__head">
+                <h2>Apparence</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <figure class="portrait">
+                <div class="portrait__frame">
+                    <!-- Dépose l'image du personnage dans public/img/Apparence.jpg -->
+                    <img src="public/img/Apparence.jpg" alt="Portrait de Hoko Senju" loading="lazy" onerror="this.parentNode.classList.add('is-empty');this.remove()">
+                    <div class="portrait__placeholder">
+                        <svg aria-hidden="true"><use href="#konoha" /></svg>
+                        <span>Portrait à venir</span>
                     </div>
                 </div>
+                <figcaption>Hoko Senju · 12 ans · 142 cm</figcaption>
+            </figure>
+        </section>
+
+        <!-- 3 · Identité -->
+        <section class="page" data-toc="Identité">
+            <header class="page__head">
+                <h2>Identité</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <dl class="facts">
+                <div><dt>Nom</dt><dd>Senju</dd></div>
+                <div><dt>Prénom</dt><dd>Hoko</dd></div>
+                <div><dt>Âge</dt><dd>12 ans</dd></div>
+                <div><dt>Taille</dt><dd>142 cm</dd></div>
+                <div><dt>Lieu de naissance</dt><dd>Village de Takumi, Pays des Rivières</dd></div>
+                <div><dt>Résidence</dt><dd>Domaine Senju, Konoha</dd></div>
+            </dl>
+            <h3>Natures de chakra</h3>
+            <ul class="chakra">
+                <li><span class="chakra__kanji" aria-hidden="true">水遁</span>Suiton</li>
+                <li><span class="chakra__kanji" aria-hidden="true">✦</span>Kiminari</li>
+            </ul>
+            <h3>Famille</h3>
+            <dl class="facts">
+                <div><dt>Mère</dt><dd>Okana Yoka</dd></div>
+                <div><dt>Père</dt><dd>Ikken Senju</dd></div>
+            </dl>
+        </section>
+
+        <!-- 4 · Personnalité -->
+        <section class="page" data-toc="Personnalité">
+            <header class="page__head">
+                <h2>Personnalité</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <h3>Qualités</h3>
+            <ul class="traits traits--good">
+                <li>Tête pensante</li>
+                <li>Agit au lieu de parler</li>
+                <li>Strict avec lui-même et les autres</li>
+                <li>Autonome</li>
+                <li>Comportement de leader</li>
+            </ul>
+            <h3>Défauts</h3>
+            <ul class="traits traits--bad">
+                <li>Égoïste</li>
+                <li>Trop sérieux</li>
+                <li>Aime tout contrôler</li>
+                <li>Mauvaise compréhension des sentiments</li>
+            </ul>
+            <blockquote class="aside">
+                Un enfant mature et sérieux, qui parle déjà comme un adulte&nbsp;; mais derrière la rigueur se cache le souvenir d'un jour dans la forêt.
+            </blockquote>
+        </section>
+
+        <!-- 5 · Ambitions (1/2) -->
+        <section class="page" data-toc="Ambitions">
+            <header class="page__head">
+                <h2>Ambitions</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <h3>La voie du shinobi</h3>
+            <ul class="goals">
+                <li>Devenir chef de la section policière.</li>
+                <li>Obtenir une dérogation pour la section militaire.</li>
+                <li>
+                    Devenir maître en taijutsu et en kenjutsu.
+                    <small>Sans les portes, afin de ne pas être «&nbsp;overcheat&nbsp;»&nbsp;: je ne recherche pas cela, mais l'exploitation des techniques de base actuelles.</small>
+                </li>
+                <li>Récupérer l'épée de sa lignée.</li>
+            </ul>
+            <p class="note">
+                <strong>Note d'intention.</strong>
+                Avant tout un personnage sérieux, strict et leader, au-devant de tous, avec un développement progressif grade après grade.
+            </p>
+        </section>
+
+        <!-- 6 · Ambitions (2/2) -->
+        <section class="page" data-toc="Ambitions (suite)">
+            <header class="page__head">
+                <h2>Pour Konoha</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <ul class="goals goals--dense">
+                <li>Créer une meilleure organisation des sections, tisser des liens avec les têtes du village et partager les bonnes idées communes.</li>
+                <li>Mettre en place un système de responsabilités pour chaque haut gradé.</li>
+                <li>Faire en sorte que les rapports aient une réelle utilité, et ne pas écrire pour écrire&nbsp;: par exemple, créer des missions pour tous les ninjas selon leur grade, et récompenser ceux qui rendent un rapport avec tout de réalisé.</li>
+                <li>Mettre en place un entraînement régulier aux combats de groupe&nbsp;: il y a un trop grand écart entre les deux villages.</li>
+                <li>Créer un réel système économique qui ne repose pas uniquement sur les taxes, comme un système de rachat et de revente des ressources pour les habitants de Konoha, ou pour les armures des hauts gradés.</li>
+                <li>Ne pas laisser les jeunes ninjas se relâcher et proposer un maximum d'activités utiles pour tous.</li>
+            </ul>
+        </section>
+
+        <!-- 7 · Histoire I -->
+        <section class="page page--story" data-toc="Histoire">
+            <header class="page__head">
+                <p class="chapter">Chapitre I</p>
+                <h2>L'enfant de Takumi</h2>
+            </header>
+            <div class="prose">
+                <p class="lettrine">Hoko, un jeune enfant du clan Senju, a grandi sans la présence quotidienne de son père, qui l'avait laissé auprès de sa mère, une ancienne ninja de Takumi. Il semble que son père accordait une importance excessive à son rôle dans le village de Konoha, ce qui l'empêchait d'être présent pour son fils.</p>
+                <p>Depuis sa naissance, il a été élevé par sa mère qui, bien que seule, lui a toujours apporté soutien et amour. Hoko a donc rapidement développé un sens de l'autonomie.</p>
+                <p>Ils vivaient dans une simple bâtisse du village de Takumi, le village des artisans situé au Pays des Rivières. Sa mère lui avait souvent parlé de son père, mais Hoko n'y prêtait pas attention, habitué à son absence. Pour lui, ne pas voir son père était normal.</p>
+                <p>Dès son plus jeune âge, Hoko avait une passion qui semblait relever d'un traumatisme&nbsp;: les combats contre les autres enfants de son âge. Il s'entraînait intensément au corps à corps et observait discrètement les entraînements au kenjutsu des shinobis de Takumi, un village réputé pour son expertise dans l'art des sabres grâce à son artisanat.</p>
             </div>
-        </div>
+        </section>
+
+        <!-- 8 · Histoire II -->
+        <section class="page page--story" data-toc="Histoire — La forêt">
+            <header class="page__head">
+                <p class="chapter">Chapitre II</p>
+                <h2>La forêt</h2>
+            </header>
+            <div class="prose">
+                <p class="lettrine">Tout cet apprentissage, jusqu'à maîtriser parfaitement le battōjutsu, l'iaidō et le kendō dès ses 10 ans, avait une cause&nbsp;: un jour, alors qu'il se promenait avec sa mère dans la forêt, ils furent agressés par deux ninjas du village d'Ame.</p>
+                <p>Ces derniers avaient franchi les frontières et volaient les artisans sur leur chemin, à la recherche de ressources. Ils dépouillèrent et humilièrent sa mère, qui fut frappée devant lui. Hoko resta figé, choqué et impuissant, incapable de bouger ou de parler. Cette agression le marqua profondément&nbsp;: elle lui ouvrit les yeux sur la violence de ce monde, et il comprit vite que l'art de se défendre était nécessaire.</p>
+                <p>Il se mit à supplier sa mère, l'artisane, de lui fabriquer un sabre, mais elle craignait qu'il ne se blesse. Elle finit par céder et décida de lui apprendre à maîtriser son chakra. Un oiseau fut envoyé vers Konoha avec un message d'Okana, indiquant à Ikken que le jour était venu.</p>
+            </div>
+        </section>
+
+        <!-- 9 · Histoire III -->
+        <section class="page page--story" data-toc="Histoire — Le retour du père">
+            <header class="page__head">
+                <p class="chapter">Chapitre III</p>
+                <h2>Le retour du père</h2>
+            </header>
+            <div class="prose">
+                <p class="lettrine">Pendant ce temps, sa mère lui fit passer le test de la feuille. La feuille sembla comme noyée dans l'eau. Descendant du Second Hokage et vivant au Pays des Rivières&nbsp;: la nature avait bien choisi les choses.</p>
+                <p>Puis un jour, pendant un entraînement de kenjutsu, Ikken Senju arriva. Son père était vêtu comme un marchand, comme s'il voulait se faire discret. Il salua son fils et enlaça Okana. Après une longue discussion entre eux, qui resta assez floue, Okana expliqua à Hoko qu'il devait partir avec son père pour accomplir son devoir de fils du clan Senju, et qu'il pourrait revenir la voir quand il le souhaiterait, car elle n'allait pas rester.</p>
+                <p>Confus et triste, il accepta à contrecœur. Cinq jours plus tard, ils arrivèrent au village, puis au domaine. Ikken le présenta aux quelques membres présents. Après cette visite, Hoko s'isola dans la bibliothèque.</p>
+                <p class="beat">Il prit un livre…</p>
+            </div>
+        </section>
+
+        <!-- 10 · Histoire IV -->
+        <section class="page page--story" data-toc="Histoire — L'héritage">
+            <header class="page__head">
+                <p class="chapter">Chapitre IV</p>
+                <h2>L'héritage des Senju</h2>
+            </header>
+            <div class="prose">
+                <p class="lettrine">Au fil de ses lectures et du temps qui passait, pris de passion, il s'imaginait à la place des grandes figures de son clan. Un objectif était né en lui&nbsp;: laisser son nom dans les mémoires et accomplir des exploits dignes des plus grands de Konoha.</p>
+                <p>Hoko n'était pourtant encore qu'un enfant lors de ces événements. On estime qu'il avait environ 8 ans lors de l'agression dans la forêt, et 12 ans lorsqu'il fut présenté au domaine du clan Senju et commença à se plonger dans les récits de sa lignée.</p>
+                <p>La prochaine étape sera la rencontre avec les membres du clan. C'est là qu'il exprimera toute sa motivation et ses ambitions, en parlant, étonnamment, comme un enfant mature, sérieux et prêt.</p>
+                <p class="to-be-continued">À suivre…</p>
+            </div>
+        </section>
+
+        <!-- 11 · Nindo -->
+        <section class="page page--nindo" data-toc="Nindo">
+            <header class="page__head">
+                <p class="chapter" lang="ja">忍道</p>
+                <h2>Nindo</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <blockquote class="nindo">
+                <p>Je vise à instaurer l'ordre dans mon village, inspiré des livres des temps anciens de Keitaro et Karasuma Senju, puis à perpétuer sa réputation de village sérieux et redoutable, pour préserver la paix.</p>
+                <p>J'aspire aussi à devenir un grand maître du taijutsu et du kenjutsu.</p>
+            </blockquote>
+            <svg class="nindo__emblem" aria-hidden="true"><use href="#konoha" /></svg>
+        </section>
+
+        <!-- 12 · Chronologie -->
+        <section class="page" data-toc="Chronologie">
+            <header class="page__head">
+                <h2>Chronologie</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <ol class="timeline">
+                <li><b>Naissance</b><span>Village de Takumi, au Pays des Rivières. Élevé par sa mère, Okana.</span></li>
+                <li><b>~ 8 ans</b><span>L'agression dans la forêt par deux ninjas d'Ame.</span></li>
+                <li><b>10 ans</b><span>Maîtrise du battōjutsu, de l'iaidō et du kendō.</span></li>
+                <li><b>L'éveil</b><span>Apprentissage du chakra. Le test de la feuille révèle le Suiton.</span></li>
+                <li><b>12 ans</b><span>Départ avec Ikken Senju. Arrivée au domaine du clan, à Konoha.</span></li>
+                <li class="is-next"><b>À venir</b><span>La rencontre avec les membres du clan.</span></li>
+            </ol>
+            <p class="book-end js-only"><a href="#page-13">Refermer le carnet <span aria-hidden="true">⟶</span></a></p>
+        </section>
+
+        <!-- 4e de couverture -->
+        <section class="page page--back" data-toc="Fin">
+            <div class="cover cover--back">
+                <svg class="cover__emblem cover__emblem--small" aria-hidden="true"><use href="#konoha" /></svg>
+                <p class="cover__quote">« Laisser son nom dans les mémoires, et accomplir des exploits dignes des plus grands de Konoha. »</p>
+                <p class="cover__credits">Fiche RP · Base Akuma</p>
+                <p class="cover__again js-only"><a href="#page-0"><span aria-hidden="true">⟲</span> Revenir à la couverture</a></p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Livre interactif (construit par public/js/book.js) -->
+    <div class="stage js-only" id="stage" hidden>
+        <div class="book" id="book" aria-roledescription="livre" aria-label="Carnet de Hoko Senju"></div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript" intergrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="js/webflow.js" type="text/javascript"></script>
-    <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
+
+    <nav class="toolbar js-only" id="toolbar" aria-label="Navigation du carnet" hidden>
+        <button class="tool" id="prev" type="button" aria-label="Page précédente" title="Page précédente (←)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        </button>
+        <div class="toolbar__center">
+            <button class="tool tool--label" id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc-menu">
+                <span id="folio">Couverture</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+            </button>
+            <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+            <ul class="toc-menu" id="toc-menu" hidden></ul>
+        </div>
+        <button class="tool" id="next" type="button" aria-label="Page suivante" title="Page suivante (→)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+        </button>
+        <span class="toolbar__sep" aria-hidden="true"></span>
+        <button class="tool" id="close" type="button" aria-label="Refermer le carnet" title="Refermer le carnet (Début)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 016.5 3H19v15H6.5A1.5 1.5 0 005 19.5v-15z" /><path d="M5 19.5A1.5 1.5 0 006.5 21H19v-3" /><path d="M9 7h6" /></svg>
+        </button>
+        <button class="tool" id="sound" type="button" aria-pressed="false" aria-label="Son des pages" title="Son des pages">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" /><path class="sound-on" d="M16 9a4 4 0 010 6M18.5 6.5a8 8 0 010 11" /><path class="sound-off" d="M16 9l5 6M21 9l-5 6" /></svg>
+        </button>
+        <button class="tool" id="fullscreen" type="button" aria-label="Plein écran" title="Plein écran (F)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+        </button>
+    </nav>
+
+    <p class="sr-only" id="announcer" aria-live="polite"></p>
+
+    <script src="public/js/book.js"></script>
 </body>
 
 </html>
