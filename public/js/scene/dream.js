@@ -183,12 +183,24 @@ export function buildDream(renderer) {
     const tower = new THREE.Group();
     tower.position.set(4, 0, -52);
     village.add(tower);
-    const towerWall = new THREE.MeshStandardMaterial({ color: '#e3cfa4', roughness: 0.8 });
-    const red = new THREE.MeshStandardMaterial({ color: '#c8452d', roughness: 0.6 });
+    const towerWall = new THREE.MeshStandardMaterial({ color: '#b93a2c', roughness: 0.7 });
+    const red = new THREE.MeshStandardMaterial({ color: '#2f7a4a', roughness: 0.6 });
     [[8, 8, 0], [6.5, 6, 8], [5, 4, 14]].forEach(([r, h, y]) => {
         add(new THREE.CylinderGeometry(r, r, h, 32), towerWall, tower, 0, y + h / 2, 0);
         add(new THREE.CylinderGeometry(r * 1.12, r * 1.12, 0.8, 32), red, tower, 0, y + h + 0.2, 0);
     });
+    // Pagode à plusieurs toits.
+    const pagoda = new THREE.Group();
+    pagoda.position.set(-22, 0, -60);
+    village.add(pagoda);
+    for (let k = 0; k < 5; k++) {
+        const w = 6 - k * 0.9;
+        add(new THREE.BoxGeometry(w, 2.4, w), walls[0], pagoda, 0, 1.2 + k * 3, 0);
+        const roof = add(new THREE.CylinderGeometry(0.2, w * 0.95, 1.2, 4), roofs[1], pagoda, 0, 2.9 + k * 3, 0);
+        roof.rotation.y = Math.PI / 4;
+    }
+    add(new THREE.ConeGeometry(0.3, 3, 8), darkMat, pagoda, 0, 17.5, 0);
+
     // Arbres aux feuillages ronds.
     const leafMats = ['#4f8a34', '#5d9a3c', '#3f7a30'].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 1 }));
     const trunkMat = new THREE.MeshStandardMaterial({ color: '#6b4a2f', roughness: 1 });
@@ -231,6 +243,23 @@ export function buildDream(renderer) {
     const cliffWall = new THREE.Mesh(new THREE.CylinderGeometry(118, 118, 46, 64, 1, true, Math.PI * 0.62, Math.PI * 0.76), new THREE.MeshStandardMaterial({ map: rockTex, roughness: 0.95, side: THREE.DoubleSide }));
     cliffWall.position.set(0, 23, 10);
     village.add(cliffWall);
+    // Grandes têtes de pierre sculptées dans la falaise (style stylisé).
+    const stone = new THREE.MeshStandardMaterial({ color: '#c9b596', roughness: 0.9 });
+    const stoneDark = new THREE.MeshStandardMaterial({ color: '#6e5c48', roughness: 1 });
+    [-0.18, -0.06, 0.06, 0.18].forEach((da, k) => {
+        const a = Math.PI + da;
+        const head = new THREE.Group();
+        head.position.set(Math.sin(a) * 112, 30, Math.cos(a) * 112 + 10);
+        head.lookAt(0, 30, 0);
+        village.add(head);
+        const skull = add(new THREE.SphereGeometry(8, 24, 18), stone, head, 0, 0, 0);
+        skull.scale.set(0.85, 1.05, 0.5);
+        add(new THREE.BoxGeometry(11, 1.4, 3), stone, head, 0, 2.2, 3.4);
+        [-2.8, 2.8].forEach((x) => add(new THREE.BoxGeometry(2.6, 0.9, 1), stoneDark, head, x, 0.8, 4.1));
+        add(new THREE.BoxGeometry(1.4, 3.2, 2), stone, head, 0, -1.4, 4.2);
+        add(new THREE.BoxGeometry(3.6, 0.6, 1), stoneDark, head, 0, -4.4, 3.8);
+        if (k % 2 === 0) add(new THREE.BoxGeometry(12, 2, 4), stone, head, 0, 5.6, 1.5);
+    });
     for (let i = 0; i < 70; i++) {
         const a = Math.PI * 0.62 + random() * Math.PI * 0.76;
         const bush = new THREE.Mesh(new THREE.IcosahedronGeometry(5 + random() * 4, 1), leafMats[i % 3]);

@@ -109,85 +109,175 @@ function addOutlines(root) {
 }
 
 // Visage anime : grands yeux (reflets, cils), sourcils, nez et bouche discrets.
+// Visage anime adulte (style « Storm ») : yeux en amande effilés, paupière
+// supérieure épaisse, sourcils anguleux, nez et bouche en quelques traits.
 const faceTexture = () => canvasTex(512, 512, (ctx, w, h) => {
     ctx.clearRect(0, 0, w, h);
     const eye = (cx, flip) => {
-        const cy = 272;
         ctx.save();
-        ctx.translate(cx, cy);
-        ctx.scale(flip * 1.5, 1.5);
-        // Blanc de l'œil.
-        ctx.fillStyle = '#fbf8f4';
+        ctx.translate(cx, 276);
+        ctx.scale(flip * 1.4, 1.4);
+        // Blanc de l'œil, en amande.
+        ctx.fillStyle = '#f7f3ee';
         ctx.beginPath();
-        ctx.moveTo(-44, 6);
-        ctx.quadraticCurveTo(-30, -30, 18, -26);
-        ctx.quadraticCurveTo(40, -20, 46, 0);
-        ctx.quadraticCurveTo(20, 30, -20, 26);
-        ctx.quadraticCurveTo(-40, 22, -44, 6);
+        ctx.moveTo(-46, 4);
+        ctx.quadraticCurveTo(-18, -20, 22, -16);
+        ctx.quadraticCurveTo(40, -12, 50, -4);
+        ctx.quadraticCurveTo(24, 16, -12, 14);
+        ctx.quadraticCurveTo(-34, 12, -46, 4);
         ctx.fill();
-        // Iris brun foncé (Senju), pupille, reflets.
-        const g = ctx.createLinearGradient(0, -26, 0, 26);
-        g.addColorStop(0, '#1d120c');
+        ctx.save();
+        ctx.clip();
+        // Iris brun sombre, en partie caché par la paupière.
+        const g = ctx.createLinearGradient(0, -22, 0, 18);
+        g.addColorStop(0, '#120b08');
         g.addColorStop(1, '#6b4128');
         ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.ellipse(2, 0, 20, 26, 0, 0, Math.PI * 2);
+        ctx.ellipse(4, -1, 16, 19, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#0c0706';
+        ctx.fillStyle = '#080504';
         ctx.beginPath();
-        ctx.ellipse(2, 2, 9, 12, 0, 0, Math.PI * 2);
+        ctx.ellipse(4, 0, 7, 9, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = 'rgba(255,255,255,.95)';
         ctx.beginPath();
-        ctx.ellipse(-6, -10, 6, 7, 0, 0, Math.PI * 2);
+        ctx.ellipse(-3, -7, 4, 4.5, 0, 0, Math.PI * 2);
         ctx.fill();
+        // Ombre de la paupière sur le haut de l'œil.
+        ctx.fillStyle = 'rgba(60,30,20,.25)';
+        ctx.fillRect(-50, -24, 110, 12);
+        ctx.restore();
+        // Paupière supérieure épaisse, avec une petite pointe vers l'extérieur.
+        ctx.fillStyle = '#140c0a';
         ctx.beginPath();
-        ctx.arc(9, 10, 3, 0, Math.PI * 2);
+        ctx.moveTo(-50, 6);
+        ctx.quadraticCurveTo(-20, -26, 24, -20);
+        ctx.quadraticCurveTo(44, -16, 58, -8);
+        ctx.lineTo(52, -2);
+        ctx.quadraticCurveTo(22, -12, -16, -12);
+        ctx.quadraticCurveTo(-36, -8, -50, 6);
         ctx.fill();
-        // Trait de cils épais au-dessus.
-        ctx.strokeStyle = '#140c0a';
-        ctx.lineWidth = 9;
-        ctx.lineCap = 'round';
+        // Paupière inférieure, trait fin.
+        ctx.strokeStyle = 'rgba(40,20,15,.7)';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(-48, 8);
-        ctx.quadraticCurveTo(-30, -34, 20, -29);
-        ctx.quadraticCurveTo(42, -24, 50, -4);
+        ctx.moveTo(-10, 15);
+        ctx.quadraticCurveTo(20, 16, 44, 4);
         ctx.stroke();
-        ctx.lineWidth = 3;
+        // Pli de la paupière.
+        ctx.strokeStyle = 'rgba(80,40,30,.45)';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(-18, 27);
-        ctx.quadraticCurveTo(14, 30, 36, 14);
+        ctx.moveTo(-30, -18);
+        ctx.quadraticCurveTo(10, -32, 44, -22);
         ctx.stroke();
         ctx.restore();
-        // Sourcil déterminé.
+        // Sourcil anguleux, froncé vers le centre.
         ctx.save();
-        ctx.translate(cx, cy - 78);
-        ctx.scale(flip * 1.35, 1.2);
-        ctx.fillStyle = '#24160f';
+        ctx.translate(cx, 214);
+        ctx.scale(flip * 1.35, 1.3);
+        ctx.fillStyle = '#1c110c';
         ctx.beginPath();
-        ctx.moveTo(-46, 12);
-        ctx.quadraticCurveTo(0, -12, 48, 2);
-        ctx.lineTo(46, 12);
-        ctx.quadraticCurveTo(0, -2, -44, 20);
+        ctx.moveTo(-50, 14);
+        ctx.lineTo(-40, 2);
+        ctx.quadraticCurveTo(0, -8, 54, -2);
+        ctx.lineTo(52, 6);
+        ctx.quadraticCurveTo(0, 4, -38, 18);
         ctx.fill();
         ctx.restore();
     };
-    eye(160, -1);
-    eye(352, 1);
-    ctx.strokeStyle = 'rgba(150,80,60,.55)';
+    eye(168, -1);
+    eye(344, 1);
+    // Nez : un trait d'ombre et la pointe.
+    ctx.strokeStyle = 'rgba(140,70,50,.55)';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(262, 338);
-    ctx.lineTo(252, 362);
-    ctx.lineTo(264, 364);
+    ctx.moveTo(268, 300);
+    ctx.quadraticCurveTo(272, 340, 262, 360);
     ctx.stroke();
-    ctx.strokeStyle = '#6e3a2c';
-    ctx.lineWidth = 4;
+    ctx.fillStyle = 'rgba(140,70,50,.35)';
     ctx.beginPath();
-    ctx.moveTo(234, 404);
-    ctx.quadraticCurveTo(256, 410, 280, 402);
+    ctx.ellipse(254, 364, 9, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Bouche : trait sérieux, ombre de la lèvre inférieure.
+    ctx.strokeStyle = '#5e2e22';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(228, 410);
+    ctx.quadraticCurveTo(256, 414, 286, 406);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(140,70,50,.3)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(244, 428);
+    ctx.lineTo(272, 428);
     ctx.stroke();
 });
+
+// Gilet tactique : toile gris-vert, coutures et cannelures des poches.
+const vestTexture = () => canvasTex(256, 256, (ctx, w, h) => {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = 'rgba(60,80,70,.28)';
+    ctx.lineWidth = 2;
+    for (let x = 16; x < w; x += 32) {
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ctx.strokeStyle = 'rgba(40,60,50,.12)';
+    for (let i = 0; i < 400; i++) {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 3, y + 1);
+        ctx.stroke();
+    }
+});
+
+// Poche à rouleaux cannelée (bandes horizontales).
+const pocketTexture = () => canvasTex(64, 128, (ctx, w, h) => {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = 'rgba(40,60,50,.35)';
+    for (let y = 10; y < h; y += 16) ctx.fillRect(4, y, w - 8, 4);
+    ctx.strokeStyle = 'rgba(40,60,50,.5)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(2, 2, w - 4, h - 4);
+});
+
+// Mèche de cheveux : un tube courbe qui s'affine jusqu'à la pointe.
+function hairLock(points, radius, flat = 0.6) {
+    const curve = new THREE.CatmullRomCurve3(points);
+    const segments = 12;
+    const radial = 7;
+    const geo = new THREE.TubeGeometry(curve, segments, radius, radial, false);
+    const pos = geo.attributes.position;
+    const frames = curve.computeFrenetFrames(segments, false);
+    for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        const center = curve.getPointAt(t);
+        const k = Math.pow(1 - t, 0.85) + 0.02;
+        for (let j = 0; j <= radial; j++) {
+            const idx = i * (radial + 1) + j;
+            const v = new THREE.Vector3().fromBufferAttribute(pos, idx).sub(center);
+            // Mèche aplatie (plus large que épaisse), comme dans les animes.
+            const along = frames.binormals[i];
+            const d = v.dot(along);
+            v.addScaledVector(along, -d * (1 - flat));
+            v.multiplyScalar(k);
+            pos.setXYZ(idx, center.x + v.x, center.y + v.y, center.z + v.z);
+        }
+    }
+    geo.computeVertexNormals();
+    return geo;
+}
 
 // Bandes blanches (tibias, cuisse).
 const bandageTexture = () => canvasTex(64, 64, (ctx, w, h) => {
@@ -213,8 +303,9 @@ export function buildNinja() {
         skin: mat('#f2c9a8'),
         cloth: mat('#252d57'),
         clothDark: mat('#1a2044'),
-        vest: mat('#7cbfae'),
-        vestDark: mat('#5d9f8e'),
+        vest: mat('#c3d0c2', 0.8, { map: vestTexture() }),
+        vestDark: mat('#a3b3a4'),
+        pocket: mat('#b4c3b5', 0.8, { map: pocketTexture() }),
         apron: mat('#ffffff', 0.8, { map: apronTexture(), side: THREE.DoubleSide }),
         swirl: mat('#ffffff', 0.8, { map: swirlTexture() }),
         face: mat('#ffffff', 0.8, { map: faceTexture(), transparent: true, alphaTest: 0.5 }),
@@ -261,7 +352,6 @@ export function buildNinja() {
     // Tablier violet à losanges, ouvert devant (comme les jōnin du serveur).
     const apron = mesh(new THREE.CylinderGeometry(0.2, 0.33, 0.62, 28, 1, true, Math.PI * 0.2, Math.PI * 1.6), M.apron, J.hips, 0, -0.22, 0);
     apron.scale.z = 0.8;
-    apron.rotation.y = Math.PI;
     apron.userData.noOutline = true;
     const pouch = joint(J.hips, 0.2, 0.03, -0.06);
     mesh(new THREE.SphereGeometry(0.07, 18, 14), M.leather, pouch).scale.set(1, 1.15, 0.85);
@@ -286,36 +376,49 @@ export function buildNinja() {
         mesh(new RoundedBoxGeometry(0.09, 0.035, 0.08, 2, 0.015), M.skin, foot, 0, -0.005, 0.13);
     });
 
-    /* ---------------- Buste : veste de jōnin ---------------- */
+    /* ---------------- Buste : gilet tactique de jōnin ---------------- */
     J.spine = joint(J.hips, 0, 0.12, 0);
-    const shirt = mesh(new THREE.CapsuleGeometry(0.15, 0.3, 8, 18), M.cloth, J.spine, 0, 0.28, 0);
+    // Torse (maillot bleu nuit), taille fine, épaules larges.
+    const torsoProfile = [[0, 0], [0.13, 0.0], [0.135, 0.12], [0.15, 0.3], [0.165, 0.42], [0.15, 0.5], [0.09, 0.56], [0, 0.57]].map(([r, y]) => new THREE.Vector2(r, y));
+    const shirt = mesh(new THREE.LatheGeometry(torsoProfile, 24), M.cloth, J.spine, 0, 0.02, 0);
     shirt.scale.set(1.2, 1, 0.78);
-    const vest = mesh(new THREE.CylinderGeometry(0.205, 0.175, 0.46, 10), M.vest, J.spine, 0, 0.28, 0);
-    vest.scale.z = 0.72;
-    mesh(new THREE.CylinderGeometry(0.19, 0.205, 0.08, 10), M.vestDark, J.spine, 0, 0.53, 0).scale.z = 0.74;
-    // Poches à rouleaux sur la poitrine.
+    // Gilet rembourré par-dessus.
+    const vestProfile = [[0.14, 0.04], [0.158, 0.06], [0.16, 0.2], [0.178, 0.34], [0.188, 0.44], [0.17, 0.52], [0.12, 0.555]].map(([r, y]) => new THREE.Vector2(r, y));
+    const vest = mesh(new THREE.LatheGeometry(vestProfile, 28), M.vest, J.spine, 0, 0.02, 0);
+    vest.scale.set(1.22, 1, 0.84);
+    // Bord inférieur épais.
+    const hem = mesh(new THREE.TorusGeometry(0.155, 0.018, 8, 28), M.vestDark, J.spine, 0, 0.065, 0);
+    hem.rotation.x = Math.PI / 2;
+    hem.scale.set(1.22, 0.84, 1);
+    // Col roulé, gros et rembourré.
+    const collar = mesh(new THREE.TorusGeometry(0.1, 0.045, 12, 28), M.vest, J.spine, 0, 0.57, 0);
+    collar.rotation.x = Math.PI / 2;
+    collar.scale.set(1.12, 0.95, 1);
+    // Fermeture éclair.
+    mesh(new THREE.BoxGeometry(0.012, 0.44, 0.012), M.vestDark, J.spine, 0, 0.3, 0.158);
+    // Poches à rouleaux cannelées, deux de chaque côté.
     [-1, 1].forEach((sx) => {
-        [0.2, 0.32].forEach((y) => {
-            const p = mesh(new RoundedBoxGeometry(0.085, 0.1, 0.045, 2, 0.015), M.vestDark, J.spine, sx * 0.09, y, 0.125);
-            p.rotation.x = -0.05;
+        [-0.055, -0.13].forEach((dx) => {
+            const p = mesh(new RoundedBoxGeometry(0.06, 0.13, 0.04, 2, 0.012), M.pocket, J.spine, sx * -dx, 0.27, 0.15);
+            p.rotation.y = sx * dx * 1.6;
         });
     });
-    mesh(new THREE.BoxGeometry(0.012, 0.42, 0.02), M.clothDark, J.spine, 0, 0.28, 0.14);
-    // Col montant.
-    mesh(new THREE.CylinderGeometry(0.1, 0.13, 0.1, 20, 1, true), M.vest, J.spine, 0, 0.6, 0).material.side = THREE.DoubleSide;
+    // Sacoche au bas du dos.
+    mesh(new RoundedBoxGeometry(0.17, 0.08, 0.07, 2, 0.025), M.vestDark, J.hips, 0, 0.07, -0.16);
     // Grand tourbillon rouge dans le dos.
-    const backSwirl = mesh(new THREE.CircleGeometry(0.09, 28), M.swirl, J.spine, 0, 0.34, -0.155);
+    const backSwirl = mesh(new THREE.CircleGeometry(0.085, 28), M.swirl, J.spine, 0, 0.36, -0.168);
     backSwirl.rotation.y = Math.PI;
     backSwirl.userData.noOutline = true;
     // Fourreau du sabre, en travers du dos.
-    const back = joint(J.spine, 0, 0.3, -0.17);
+    const back = joint(J.spine, 0, 0.3, -0.18);
     back.rotation.z = 0.75;
     mesh(new THREE.CylinderGeometry(0.022, 0.018, 0.8, 10), M.black, back);
 
     /* ---------------- Tête ---------------- */
-    J.neck = joint(J.spine, 0, 0.58, 0);
+    J.neck = joint(J.spine, 0, 0.6, 0);
     mesh(new THREE.CylinderGeometry(0.052, 0.058, 0.1, 14), M.skin, J.neck, 0, 0.03, 0);
     J.head = joint(J.neck, 0, 0.1, 0);
+    J.head.scale.setScalar(0.93);
     const skull = mesh(new THREE.SphereGeometry(0.125, 32, 24), M.skin, J.head, 0, 0.11, 0);
     skull.scale.set(0.9, 1.02, 0.95);
     const jaw = mesh(new THREE.SphereGeometry(0.1, 24, 16), M.skin, J.head, 0, 0.055, 0.018);
@@ -336,27 +439,34 @@ export function buildNinja() {
         const tail = mesh(new THREE.BoxGeometry(0.032, 0.22, 0.006), M.band, J.head, s * 0.03, 0.08, -0.13);
         tail.rotation.set(0.4, 0, s * 0.3);
     });
-    // Cheveux : calotte et grandes mèches pointues, style anime.
-    const hairRandom = (() => { let x = 11; return () => { x = (x * 16807) % 2147483647; return x / 2147483647; }; })();
-    mesh(new THREE.SphereGeometry(0.131, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.52), M.hair, J.head, 0, 0.125, -0.012).scale.set(0.95, 0.95, 1.02);
-    // Arrière de la tête : les cheveux descendent jusqu'à la nuque.
-    mesh(new THREE.SphereGeometry(0.133, 24, 18, Math.PI * 1.05, Math.PI * 0.9, 0.3, 2.2), M.hair, J.head, 0, 0.1, -0.008).scale.set(0.95, 1.02, 1.02);
-    const spike = (base, dir, length, radius) => {
-        const cone = mesh(new THREE.ConeGeometry(radius, length, 5), M.hair, J.head);
-        cone.scale.z = 0.55;
-        cone.quaternion.setFromUnitVectors(Y, dir.clone().normalize());
-        cone.position.copy(base).addScaledVector(dir.clone().normalize(), length * 0.42);
-    };
-    for (let k = 0; k < 20; k++) {
-        const a = Math.PI * 0.18 + (k / 19) * Math.PI * 1.64; // de l'arrière gauche à l'arrière droit
-        const base = new THREE.Vector3(Math.sin(a + Math.PI) * 0.1, 0.19 + hairRandom() * 0.04, Math.cos(a + Math.PI) * 0.1 - 0.02);
-        const dir = new THREE.Vector3(base.x * 2.2, 0.55 + hairRandom() * 0.5, base.z * 2 - 0.55);
-        spike(base, dir, 0.16 + hairRandom() * 0.1, 0.05 + hairRandom() * 0.015);
-    }
-    // Mèches du dessus et du devant (au-dessus du bandeau, sur les tempes).
-    [[0, 0.24, 0.02, 0.1, 1, -0.45], [0.06, 0.23, 0.05, 0.6, 0.8, 0.1], [-0.06, 0.23, 0.05, -0.6, 0.8, 0.1], [0.1, 0.16, 0.07, 0.35, -0.9, 0.3], [-0.1, 0.16, 0.07, -0.35, -0.9, 0.3]].forEach(([x, y, z, dx, dy, dz], i) => {
-        spike(new THREE.Vector3(x, y, z), new THREE.Vector3(dx, dy, dz), i < 3 ? 0.17 : 0.12, 0.045);
-    });
+    // Cheveux : volume de base, puis grandes mèches courbes (style anime).
+    const cap = mesh(new THREE.SphereGeometry(0.133, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.4), M.hair, J.head, 0, 0.14, -0.02);
+    cap.scale.set(0.97, 0.98, 1.04);
+    mesh(new THREE.SphereGeometry(0.135, 24, 18, Math.PI * 1.1, Math.PI * 0.8, 0.3, 2.2), M.hair, J.head, 0, 0.1, -0.015).scale.set(0.97, 1.02, 1.04);
+    const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+    const lock = (pts, r) => mesh(hairLock(pts.map(([x, y, z]) => V3(x, y, z)), r), M.hair, J.head);
+    // Mèches du dessus et de l'arrière, qui se dressent puis retombent en pointes.
+    const locks = [
+        [[0, 0.24, 0.03], [0.0, 0.33, -0.02], [0.0, 0.36, -0.12]],
+        [[0.05, 0.23, 0.02], [0.1, 0.31, -0.03], [0.16, 0.33, -0.12]],
+        [[-0.05, 0.23, 0.02], [-0.1, 0.31, -0.03], [-0.16, 0.33, -0.12]],
+        [[0.08, 0.2, -0.06], [0.17, 0.25, -0.12], [0.24, 0.24, -0.2]],
+        [[-0.08, 0.2, -0.06], [-0.17, 0.25, -0.12], [-0.24, 0.24, -0.2]],
+        [[0.03, 0.22, -0.1], [0.06, 0.27, -0.2], [0.08, 0.24, -0.3]],
+        [[-0.03, 0.22, -0.1], [-0.06, 0.27, -0.2], [-0.08, 0.24, -0.3]],
+        [[0.09, 0.12, -0.1], [0.16, 0.1, -0.18], [0.22, 0.04, -0.24]],
+        [[-0.09, 0.12, -0.1], [-0.16, 0.1, -0.18], [-0.22, 0.04, -0.24]],
+        [[0.03, 0.08, -0.12], [0.05, 0.02, -0.2], [0.07, -0.05, -0.24]],
+        [[-0.03, 0.08, -0.12], [-0.05, 0.02, -0.2], [-0.07, -0.05, -0.24]]
+    ];
+    locks.forEach((pts) => lock(pts, 0.052));
+    // Mèches du devant : elles tombent par-dessus le bandeau et encadrent le visage.
+    [
+        [[0.02, 0.24, 0.08], [0.03, 0.22, 0.14], [0.05, 0.13, 0.16]],
+        [[-0.05, 0.23, 0.08], [-0.07, 0.2, 0.14], [-0.09, 0.11, 0.15]],
+        [[0.1, 0.2, 0.06], [0.13, 0.13, 0.1], [0.125, 0.02, 0.1]],
+        [[-0.1, 0.2, 0.06], [-0.13, 0.13, 0.1], [-0.125, 0.02, 0.1]]
+    ].forEach((pts, i) => lock(pts, i < 2 ? 0.036 : 0.03));
 
     /* ---------------- Bras ---------------- */
     ['L', 'R'].forEach((side, i) => {
@@ -364,7 +474,7 @@ export function buildNinja() {
         const shoulder = J['shoulder' + side] = joint(J.spine, s * 0.25, 0.47, 0);
         const pad = mesh(new THREE.SphereGeometry(0.078, 16, 12), M.vestDark, shoulder);
         pad.scale.set(1, 0.8, 0.95);
-        const sw = mesh(new THREE.CircleGeometry(0.042, 24), M.swirl, shoulder, s * 0.075, -0.005, 0);
+        const sw = mesh(new THREE.CircleGeometry(0.036, 24), M.swirl, shoulder, s * 0.06, -0.1, 0);
         sw.rotation.y = s * Math.PI / 2;
         sw.userData.noOutline = true;
         capsule(0.056, 0.26, M.cloth, shoulder);
@@ -375,8 +485,12 @@ export function buildNinja() {
         guard.scale.z = 0.9;
         mesh(new THREE.BoxGeometry(0.05, 0.12, 0.012), M.steel, elbow, 0, -0.2, 0.052);
         const hand = J['hand' + side] = joint(elbow, 0, -0.32, 0);
-        mesh(new RoundedBoxGeometry(0.075, 0.075, 0.04, 2, 0.016), M.glove, hand, 0, -0.02, 0);
-        mesh(new RoundedBoxGeometry(0.07, 0.055, 0.036, 2, 0.015), M.skin, hand, 0, -0.075, 0.002);
+        // Gant noir sans doigts : paume gantée, doigts nus.
+        mesh(new RoundedBoxGeometry(0.075, 0.07, 0.038, 2, 0.016), M.glove, hand, 0, -0.02, 0);
+        [-0.025, -0.008, 0.009, 0.025].forEach((fx, k) => {
+            const f = mesh(new THREE.CapsuleGeometry(0.0085, 0.045 - Math.abs(k - 1.5) * 0.006, 4, 8), M.skin, hand, fx, -0.085, 0.004);
+            f.rotation.x = 0.25;
+        });
         mesh(new THREE.CapsuleGeometry(0.015, 0.03, 4, 8), M.skin, hand, -s * 0.043, -0.035, 0.02).rotation.z = s * 0.6;
     });
 
