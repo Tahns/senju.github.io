@@ -13,6 +13,7 @@ import { setAnisotropy } from './textures.js';
 import { SceneAudio } from './audio.js';
 import { buildDream } from './dream.js';
 import { loadHead } from './head.js';
+import { loadAvatar } from './avatar.js';
 import { Radio } from './radio.js';
 
 const html = document.documentElement;
@@ -562,11 +563,12 @@ async function start() {
 
     // La tête de Hoko adulte se sculpte en arrière-plan dès maintenant.
     const headReady = loadHead();
+    const avatarReady = loadAvatar();
     let dreamReady = null;
     function prepareDream() {
         if (!dreamReady) {
-            dreamReady = headReady.then((head) => {
-                dream = buildDream(renderer, { low, mobile, head });
+            dreamReady = Promise.all([headReady, avatarReady]).then(([head, avatar]) => {
+                dream = buildDream(renderer, { low, mobile, head, avatar });
                 window.__scene.dream = dream;
                 dream.resize(window.innerWidth / window.innerHeight);
                 renderer.compile(dream.scene, dream.camera);

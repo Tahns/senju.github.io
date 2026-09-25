@@ -53,3 +53,13 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   couchés sur le crâne, rejetés en arrière, pointes dressées devant) sur une
   calotte lisse ; construite en 0,5 s au lieu de 4 s.
 - Outil `tools/head-preview.html` : la tête seule, de face, 3/4, profil, dos.
+- **Hoko adulte = un vrai modèle anime.** La tête faite en code était jugée
+  « triangle », « Mii ». On utilise maintenant le modèle VRoid « HairSample_Male »
+  (CC0, libre de droits) : visage et cheveux d'anime de vrai jeu. Allégé de
+  19 à 4,3 Mo (textures WebP), yeux et cheveux passés au brun, gilet de
+  jōnin (poches à rouleaux, tourbillon dans le dos) peint sur son sweat,
+  manches bleu nuit, capuche repliée. Son squelette recopie les poses du rêve
+  (reciblage), les doigts se ferment sur la poignée du sabre, il cligne des
+  yeux. Bandeau et plaque ajustés à sa tête ; sandales, bandes, étui, bourse
+  et fourreau conservés. Proportions du squelette d'animation calées sur le
+  modèle. Image de partage refaite.
