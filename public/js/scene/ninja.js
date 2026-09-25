@@ -299,7 +299,11 @@ export function buildNinja(sculpt) {
 
     /* ---------------- Sabre (dans le fourreau, sur le dos) ---------------- */
     const katana = new THREE.Group();
-    mesh(new THREE.BoxGeometry(0.028, 0.78, 0.005), M.steel, katana, 0, 0.5, 0);
+    mesh(new THREE.BoxGeometry(0.03, 0.78, 0.005), M.steel, katana, 0, 0.5, 0);
+    // Fil de la lame : un liseré lumineux, lisible sous toutes les lumières.
+    const edge = new THREE.Mesh(new THREE.BoxGeometry(0.005, 0.76, 0.007), new THREE.MeshBasicMaterial({ color: '#eef8ff' }));
+    edge.position.set(0.015, 0.5, 0);
+    katana.add(edge);
     mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.01, 18), M.gold, katana, 0, 0.105, 0);
     mesh(new THREE.CylinderGeometry(0.017, 0.018, 0.22, 10), M.black, katana, 0, 0, 0);
     back.add(katana);

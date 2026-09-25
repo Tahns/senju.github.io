@@ -243,19 +243,78 @@ export function buildDream(renderer, { low = false, head } = {}) {
     });
 
     /* ---------------- Effets : sabre, eau, pièces ---------------- */
-    const arcMat = new THREE.MeshBasicMaterial({ color: '#cfefff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+    // Coup de sabre : un croissant de lumière, vif au bout, qui s'efface.
+    const slashMaterial = () => new THREE.ShaderMaterial({
+        uniforms: { uOpacity: { value: 0 }, uColor: { value: new THREE.Color('#dff4ff') } },
+        vertexShader: 'varying vec2 vP; void main(){ vP = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: 'uniform float uOpacity; uniform vec3 uColor; varying vec2 vP; void main(){ float t = clamp(atan(vP.y, vP.x) / 2.4, 0.0, 1.0); float r = (length(vP) - 0.8) / 0.34; float edge = smoothstep(0.0, 0.75, r) * (1.0 - smoothstep(0.9, 1.0, r)); float core = smoothstep(0.62, 0.92, r) * (1.0 - smoothstep(0.92, 1.0, r)); gl_FragColor = vec4(uColor * (1.0 + core * 2.5), pow(t, 1.6) * edge * uOpacity); }',
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide
+    });
     const arcs = [0, 1, 2].map(() => {
-        const m = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.03, 6, 48, 2.4), arcMat.clone());
-        m.scale.z = 0.3;
+        const m = new THREE.Mesh(new THREE.RingGeometry(0.8, 1.14, 64, 1, 0, 2.4), slashMaterial());
         scene.add(m);
         return m;
     });
 
-    const waterCount = 900;
+    // Dragon d'eau : un tube qui s'enroule autour de Hoko, puis jaillit.
+    const dragonPoints = [];
+    for (let i = 0; i <= 64; i++) {
+        const t = i / 64;
+        const a = t * Math.PI * 4.5 + 1.2;
+        const r = 1.05 - t * 0.35;
+        dragonPoints.push(V(Math.cos(a) * r, 0.15 + t * 2.4, Math.sin(a) * r));
+    }
+    dragonPoints.push(V(0.2, 2.9, 0.9), V(-0.8, 2.8, 2.8), V(-2.4, 2.3, 5.5), V(-4.5, 1.8, 9.5));
+    const dragonCurve = new THREE.CatmullRomCurve3(dragonPoints);
+    const segments = 420;
+    const radial = 18;
+    const dragonGeo = new THREE.TubeGeometry(dragonCurve, segments, 0.17, radial, false);
+    const centers = new Float32Array(dragonGeo.attributes.position.count * 3);
+    for (let i = 0; i <= segments; i++) {
+        const c = dragonCurve.getPointAt(i / segments);
+        for (let j = 0; j <= radial; j++) centers.set([c.x, c.y, c.z], (i * (radial + 1) + j) * 3);
+    }
+    dragonGeo.setAttribute('center', new THREE.BufferAttribute(centers, 3));
+    const dragonMat = new THREE.ShaderMaterial({
+        uniforms: { uHead: { value: 0 }, uTail: { value: 0 }, uTime: { value: 0 } },
+        vertexShader: `attribute vec3 center; uniform float uHead; uniform float uTail; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+            void main(){
+                vUv = uv;
+                float body = smoothstep(uTail, uTail + 0.1, uv.x) * (1.0 - smoothstep(uHead - 0.015, uHead, uv.x));
+                float head = exp(-pow((uv.x - (uHead - 0.035)) / 0.02, 2.0)) * step(0.01, uHead);
+                float s = body * (0.55 + 0.45 * smoothstep(uTail, uTail + 0.3, uv.x)) + head * 0.7;
+                vec3 p = center + (position - center) * s;
+                vec4 mv = modelViewMatrix * vec4(p, 1.0);
+                vN = normalize(normalMatrix * normal);
+                vV = -mv.xyz;
+                gl_Position = projectionMatrix * mv;
+            }`,
+        fragmentShader: `uniform float uTime; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+            void main(){
+                float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0);
+                vec3 deep = vec3(0.05, 0.32, 0.78);
+                vec3 light = vec3(0.45, 0.85, 1.0);
+                vec3 c = mix(deep, light, f * 0.8 + max(vN.y, 0.0) * 0.25);
+                float foam = smoothstep(0.72, 1.0, sin(vUv.x * 260.0 - uTime * 14.0 + sin(vUv.y * 18.85) * 1.6));
+                c += vec3(1.0) * foam * 0.9;
+                gl_FragColor = vec4(c * 1.2, 0.62 + f * 0.33 + foam * 0.2);
+            }`,
+        transparent: true,
+        depthWrite: false
+    });
+    const dragon = new THREE.Mesh(dragonGeo, dragonMat);
+    dragon.frustumCulled = false;
+    scene.add(dragon);
+    updaters.push((dt, time) => { dragonMat.uniforms.uTime.value = time; });
+
+    const waterCount = 420;
     const waterPos = new Float32Array(waterCount * 3);
     const waterGeo = new THREE.BufferGeometry();
     waterGeo.setAttribute('position', new THREE.BufferAttribute(waterPos, 3));
-    const waterMat = new THREE.PointsMaterial({ color: '#3fa6ff', size: 0.13, map: dot(), transparent: true, opacity: 0, depthWrite: false });
+    const waterMat = new THREE.PointsMaterial({ color: '#8fd4ff', size: 0.08, map: dot(), transparent: true, opacity: 0, depthWrite: false });
     const water = new THREE.Points(waterGeo, waterMat);
     water.frustumCulled = false;
     scene.add(water);
@@ -408,9 +467,9 @@ export function buildDream(renderer, { low = false, head } = {}) {
         const arc = arcs[index];
         arc.rotation.set(...rotation);
         arc.position.copy(position);
-        arc.material.opacity = 0.9;
+        arc.material.uniforms.uOpacity.value = 1;
         return timeline.tween(0.45, (k) => {
-            arc.material.opacity = 0.9 * (1 - k);
+            arc.material.uniforms.uOpacity.value = 1 - k;
             arc.rotation.z = rotation[2] + k * 0.6;
         }, ease.out);
     }
@@ -462,11 +521,19 @@ export function buildDream(renderer, { low = false, head } = {}) {
         await low;
         say('Suiton : maître de l\'eau', 3.5);
         sound.water(2.6);
-        waterMat.opacity = 0.85;
-        await tl.tween(2.2, (k) => { waterState.rise = k; }, ease.out);
+        waterMat.opacity = 0.55;
+        const D = dragonMat.uniforms;
+        await tl.tween(2.2, (k) => { waterState.rise = k; D.uHead.value = 0.7 * k; D.uTail.value = 0; }, ease.out);
         await pose(tl, 'release', 0.25, ease.out);
         sound.splash();
-        await tl.tween(1.1, (k) => { waterState.blast = k; waterMat.opacity = 0.85 * (1 - k * k); }, ease.in);
+        await tl.tween(1.3, (k) => {
+            waterState.blast = k;
+            waterMat.opacity = 0.55 * (1 - k * k);
+            D.uHead.value = 0.7 + 0.4 * k;
+            D.uTail.value = k * 1.05;
+        }, ease.in);
+        D.uHead.value = 0;
+        D.uTail.value = 0;
         waterState.rise = 0;
         waterState.blast = 0;
         await pose(tl, 'stand', 0.4);
@@ -521,6 +588,7 @@ export function buildDream(renderer, { low = false, head } = {}) {
     return {
         scene,
         camera,
+        ninja,
         play,
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
         // Rendu avec profondeur de champ : la mise au point suit Hoko.

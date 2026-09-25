@@ -20,3 +20,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   pendant l'acte de la section économique.
 - **Cadrage** : plan rapproché pendant la pluie de ryō ; arbres plus
   touffus (plus de feuilles, cœur moins sombre).
+- **Kenjutsu** : lame avec un fil lumineux, coups de sabre en croissants
+  de lumière (vifs au bout, qui s'effacent).
+- **Suiton** : vrai dragon d'eau — un tube d'eau translucide, écume qui
+  file, qui s'enroule autour de Hoko puis jaillit ; embruns plus fins.
+- **Anti-cache** : chaque fichier est versionné (`tools/version.py`), la
+  carte d'import redirige chaque module vers sa version.
