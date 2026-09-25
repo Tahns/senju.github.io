@@ -15,3 +15,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   regard qui flâne, pans du bandeau qui flottent.
 - **Chargement** : pourcentage réel sur le bouton « Chargement… ».
 - **Carte de fin** : lien « Revoir le rêve ».
+- **Pluie de ryō** : pièces plus grandes et d'un or plus vif, posées sur
+  l'herbe (et non cachées dedans), paillettes dorées et lueur chaude
+  pendant l'acte de la section économique.
