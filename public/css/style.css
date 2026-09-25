@@ -1949,9 +1949,7 @@ html.book-open .scene-caption {
     display: inline;
 }
 
-html.book-open .scene-sound {
-    display: none;
-}
+
 
 /* Le rêve */
 .dream-glow {
@@ -2015,4 +2013,278 @@ html.dreaming .scene-vignette {
 
 @keyframes hud-in {
     from { opacity: 0; transform: translateY(-10px); }
+}
+
+/* ==========================================================================
+   Habillage inspiré de l'univers « ninja RP » : lettrage pinceau blanc cerné
+   de violet, touches magenta, boutons en biseau.
+   ========================================================================== */
+:root {
+    --zk-purple: #5b2be0;
+    --zk-deep: #24115e;
+    --zk-magenta: #e5357f;
+    --zk-font: 'Permanent Marker', 'Bangers', 'Comic Sans MS', cursive;
+}
+
+.scene-card {
+    color: #fff;
+    background:
+        repeating-linear-gradient(115deg, rgba(255, 255, 255, .025) 0 2px, transparent 2px 22px),
+        radial-gradient(ellipse 60% 55% at 50% 45%, rgba(91, 43, 224, .45), rgba(10, 6, 24, .92) 72%);
+}
+
+.scene-card__title {
+    position: relative;
+    font-family: var(--zk-font);
+    font-weight: 400;
+    font-size: clamp(42px, 10vw, 84px);
+    letter-spacing: .02em;
+    line-height: 1;
+    color: #fff;
+    transform: rotate(-4deg);
+    text-shadow:
+        3px 3px 0 var(--zk-deep), -3px -3px 0 var(--zk-deep), 3px -3px 0 var(--zk-deep), -3px 3px 0 var(--zk-deep),
+        0 4px 0 var(--zk-deep), 4px 0 0 var(--zk-deep), 0 -4px 0 var(--zk-deep), -4px 0 0 var(--zk-deep),
+        7px 8px 0 var(--zk-purple), 0 0 28px rgba(229, 53, 127, .55);
+    isolation: isolate;
+}
+
+/* Coup de pinceau magenta derrière le titre */
+.scene-card__title::before {
+    content: "";
+    position: absolute;
+    left: -6%;
+    right: -8%;
+    top: 58%;
+    height: .42em;
+    z-index: -1;
+    background: linear-gradient(90deg, transparent, var(--zk-magenta) 12%, #ff6fa8 60%, transparent);
+    clip-path: polygon(0 45%, 6% 20%, 30% 12%, 60% 0, 88% 18%, 100% 40%, 94% 70%, 64% 88%, 30% 100%, 8% 82%);
+    opacity: .9;
+    transform: skewX(-18deg);
+}
+
+.scene-card__title span {
+    color: #fff;
+}
+
+.scene-card__tag,
+.scene-card__kana {
+    margin: 0;
+    font-family: var(--font-kanji);
+    font-size: 16px;
+    letter-spacing: .35em;
+    color: #d9ccff;
+}
+
+.scene-card__text {
+    color: rgba(230, 220, 255, .8);
+}
+
+.shuriken {
+    width: 58px;
+    height: 58px;
+    fill: #dfe2ee;
+    stroke: var(--zk-deep);
+    stroke-width: 4;
+    filter: drop-shadow(3px 3px 0 var(--zk-purple)) drop-shadow(0 0 12px rgba(229, 53, 127, .5));
+    animation: shuriken-spin 6s linear infinite;
+}
+
+.shuriken circle {
+    fill: var(--zk-deep);
+    stroke: none;
+}
+
+@keyframes shuriken-spin {
+    to { transform: rotate(360deg); }
+}
+
+.scene-button {
+    padding: 13px 40px;
+    font-family: var(--zk-font);
+    font-size: 20px;
+    letter-spacing: .08em;
+    text-transform: none;
+    color: #fff;
+    background: linear-gradient(135deg, #7b4dff, var(--zk-purple) 55%, var(--zk-deep));
+    border: 2px solid rgba(255, 255, 255, .85);
+    border-radius: 4px;
+    transform: skewX(-12deg);
+    box-shadow: 5px 5px 0 var(--zk-magenta), 0 10px 30px rgba(91, 43, 224, .45);
+}
+
+.scene-button:hover:not(:disabled) {
+    transform: skewX(-12deg) translate(-2px, -2px);
+    box-shadow: 7px 7px 0 var(--zk-magenta), 0 14px 34px rgba(91, 43, 224, .55);
+}
+
+.scene-card__link {
+    color: rgba(230, 220, 255, .75);
+}
+
+.scene-card__link:hover {
+    color: #fff;
+}
+
+.scene-caption {
+    font-family: var(--zk-font);
+    font-style: normal;
+    font-size: clamp(18px, 3vw, 26px);
+    color: #fff;
+    text-shadow:
+        2px 2px 0 var(--zk-deep), -2px -2px 0 var(--zk-deep), 2px -2px 0 var(--zk-deep), -2px 2px 0 var(--zk-deep),
+        4px 4px 0 var(--zk-purple), 0 0 18px rgba(0, 0, 0, .6);
+}
+
+.scene-skip {
+    font-family: var(--zk-font);
+    font-size: 15px;
+    letter-spacing: .05em;
+    text-transform: none;
+    color: #fff;
+    background: linear-gradient(135deg, #7b4dff, var(--zk-deep));
+    border: 1.5px solid rgba(255, 255, 255, .7);
+    border-radius: 3px;
+    transform: skewX(-12deg);
+    box-shadow: 3px 3px 0 var(--zk-magenta);
+}
+
+.scene-sound {
+    color: #fff;
+    background: linear-gradient(135deg, #7b4dff, var(--zk-deep));
+    border: 1.5px solid rgba(255, 255, 255, .7);
+    box-shadow: 3px 3px 0 var(--zk-magenta);
+}
+
+.scene-sound.is-off {
+    background: #2a2440;
+}
+
+/* Panneau de volume */
+.sound-panel {
+    position: fixed;
+    top: 64px;
+    right: 14px;
+    z-index: 13;
+    width: min(260px, calc(100vw - 28px));
+    padding: 14px 16px 16px;
+    color: #fff;
+    background: rgba(18, 10, 42, .93);
+    border: 1.5px solid rgba(123, 77, 255, .7);
+    border-radius: 10px;
+    box-shadow: 4px 4px 0 var(--zk-magenta), 0 18px 40px rgba(0, 0, 0, .5);
+}
+
+.sound-panel__title {
+    margin: 0 0 8px;
+    font-family: var(--zk-font);
+    font-size: 18px;
+}
+
+.sound-panel label {
+    display: grid;
+    grid-template-columns: 5.5em 1fr;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+    font-size: 15px;
+}
+
+.sound-panel input[type="range"] {
+    width: 100%;
+    accent-color: var(--zk-magenta);
+}
+
+.sound-panel__mute {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    font: inherit;
+    font-size: 14px;
+    color: #fff;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.sound-panel__mute:hover {
+    background: rgba(229, 53, 127, .3);
+}
+
+/* Petite carte de la musique en cours (lecteur YouTube) */
+.radio {
+    position: fixed;
+    left: 14px;
+    bottom: 14px;
+    z-index: 12;
+    padding: 8px;
+    color: #fff;
+    background: rgba(18, 10, 42, .9);
+    border: 1.5px solid rgba(123, 77, 255, .7);
+    border-radius: 10px;
+    box-shadow: 3px 3px 0 var(--zk-magenta);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity .6s ease, transform .6s ease;
+}
+
+.radio.is-on {
+    opacity: 1;
+    transform: none;
+}
+
+.radio__title {
+    margin: 0 0 6px;
+    font-size: 13px;
+}
+
+.radio__title b {
+    font-family: var(--zk-font);
+    font-weight: 400;
+    font-size: 15px;
+}
+
+.radio__title small {
+    opacity: .7;
+}
+
+.radio__player,
+.radio__player iframe {
+    display: block;
+    width: 200px;
+    height: 113px;
+    border: 0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+html.book-open .radio {
+    bottom: 84px;
+}
+
+@media (max-width: 760px) {
+    .radio {
+        left: 8px;
+        top: 8px;
+        bottom: auto;
+    }
+
+    html.book-open .radio {
+        bottom: auto;
+    }
+}
+
+/* HUD du rêve aux couleurs violet / magenta */
+.dream-hud {
+    background: rgba(18, 10, 42, .82);
+    border: 1.5px solid rgba(123, 77, 255, .75);
+    box-shadow: 4px 4px 0 var(--zk-magenta), 0 10px 30px rgba(0, 0, 0, .35);
+}
+
+.dream-hud b {
+    font-family: var(--zk-font);
+    font-weight: 400;
+    font-size: 17px;
 }

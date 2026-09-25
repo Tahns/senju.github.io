@@ -40,13 +40,84 @@ function plateTexture() {
     return t;
 }
 
+// Ombrage « dessin animé » : trois tons francs au lieu d'un dégradé.
+function toonRamp() {
+    const data = new Uint8Array([90, 90, 90, 255, 175, 175, 175, 255, 255, 255, 255, 255]);
+    const t = new THREE.DataTexture(data, 3, 1, THREE.RGBAFormat);
+    t.minFilter = THREE.NearestFilter;
+    t.magFilter = THREE.NearestFilter;
+    t.needsUpdate = true;
+    return t;
+}
+
+function canvasTex(w, h, draw) {
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    draw(c.getContext('2d'), w, h);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+}
+
+// Tablier violet avec une rangée de losanges blancs en bas.
+const apronTexture = () => canvasTex(512, 128, (ctx, w, h) => {
+    ctx.fillStyle = '#3a3272';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#eef0f6';
+    for (let x = 0; x < w; x += 32) {
+        ctx.beginPath();
+        ctx.moveTo(x + 16, h - 34);
+        ctx.lineTo(x + 30, h - 17);
+        ctx.lineTo(x + 16, h);
+        ctx.lineTo(x + 2, h - 17);
+        ctx.fill();
+    }
+});
+
+// Tourbillon rouge des vestes de jōnin.
+const swirlTexture = () => canvasTex(128, 128, (ctx, w, h) => {
+    ctx.fillStyle = '#c42a2a';
+    ctx.beginPath();
+    ctx.arc(64, 64, 60, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#7cbfae';
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    for (let a = 0; a < Math.PI * 5; a += 0.1) {
+        const r = 6 + a * 3.2;
+        ctx.lineTo(64 + Math.cos(a) * r, 64 + Math.sin(a) * r);
+    }
+    ctx.stroke();
+});
+
+// Contour noir (technique de la « coque inversée ») pour le rendu anime.
+function addOutlines(root) {
+    const outline = new THREE.MeshBasicMaterial({ color: '#141026', side: THREE.BackSide });
+    outline.onBeforeCompile = (shader) => {
+        shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n transformed += normal * 0.009;');
+    };
+    const meshes = [];
+    root.traverse((o) => { if (o.isMesh && !o.userData.noOutline) meshes.push(o); });
+    meshes.forEach((m) => {
+        const hull = new THREE.Mesh(m.geometry, outline);
+        hull.userData.noOutline = true;
+        hull.castShadow = false;
+        hull.frustumCulled = false;
+        m.add(hull);
+    });
+}
+
 export function buildNinja() {
-    const mat = (color, roughness = 0.8, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness, ...extra });
+    const ramp = toonRamp();
+    const mat = (color, roughness = 0.8, extra = {}) => new THREE.MeshToonMaterial({ color, gradientMap: ramp, ...extra });
     const M = {
-        skin: new THREE.MeshPhysicalMaterial({ color: '#e2b596', roughness: 0.55, sheen: 0.6, sheenColor: new THREE.Color('#ff9f86') }),
-        cloth: mat('#1f2640'),
-        vest: mat('#5b6a3a', 0.85),
-        vestDark: mat('#46522c', 0.9),
+        skin: mat('#f0c7a6'),
+        cloth: mat('#26305a'),
+        vest: mat('#7cbfae'),
+        vestDark: mat('#5d9f8e'),
+        apron: mat('#ffffff', 0.8, { map: apronTexture(), side: THREE.DoubleSide }),
+        swirl: mat('#ffffff', 0.8, { map: swirlTexture() }),
         hair: mat('#23160f', 0.7),
         band: mat('#1b2033', 0.8),
         plate: new THREE.MeshStandardMaterial({ map: plateTexture(), metalness: 0.85, roughness: 0.28 }),
@@ -59,6 +130,7 @@ export function buildNinja() {
         eye: mat('#1a1410', 0.3),
         white: mat('#f2eee6', 0.6)
     };
+    M.eye.color.set('#141020');
     const shadow = (m) => { m.castShadow = true; m.receiveShadow = true; return m; };
     const mesh = (geo, m, parent, x = 0, y = 0, z = 0) => {
         const o = shadow(new THREE.Mesh(geo, m));
@@ -84,6 +156,10 @@ export function buildNinja() {
     J.hips = joint(root, 0, 0.98, 0);
     mesh(new RoundedBoxGeometry(0.34, 0.2, 0.22, 3, 0.07), M.cloth, J.hips, 0, 0.02, 0);
     mesh(new THREE.CylinderGeometry(0.175, 0.175, 0.07, 20), M.belt, J.hips, 0, 0.1, 0);
+
+    // Tablier violet à losanges blancs, autour des hanches.
+    const apron = mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.55, 24, 1, true), M.apron, J.hips, 0, -0.2, 0);
+    apron.userData.noOutline = true;
 
     // Bourse de pièces à la ceinture (elle gonfle pendant le rêve).
     const pouch = joint(J.hips, 0.19, 0.02, 0.07);
@@ -154,6 +230,10 @@ export function buildNinja() {
         const s = i === 0 ? -1 : 1;
         const shoulder = J['shoulder' + side] = joint(J.spine, s * 0.25, 0.46, 0);
         mesh(new THREE.SphereGeometry(0.075, 14, 12), M.vestDark, shoulder);
+        // Tourbillon rouge sur l'épaule.
+        const sw = mesh(new THREE.CircleGeometry(0.045, 24), M.swirl, shoulder, s * 0.06, -0.02, 0);
+        sw.rotation.y = s * Math.PI / 2;
+        sw.userData.noOutline = true;
         capsule(0.058, 0.26, M.cloth, shoulder);
         const elbow = J['elbow' + side] = joint(shoulder, 0, -0.33, 0);
         capsule(0.05, 0.24, M.cloth, elbow);
@@ -207,6 +287,7 @@ export function buildNinja() {
     }
 
     applyPose('crossed');
+    addOutlines(root);
     root.traverse((o) => { if (o.isMesh) o.frustumCulled = false; });
 
     return {

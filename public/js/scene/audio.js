@@ -32,6 +32,18 @@ export class SceneAudio {
         this.ctx = null;
         this.on = true;
         this.music = null;
+        // Volumes réglables par le visiteur (0 à 1).
+        this.volumes = { music: 0.8, ambience: 0.7, sfx: 0.9 };
+    }
+
+    setVolumes(volumes) {
+        this.volumes = { ...this.volumes, ...volumes };
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        this.sfx.gain.setTargetAtTime(this.volumes.sfx, t, 0.05);
+        if (this.crickets) this.ambience.gain.setTargetAtTime(1.3 * this.volumes.ambience, t, 0.05);
+        if (this.music) this.musicBus.gain.setTargetAtTime(this.volumes.music, t, 0.05);
+        if (this.dream) this.dreamBus.gain.setTargetAtTime(this.volumes.music, t, 0.05);
     }
 
     // À appeler lors d'un clic (les navigateurs l'exigent).
@@ -45,7 +57,7 @@ export class SceneAudio {
             this.master.gain.value = this.on ? 1 : 0;
             this.master.connect(ctx.destination);
             this.sfx = ctx.createGain();
-            this.sfx.gain.value = 0.9;
+            this.sfx.gain.value = this.volumes.sfx;
             this.sfx.connect(this.master);
             this.musicBus = ctx.createGain();
             this.musicBus.gain.value = 0;
@@ -188,7 +200,7 @@ export class SceneAudio {
     startCrickets() {
         if (!this.ctx || this.crickets) return;
         const ctx = this.ctx;
-        this.ambience.gain.setTargetAtTime(0.9, ctx.currentTime, 1.5);
+        this.ambience.gain.setTargetAtTime(1.3 * this.volumes.ambience, ctx.currentTime, 1.5);
         // Suzumushi : « riiin » aigu et doux, à intervalles irréguliers.
         const chirp = () => {
             const t = ctx.currentTime + 0.05;
@@ -243,7 +255,7 @@ export class SceneAudio {
         if (!this.ctx || this.music) return;
         const ctx = this.ctx;
         this.musicBus.gain.cancelScheduledValues(ctx.currentTime);
-        this.musicBus.gain.setTargetAtTime(0.85, ctx.currentTime, 0.4);
+        this.musicBus.gain.setTargetAtTime(this.volumes.music, ctx.currentTime, 0.4);
         const state = { beat: 60 / 66, index: 0, bar: 0, next: ctx.currentTime + 0.2, beatInBar: 0, slow: 1 };
         this.music = state;
         // Programmation en avance (plus régulier que des minuteurs seuls).
@@ -367,7 +379,7 @@ export class SceneAudio {
         this.dreamBus.gain.value = 0.0001;
         this.dreamBus.connect(this.master);
         this.dreamBus.connect(this.reverb);
-        this.dreamBus.gain.setTargetAtTime(0.9, ctx.currentTime, 0.8);
+        this.dreamBus.gain.setTargetAtTime(this.volumes.music, ctx.currentTime, 0.8);
         // Gamme yo (ré, mi, sol, la, si) ; demi-tons depuis La 4.
         const D5 = 5, E5 = 7, G5 = 10, A5 = 12, B5 = 14, D6 = 17, B4 = 2, A4 = 0;
         const melody = [
