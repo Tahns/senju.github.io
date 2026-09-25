@@ -286,7 +286,7 @@ export function pageEdges() {
 
 const THEMES = {
     hoko: { leather: ['#8a261c', '#641710', '#3a0c08'], gold: '#d6b35e', light: '#f0d78f', title: ['HOKO', 'SENJU'], seal: '千手', sealBg: '#b3261b', kicker: 'CLAN SENJU · KONOHA' },
-    second: { leather: ['#34427a', '#1f2856', '#0e1230'], gold: '#c8d2e6', light: '#eef2fb', title: ['SECOND', 'CARNET'], seal: '忍道', sealBg: '#3a4a8c', kicker: 'KONOHA' }
+    second: { leather: ['#34427a', '#1f2856', '#0e1230'], gold: '#c8d2e6', light: '#eef2fb', title: ['CARNET', ''], subtitle: '', seal: '忍道', sealBg: '#3a4a8c', kicker: '' }
 };
 
 function leather(ctx, w, h, colors, random) {
@@ -328,13 +328,13 @@ export function bookCover(kind) {
         ctx.shadowColor = 'rgba(0,0,0,.6)';
         ctx.shadowBlur = 6;
         ctx.font = '700 64px Cinzel, Georgia, serif';
-        ctx.fillText(theme.title[0], w / 2, 470);
+        ctx.fillText(theme.title[0], w / 2, theme.title[1] ? 470 : 490);
         ctx.font = '700 38px Cinzel, Georgia, serif';
         ctx.fillText(theme.title[1].split('').join(' '), w / 2, 518);
         ctx.shadowBlur = 0;
         ctx.fillStyle = theme.gold;
         ctx.font = '46px "Great Vibes", cursive';
-        ctx.fillText('Fiche Personnage', w / 2, 590);
+        ctx.fillText(theme.subtitle === undefined ? 'Fiche Personnage' : theme.subtitle, w / 2, 590);
         // Sceau.
         ctx.save();
         ctx.translate(w - 92, h - 118);

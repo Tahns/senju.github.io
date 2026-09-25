@@ -303,161 +303,35 @@
     </main>
 
     <!--
-        Deuxième carnet (modèle à compléter).
-        Même principe que le premier : une <section class="page"> par page,
-        un nombre pair de pages entre les deux couvertures.
+        Deuxième carnet : un carnet vierge, encore à écrire.
+        Pour y mettre du contenu, remplace les pages vierges par des
+        <section class="page"> comme dans le premier carnet
+        (toujours un nombre pair de pages entre les deux couvertures).
     -->
     <section class="source book-source" data-book="second" hidden>
 
         <section class="page page--cover" data-toc="Couverture">
             <div class="cover cover--indigo">
                 <div class="cover__frame">
-                    <p class="cover__kicker">Konoha</p>
                     <svg class="cover__emblem" aria-hidden="true"><use href="#konoha" /></svg>
-                    <h1 class="cover__title">Second <span>Carnet</span></h1>
-                    <p class="cover__subtitle">Fiche Personnage</p>
+                    <h1 class="cover__title cover__title--solo">Carnet</h1>
                     <p class="cover__seal" aria-hidden="true">忍道</p>
                 </div>
                 <p class="cover__hint js-only">Ouvrir le carnet <span aria-hidden="true">⟶</span></p>
             </div>
         </section>
 
-        <section class="page page--toc" data-toc="Sommaire">
-            <header class="page__head">
-                <h2>Sommaire</h2>
-                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
-            </header>
-            <nav class="toc" aria-label="Sommaire du carnet">
-                <ol>
-                    <li><a href="#page-2"><span>Apparence</span><i></i><b>2</b></a></li>
-                    <li><a href="#page-3"><span>Identité</span><i></i><b>3</b></a></li>
-                    <li><a href="#page-4"><span>Personnalité</span><i></i><b>4</b></a></li>
-                    <li><a href="#page-5"><span>Ambitions</span><i></i><b>5</b></a></li>
-                    <li><a href="#page-6"><span>Histoire</span><i></i><b>6</b></a></li>
-                    <li><a href="#page-7"><span>Nindo</span><i></i><b>7</b></a></li>
-                    <li><a href="#page-8"><span>Chronologie</span><i></i><b>8</b></a></li>
-                </ol>
-            </nav>
-            <div class="exlibris">
-                <svg aria-hidden="true"><use href="#konoha" /></svg>
-                <p>Ce carnet appartient à</p>
-                <p class="signature">…</p>
-            </div>
-        </section>
-
-        <section class="page page--portrait" data-toc="Apparence">
-            <header class="page__head">
-                <h2>Apparence</h2>
-                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
-            </header>
-            <figure class="portrait">
-                <div class="portrait__frame">
-                    <!-- Dépose l'image du personnage dans public/img/Apparence-2.jpg -->
-                    <img src="public/img/Apparence-2.jpg" alt="Portrait du personnage" loading="lazy" onerror="this.parentNode.classList.add('is-empty');this.remove()">
-                    <div class="portrait__placeholder">
-                        <svg aria-hidden="true"><use href="#konoha" /></svg>
-                        <span>Portrait à venir</span>
-                    </div>
-                </div>
-                <figcaption>Nom · âge · taille</figcaption>
-            </figure>
-        </section>
-
-        <section class="page" data-toc="Identité">
-            <header class="page__head">
-                <h2>Identité</h2>
-                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
-            </header>
-            <dl class="facts">
-                <div><dt>Nom</dt><dd>À compléter</dd></div>
-                <div><dt>Prénom</dt><dd>À compléter</dd></div>
-                <div><dt>Âge</dt><dd>À compléter</dd></div>
-                <div><dt>Taille</dt><dd>À compléter</dd></div>
-                <div><dt>Lieu de naissance</dt><dd>À compléter</dd></div>
-                <div><dt>Résidence</dt><dd>À compléter</dd></div>
-            </dl>
-            <h3>Natures de chakra</h3>
-            <ul class="chakra">
-                <li><span class="chakra__kanji" aria-hidden="true">✦</span>À compléter</li>
-            </ul>
-            <h3>Famille</h3>
-            <dl class="facts">
-                <div><dt>Mère</dt><dd>À compléter</dd></div>
-                <div><dt>Père</dt><dd>À compléter</dd></div>
-            </dl>
-        </section>
-
-        <section class="page" data-toc="Personnalité">
-            <header class="page__head">
-                <h2>Personnalité</h2>
-                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
-            </header>
-            <h3>Qualités</h3>
-            <ul class="traits traits--good">
-                <li>À compléter</li>
-                <li>À compléter</li>
-                <li>À compléter</li>
-            </ul>
-            <h3>Défauts</h3>
-            <ul class="traits traits--bad">
-                <li>À compléter</li>
-                <li>À compléter</li>
-                <li>À compléter</li>
-            </ul>
-        </section>
-
-        <section class="page" data-toc="Ambitions">
-            <header class="page__head">
-                <h2>Ambitions</h2>
-                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
-            </header>
-            <ul class="goals">
-                <li>À compléter.</li>
-                <li>À compléter.</li>
-                <li>À compléter.</li>
-            </ul>
-        </section>
-
-        <section class="page page--story" data-toc="Histoire">
-            <header class="page__head">
-                <p class="chapter">Chapitre I</p>
-                <h2>Histoire</h2>
-            </header>
-            <div class="prose">
-                <p class="lettrine">L'histoire de ce personnage reste à écrire. Remplace ce paragraphe par son passé, ses origines et ce qui l'a conduit jusqu'à Konoha.</p>
-            </div>
-        </section>
-
-        <section class="page page--nindo" data-toc="Nindo">
-            <header class="page__head">
-                <p class="chapter" lang="ja">忍道</p>
-                <h2>Nindo</h2>
-                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
-            </header>
-            <blockquote class="nindo">
-                <p>La voie du ninja de ce personnage, à compléter.</p>
-            </blockquote>
-            <svg class="nindo__emblem" aria-hidden="true"><use href="#konoha" /></svg>
-        </section>
-
-        <section class="page" data-toc="Chronologie">
-            <header class="page__head">
-                <h2>Chronologie</h2>
-                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
-            </header>
-            <ol class="timeline">
-                <li><b>Naissance</b><span>À compléter.</span></li>
-                <li class="is-next"><b>À venir</b><span>À compléter.</span></li>
-            </ol>
-            <p class="book-end js-only"><a href="#fin">Refermer le carnet <span aria-hidden="true">⟶</span></a></p>
-        </section>
+        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
+        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
+        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
+        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
+        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
+        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
 
         <section class="page page--back" data-toc="Fin">
             <div class="cover cover--back cover--indigo">
                 <div class="cover__frame">
                     <svg class="cover__emblem cover__emblem--small" aria-hidden="true"><use href="#konoha" /></svg>
-                    <p class="cover__quote">« Une citation du personnage. »</p>
-                    <p class="cover__credits">Fiche RP</p>
                     <p class="cover__again js-only"><a href="#page-0" class="no-scene"><span aria-hidden="true">⟲</span> Revenir à la couverture</a><a href="#ranger" class="scene-only"><span aria-hidden="true">⤶</span> Ranger le livre</a></p>
                     <p class="cover__seal" aria-hidden="true">忍道</p>
                 </div>
