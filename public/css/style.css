@@ -1899,3 +1899,15 @@ html.book-open .scene-caption {
         transition-duration: .01ms !important;
     }
 }
+
+/* Carnet vierge : papier réglé, sans texte */
+.page--blank .lines {
+    position: absolute;
+    inset: 12% 10% 12%;
+    background: repeating-linear-gradient(180deg, transparent 0 calc(1.9em - 1px), rgba(91, 70, 48, .16) calc(1.9em - 1px) 1.9em);
+}
+
+.cover__title--solo {
+    margin-top: .6em;
+    letter-spacing: .18em;
+}

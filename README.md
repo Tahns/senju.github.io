@@ -11,7 +11,7 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
 1. Hoko arrive dans le couloir et fait glisser la porte (shoji) de sa chambre.
 2. Il se dirige vers la bibliothèque, choisit son carnet, le tire de l'étagère et l'ouvre.
 3. Le visiteur lit le carnet, puis clique sur **Ranger** : Hoko remet le livre en place.
-4. Il en prend un deuxième (le second carnet), le lit, le range.
+4. Il en prend un deuxième (un carnet vierge), le feuillette, le range.
 5. Il va s'asseoir sur son futon, s'allonge face à la fenêtre et à la lune, la lanterne baisse… Bonne nuit.
 
 - Bouton **Passer** pour accélérer jusqu'au prochain livre, lien « Aller directement au carnet » sur l'écran d'accueil.
@@ -24,9 +24,10 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
 
 ## Le second carnet
 
-Il est dans `index.html`, dans `<section class="book-source" data-book="second">`.
-Remplace les « À compléter » par la fiche de l'autre personnage, et son portrait par `public/img/Apparence-2.jpg`.
-Pour changer le titre de sa couverture en 3D, modifie `THEMES.second` dans `public/js/scene/textures.js`.
+C'est un carnet vierge (couverture indigo, pages réglées sans texte), dans `index.html` :
+`<section class="book-source" data-book="second">`. Pour l'écrire plus tard, remplace les pages
+vierges par des `<section class="page">` comme dans le premier carnet. Le titre de sa couverture 3D
+est dans `THEMES.second` (`public/js/scene/textures.js`).
 
 ## Ce que fait le site
 
