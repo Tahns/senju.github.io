@@ -14,21 +14,24 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
 4. Le visiteur lit le carnet, puis clique sur **Ranger** : Hoko remet le livre en place et le redresse du bout du doigt.
 5. Il prend un deuxième carnet (vierge), le feuillette, le range.
 6. Il s'allonge sur son futon, regarde les étoiles par la fenêtre ouverte, la boîte à musique ralentit, ses yeux se ferment…
-7. **Le rêve** (à la troisième personne) : Hoko adulte, jōnin de Konoha, sur un rocher d'entraînement au-dessus du village. Maître du sabre, maître du Suiton, et chef de la section économique : une pluie de ryō remplit le trésor du village… et ses poches.
+7. **Le rêve** (à la troisième personne) : Hoko adulte, jōnin de Konoha, sur un rocher d'entraînement au-dessus du village. Maître du sabre (croissants de lumière, poteaux tranchés), maître du Suiton (un dragon d'eau s'enroule autour de lui puis jaillit), et chef de la section économique : une pluie de ryō dorés remplit le trésor du village… et ses poches.
+8. Carte de fin : recommencer, **revoir le rêve** ou relire le carnet.
 
 - Bouton son en haut à droite : volumes Musique / Ambiance / Effets, mémorisés.
 - Style des écrans inspiré des serveurs Naruto RP (lettrage pinceau, violet et magenta), rêve au rendu lisse façon Zenkai RP : ombrage doux, herbe qui ondule, profondeur de champ et halo lumineux. Konoha est construit en entier : rues en terre, maisons à étages en bois et enduit, balcons, auvents, enseignes, réservoirs d'eau ronds, poteaux électriques, arbres touffus, tour du Hokage et mont des Hokage.
 - Bruitages et musique générés (pas, porte, livres, boîte à musique, grillons, taiko et flûte dans le rêve), activés par défaut, avec un bouton pour couper le son.
 - Bouton **Passer** pour accélérer jusqu'au prochain livre, lien « Aller directement au carnet » sur l'écran d'accueil.
-- Tout est dessiné en code (aucune image) : `public/js/scene/`.
+- Tout est dessiné en code (aucune image, sauf l'aperçu de partage `public/img/og.jpg`) : `public/js/scene/`.
   - `room.js` : la chambre (tatamis, porte, bibliothèque, futon, lanterne, fenêtre…)
   - `arms.js` : les bras et les mains
   - `main.js` : le scénario, étape par étape (facile à modifier)
-  - `dream.js`, `ninja.js` : le rêve et Hoko adulte
-  - `village.js`, `post.js` : Konoha (fusionné par matériau pour rester léger) et le post-traitement du rêve
+  - `dream.js`, `ninja.js` : le rêve et Hoko adulte (tenue de jōnin, clignements, respiration, cheveux au vent)
+  - `sdf.js`, `sculpt.js`, `head.js`, `head-worker.js` : la tête et la chevelure sculptées d'un bloc (calculées en arrière-plan)
+  - `village.js`, `post.js` : Konoha (fusionné par matériau pour rester léger, villageois, oiseaux) et le post-traitement du rêve
   - `audio.js` : sons et musiques
   - `radio.js` : la musique YouTube (pour la changer, modifie `VIDEO` et le titre dans `index.html`)
-- Sans WebGL (vieux navigateurs), ou avec un lien direct `#page-5`, le carnet s'affiche directement.
+- Sans WebGL (vieux navigateurs), si le processeur graphique lâche, ou avec un lien direct `#page-5`, le carnet s'affiche directement.
+- Suivi des améliorations : `docs/SWOT.md` (forces, faiblesses, plan) et `docs/JOURNAL.md`.
 - Après chaque modification des fichiers JS/CSS : `python3 tools/version.py` (numéros de version anti-cache dans index.html).
 - Qualité : automatique (palier « mobile » sur écran tactile), ou forcée avec `?quality=low`, `?quality=mobile` ou `?quality=high`.
 - Pour tester une étape : `?at=shelf`, `?at=second`, `?at=bed` ou `?at=dream`, et `?speed=3` pour accélérer.
@@ -80,4 +83,3 @@ Sans image, le cadre affiche « Portrait à venir ».
 | `public/js/scene/` | Scène 3D de la chambre |
 | `public/vendor/` | Three.js (moteur 3D, licence MIT) |
 
-Base d'origine : Akuma.
