@@ -27,6 +27,9 @@ export function faceTexture(closed = false) {
     // Joues rosées, léger creux sous la lèvre, ombre douce du front sous le bandeau.
     [-1, 1].forEach((s) => soft(512 + s * 205, 700, 110, 'rgba(238,125,105,.16)'));
     soft(512, 860, 50, 'rgba(170,95,75,.12)');
+    // Modelé des joues et de la mâchoire, lumière sur l'arête du nez et le front.
+    [-1, 1].forEach((s) => soft(512 + s * 300, 780, 130, 'rgba(165,95,75,.16)'));
+    soft(512, 600, 40, 'rgba(255,235,220,.22)');
     const g = ctx.createLinearGradient(0, 330, 0, 430);
     g.addColorStop(0, 'rgba(150,90,70,.22)');
     g.addColorStop(1, 'rgba(150,90,70,0)');

@@ -922,9 +922,85 @@ export function buildVillage({ low = false } = {}) {
     const leaves = foliage.build(group, time);
     farFoliage.build(group, time).castShadow = false;
 
+    /* ----- Villageois qui marchent dans les rues ----- */
+    const walkers = [];
+    const people = 46;
+    const bodyGeo = new THREE.CapsuleGeometry(0.22, 0.85, 6, 12);
+    bodyGeo.translate(0, 0.65, 0);
+    const headGeo = new THREE.SphereGeometry(0.15, 14, 10);
+    headGeo.translate(0, 1.42, 0);
+    const bodies = new THREE.InstancedMesh(bodyGeo, new THREE.MeshStandardMaterial({ roughness: 0.85 }), people);
+    const heads = new THREE.InstancedMesh(headGeo, new THREE.MeshStandardMaterial({ roughness: 0.7 }), people);
+    const robes = ['#2b3a67', '#6a2f3a', '#3f5f3a', '#7a5a2e', '#e8e2d4', '#4a4a52', '#1f2a44', '#8a3c2a'];
+    const hairs = ['#1c1410', '#3a2618', '#d9c27a', '#6a3a22', '#2a2a30', '#b8452f'];
+    const color = new THREE.Color();
+    for (let i = 0; i < people; i++) {
+        const alongX = random() < 0.6;
+        const lines = alongX ? streetsZ.slice(1, 6) : streetsX.filter((x) => Math.abs(x) < 70);
+        const line = lines[Math.floor(random() * lines.length)] + (random() < 0.5 ? -1 : 1) * (0.8 + random() * 1.2);
+        walkers.push({ alongX, line, pos: (random() - 0.5) * 180, speed: (0.9 + random() * 0.8) * (random() < 0.5 ? -1 : 1), phase: random() * 6 });
+        bodies.setColorAt(i, color.set(robes[Math.floor(random() * robes.length)]));
+        heads.setColorAt(i, color.set(hairs[Math.floor(random() * hairs.length)]));
+    }
+    [bodies, heads].forEach((m) => {
+        m.castShadow = true;
+        m.frustumCulled = false;
+        group.add(m);
+    });
+    const dummy = new THREE.Object3D();
+    function walk(dt, t) {
+        walkers.forEach((w, i) => {
+            w.pos += w.speed * dt;
+            const limit = w.alongX ? 105 : 60;
+            if (w.pos > limit) w.pos = -limit;
+            if (w.pos < -limit) w.pos = limit;
+            const x = w.alongX ? w.pos : w.line;
+            const z = w.alongX ? w.line : -40 + w.pos;
+            // On évite le rocher et les grands bâtiments : on se cache sous le sol.
+            const hidden = !free(x, z, 0.5);
+            dummy.position.set(x, hidden ? -3 : Math.abs(Math.sin(t * 5.5 + w.phase)) * 0.06, z);
+            dummy.rotation.set(0, w.alongX ? (w.speed > 0 ? Math.PI / 2 : -Math.PI / 2) : (w.speed > 0 ? 0 : Math.PI), Math.sin(t * 5.5 + w.phase) * 0.04);
+            dummy.updateMatrix();
+            bodies.setMatrixAt(i, dummy.matrix);
+            heads.setMatrixAt(i, dummy.matrix);
+        });
+        bodies.instanceMatrix.needsUpdate = true;
+        heads.instanceMatrix.needsUpdate = true;
+    }
+
+    /* ----- Oiseaux qui tournent au-dessus du village ----- */
+    const birdGeo = new THREE.BufferGeometry();
+    birdGeo.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0.25, -0.9, 0.15, -0.1, 0, 0, -0.2, 0, 0, 0.25, 0.9, 0.15, -0.1, 0, 0, -0.2], 3));
+    birdGeo.computeVertexNormals();
+    const birdMat = new THREE.MeshBasicMaterial({ color: '#2a2622', side: THREE.DoubleSide });
+    const birds = Array.from({ length: 9 }, (_, i) => {
+        const b = new THREE.Mesh(birdGeo.clone(), birdMat);
+        b.userData = { r: 25 + random() * 30, h: 26 + random() * 14, w: 0.18 + random() * 0.12, a: random() * 6.28, cx: (random() - 0.5) * 40, cz: -45 + (random() - 0.5) * 30, flap: 7 + random() * 3 };
+        b.scale.setScalar(0.9 + (i % 3) * 0.2);
+        group.add(b);
+        return b;
+    });
+    function fly(dt, t) {
+        birds.forEach((b) => {
+            const u = b.userData;
+            const a = u.a + t * u.w;
+            b.position.set(u.cx + Math.cos(a) * u.r, u.h + Math.sin(t * 0.7 + u.a) * 1.5, u.cz + Math.sin(a) * u.r);
+            b.rotation.set(0, -a, 0.35);
+            const f = Math.sin(t * u.flap + u.a);
+            const p = b.geometry.attributes.position;
+            p.setY(1, 0.15 + f * 0.45);
+            p.setY(4, 0.15 + f * 0.45);
+            p.needsUpdate = true;
+        });
+    }
+
     return {
         group,
-        update(dt, t) { time.value = t; },
+        update(dt, t) {
+            time.value = t;
+            walk(dt, t);
+            fly(dt, t);
+        },
         leaves
     };
 }

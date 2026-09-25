@@ -599,7 +599,7 @@ export function buildDream(renderer, { low = false, mobile = false, head } = {})
                 return;
             }
             ninja.J.head.getWorldPosition(focusPoint);
-            post.focus = Math.max(1.5, camera.position.distanceTo(focusPoint));
+            post.focus = Math.max(0.3, camera.position.distanceTo(focusPoint));
             post.render(scene, camera);
         },
         degrade() { post = null; },

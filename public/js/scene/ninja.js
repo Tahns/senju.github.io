@@ -257,7 +257,7 @@ export function buildNinja(sculpt) {
     /* ---------------- Tête (sculptée d'un bloc) et chevelure ---------------- */
     J.neck = joint(J.spine, 0, 0.6, 0);
     J.head = joint(J.neck, 0, 0.05, 0.006);
-    J.head.scale.setScalar(1.06);
+    J.head.scale.setScalar(1.12);
     mesh(sculpt.head, M.head, J.head, 0, 0.11, 0);
     mesh(sculpt.hair, M.hair, J.head, 0, 0.11, 0);
     mesh(sculpt.band, M.band, J.head, 0, 0.11, 0);
