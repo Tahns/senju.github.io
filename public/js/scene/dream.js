@@ -238,6 +238,7 @@ export function buildDream(renderer, { low = false, head } = {}) {
     scene.add(ninja.root);
     updaters.push((dt, time) => {
         ninja.J.spine.position.y = 0.12 + Math.sin(time * 1.8) * 0.006;
+        ninja.live(time);
         ninja.plantFeet();
     });
 

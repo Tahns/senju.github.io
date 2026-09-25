@@ -1,0 +1,17 @@
+# Journal des améliorations autonomes
+
+Chaque relance : une faiblesse du [SWOT](SWOT.md) corrigée, testée (parcours
+complet + captures), publiée (PR fusionnée, déploiement vérifié).
+
+## Vendredi 25 septembre
+
+- **Rendu lisse façon Zenkai RP** (PR #9) : village de Konoha détaillé,
+  herbe, ciel, profondeur de champ, halo ; plus de contours noirs.
+- **Tenue d'après les modèles jōnin** et **tête sculptée d'un bloc** (PR #10) :
+  gilet olive à col montant, poches, pantalon droit ; tête, visage et
+  chevelure fondus en une seule surface, calculés dans un worker.
+- SWOT rédigé.
+- **Vie du personnage** : clignements (visage yeux fermés), respiration,
+  regard qui flâne, pans du bandeau qui flottent.
+- **Chargement** : pourcentage réel sur le bouton « Chargement… ».
+- **Carte de fin** : lien « Revoir le rêve ».

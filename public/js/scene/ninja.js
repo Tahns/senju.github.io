@@ -265,9 +265,13 @@ export function buildNinja(sculpt) {
     plate.rotation.x = -0.12;
     // Nœud et pans du bandeau, derrière la tête.
     mesh(new THREE.SphereGeometry(0.016, 16, 12), M.band, J.head, 0, 0.11 + sculpt.plate.y, -sculpt.back - 0.008);
-    [-1, 1].forEach((s) => {
-        const tail = mesh(new RoundedBoxGeometry(0.03, 0.2, 0.006, 2, 0.003), M.band, J.head, s * 0.025, 0.11 + sculpt.plate.y - 0.09, -sculpt.back - 0.02);
-        tail.rotation.set(0.35, 0, s * 0.28);
+    const tails = [-1, 1].map((s) => {
+        // Pivot au nœud : le pan flotte au vent.
+        const pivot = joint(J.head, s * 0.02, 0.11 + sculpt.plate.y, -sculpt.back - 0.015);
+        const tail = mesh(new RoundedBoxGeometry(0.03, 0.2, 0.006, 2, 0.003), M.band, pivot, 0, -0.095, 0);
+        tail.rotation.set(0, 0, 0);
+        pivot.rotation.set(0.35, 0, s * 0.28);
+        return { pivot, s };
     });
 
     /* ---------------- Bras : manches longues, bracelets, mains nues ---------------- */
@@ -339,8 +343,26 @@ export function buildNinja(sculpt) {
     applyPose('crossed');
     root.traverse((o) => { if (o.isMesh) o.frustumCulled = false; });
 
+    // Vie : clignements, respiration, regard qui flâne, pans du bandeau au vent.
+    const faceOpen = M.head.map;
+    const faceClosed = faceTexture(true);
+    let nextBlink = 1.5;
+    function live(time) {
+        const blinking = time > nextBlink && time < nextBlink + 0.13;
+        const map = blinking ? faceClosed : faceOpen;
+        if (M.head.map !== map) M.head.map = map;
+        if (time > nextBlink + 0.13) nextBlink = time + 2.2 + ((Math.sin(time * 12.9898) * 43758.5453) % 1 + 1) % 1 * 3;
+        J.neck.rotation.set(Math.sin(time * 0.6) * 0.025, Math.sin(time * 0.37) * 0.09, Math.sin(time * 0.29) * 0.02);
+        const chest = 1 + Math.sin(time * 1.8) * 0.012;
+        J.spine.scale.set(1, 1, chest);
+        tails.forEach(({ pivot, s }, i) => {
+            pivot.rotation.x = 0.45 + Math.sin(time * 3.1 + i) * 0.12 + Math.sin(time * 7.3 + i * 2) * 0.04;
+            pivot.rotation.z = s * (0.28 + Math.sin(time * 2.3 + i) * 0.08);
+        });
+    }
+
     return {
-        root, J, M, katana, pouch, plate,
+        root, J, M, katana, pouch, plate, live,
         poseValues, currentValues, setValues, plantFeet,
         // Sabre en main / rengainé.
         drawKatana() {
