@@ -162,14 +162,20 @@ export function bindAvatar(gltf, J, parent) {
     saved.forEach((quat, o) => o.quaternion.copy(quat));
     parent.updateMatrixWorld(true);
 
-    // Expressions (formes de VRoid) : clignement, colère, joie.
+    // Expressions : table officielle du modèle (groupes VRM « Blink », « Angry »…),
+    // qui dit quelles formes du visage activer et avec quel poids.
     const faces = [];
-    model.traverse((o) => { if (o.isMesh && o.morphTargetDictionary) faces.push(o); });
-    const morph = (key) => {
-        const hit = faces.map((m) => [m, Object.keys(m.morphTargetDictionary).find((k) => k.endsWith(key))]).filter(([, k]) => k);
-        return (value) => hit.forEach(([m, k]) => { m.morphTargetInfluences[m.morphTargetDictionary[k]] = value; });
+    model.traverse((o) => { if (o.isMesh && o.morphTargetInfluences) faces.push(o); });
+    const groups = ((gltf.parser.json.extensions || {}).VRM || {}).blendShapeMaster?.blendShapeGroups || [];
+    const meshIndex = (o) => (gltf.parser.associations.get(o) || {}).meshes;
+    const morph = (group) => {
+        const g = groups.find((x) => x.name.toLowerCase() === group.toLowerCase());
+        if (!g) return () => {};
+        const targets = [];
+        g.binds.forEach((bind) => faces.forEach((m) => { if (meshIndex(m) === bind.mesh) targets.push([m, bind.index, bind.weight / 100]); }));
+        return (value) => targets.forEach(([m, i, w]) => { m.morphTargetInfluences[i] = value * w; });
     };
-    const expressions = { blink: morph('Fcl_EYE_Close'), angry: morph('Fcl_ALL_Angry'), joy: morph('Fcl_ALL_Joy'), fun: morph('Fcl_ALL_Fun') };
+    const expressions = { blink: morph('Blink'), angry: morph('Angry'), joy: morph('Joy'), fun: morph('Fun') };
 
     // Doigts : repliés vers la paume (main détendue, ou poing fermé sur la poignée).
     // Côté « L » du modèle = main droite du personnage (x > 0).
@@ -187,11 +193,24 @@ export function bindAvatar(gltf, J, parent) {
     curl('L', 0.35);
     curl('R', 0.35);
 
+    // Mèches (os « HairJoint » de VRoid) : elles ondulent au vent.
+    const hairBones = [];
+    model.traverse((o) => { if (o.isBone && o.name.startsWith('HairJoint')) hairBones.push({ b: o, q: o.quaternion.clone(), k: hairBones.length }); });
+    const sway = new THREE.Quaternion();
+    const euler = new THREE.Euler();
+
     const target = new THREE.Quaternion();
     const pos = new THREE.Vector3();
     return {
         model,
         expressions,
+        bone,
+        wind(time) {
+            hairBones.forEach(({ b, q, k }) => {
+                euler.set(Math.sin(time * 2.1 + k * 0.7) * 0.05, 0, Math.sin(time * 1.6 + k * 1.3) * 0.06);
+                b.quaternion.copy(q).multiply(sway.setFromEuler(euler));
+            });
+        },
         // Main droite (sabre) ou gauche : 0 = détendue, 1 = poing fermé.
         grip(hand, closed) { curl(hand === 'right' ? 'L' : 'R', closed ? 1.25 : 0.35); },
         head: pairs.find((p) => p.joint === J.head).bone,

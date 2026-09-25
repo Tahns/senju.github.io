@@ -28,9 +28,9 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
 
 | # | Faiblesse | Visibilité | Piste |
 |---|-----------|-----------|-------|
-| F1 | Tourbillon rouge du dos coupé en deux par la couture du vêtement | Forte (vue de dos) | Le poser en décalque 3D sur le dos |
-| F2 | Reste de capuche : un gros col bleu nuit derrière la nuque | Moyenne | Replier davantage ses os ou le masquer dans la texture |
-| F3 | Visage toujours neutre : pas d'expression pendant les actes | Moyenne | Colère/détermination au sabre, joie sous la pluie de ryō (formes déjà présentes) |
+| F1 | ~~Tourbillon rouge du dos coupé en deux~~ | — | Corrigé : décalque 3D sur le dos |
+| F2 | ~~Reste de capuche~~ | — | Corrigé : capuche masquée, col montant olive du gilet |
+| F3 | ~~Visage toujours neutre~~ | — | Corrigé : détermination au sabre et au Suiton, joie sous les ryō, sourire final ; clignements réparés |
 | F4 | Bras de la chambre (première personne) encore procéduraux, d'un autre style que Hoko adulte | Moyenne | Réutiliser les mains/manches du modèle |
 | F5 | Portrait de la fiche vide (« Portrait à venir ») + erreur 404 dans la console | Moyenne | Image du joueur, ou portrait tiré du modèle |
 | F6 | L'aperçu Claude (artifact) n'affiche pas le modèle (format .vrm refusé) : tête de secours | Faible (le site est la référence) | Servir le modèle sous un format accepté |
