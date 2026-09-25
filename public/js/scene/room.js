@@ -384,17 +384,66 @@ export function buildRoom(scene) {
         box(tansu, 0.005, 0.005, 0.76, darkWood, 0.212, y + 0.11, 0);
         box(tansu, 0.012, 0.03, 0.09, iron, 0.215, y, 0);
     });
-    const pot = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.08, 0.07, 20), new THREE.MeshStandardMaterial({ color: '#3b2a24', roughness: 0.5 })));
-    pot.position.set(0, 0.855, 0.22);
+    // Bonsaï : pot rectangulaire émaillé, mousse, tronc tortueux, coussins de feuillage.
+    const potMat = new THREE.MeshStandardMaterial({ color: '#2f3b4a', roughness: 0.25, metalness: 0.1 });
+    const pot = shadowy(new THREE.Mesh(new RoundedBoxGeometry(0.22, 0.055, 0.15, 3, 0.012), potMat));
+    pot.position.set(0, 0.85, 0.22);
     tansu.add(pot);
-    const trunk = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.022, 0.16, 6), darkWood));
-    trunk.position.set(0.01, 0.95, 0.22);
-    trunk.rotation.z = 0.3;
-    tansu.add(trunk);
-    const leafMat = new THREE.MeshStandardMaterial({ color: '#34502a', roughness: 0.9 });
-    [[-0.05, 1.04, 0.22, 0.07], [0.04, 1.06, 0.19, 0.06], [0.0, 1.1, 0.26, 0.05]].forEach(([x, y, z, r]) => {
-        const f = shadowy(new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), leafMat));
-        f.scale.y = 0.6;
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => {
+        const foot = new THREE.Mesh(new RoundedBoxGeometry(0.03, 0.014, 0.025, 2, 0.005), potMat);
+        foot.position.set(sx * 0.08, 0.823, 0.22 + sz * 0.05);
+        tansu.add(foot);
+    });
+    const moss = new THREE.Mesh(new THREE.SphereGeometry(0.1, 32, 8, 0, Math.PI * 2, 0, 0.5), new THREE.MeshStandardMaterial({ color: '#34481f', roughness: 1 }));
+    moss.scale.set(0.95, 0.22, 0.6);
+    moss.position.set(0, 0.864, 0.22);
+    tansu.add(moss);
+    const bark = new THREE.MeshStandardMaterial({ color: '#4a3526', roughness: 0.95 });
+    const trunkCurve = new THREE.CatmullRomCurve3([[0.02, 0.87, 0.22], [0.035, 0.93, 0.225], [-0.015, 0.99, 0.215], [-0.04, 1.04, 0.22], [0.0, 1.09, 0.225]].map(([x, y, z]) => new THREE.Vector3(x, y, z)));
+    const trunkGeo = new THREE.TubeGeometry(trunkCurve, 32, 0.018, 10, false);
+    // Le tronc s'affine vers le haut.
+    const tp = trunkGeo.attributes.position;
+    for (let i = 0; i <= 32; i++) {
+        const c = trunkCurve.getPointAt(i / 32);
+        const k = 1 - (i / 32) * 0.6;
+        for (let j = 0; j <= 10; j++) {
+            const idx = i * 11 + j;
+            tp.setXYZ(idx, c.x + (tp.getX(idx) - c.x) * k, c.y + (tp.getY(idx) - c.y) * k, c.z + (tp.getZ(idx) - c.z) * k);
+        }
+    }
+    trunkGeo.computeVertexNormals();
+    tansu.add(shadowy(new THREE.Mesh(trunkGeo, bark)));
+    const leafTex = (() => {
+        const c = document.createElement('canvas');
+        c.width = c.height = 128;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#3d5a2a';
+        ctx.fillRect(0, 0, 128, 128);
+        for (let i = 0; i < 700; i++) {
+            ctx.fillStyle = ['#2c4420', '#4f7334', '#5e8440', '#36522a'][i % 4];
+            ctx.beginPath();
+            ctx.ellipse(Math.random() * 128, Math.random() * 128, 2.5, 1.2, Math.random() * 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        const t = new THREE.CanvasTexture(c);
+        t.colorSpace = THREE.SRGBColorSpace;
+        return t;
+    })();
+    const leafMat = new THREE.MeshStandardMaterial({ map: leafTex, roughness: 0.9 });
+    [[-0.07, 1.04, 0.22, 0.075], [0.06, 1.0, 0.2, 0.06], [0.0, 1.1, 0.23, 0.06], [-0.02, 0.97, 0.26, 0.045]].forEach(([x, y, z, r]) => {
+        const g = new THREE.SphereGeometry(r, 32, 16);
+        // Coussin irrégulier : bosses douces à la surface.
+        const gp = g.attributes.position;
+        for (let i = 0; i < gp.count; i++) {
+            const vx = gp.getX(i);
+            const vy = gp.getY(i);
+            const vz = gp.getZ(i);
+            const bump = 1 + 0.12 * Math.sin(vx * 90 + vz * 60) * Math.sin(vy * 70 + vx * 40);
+            gp.setXYZ(i, vx * bump, vy * bump, vz * bump);
+        }
+        g.computeVertexNormals();
+        const f = shadowy(new THREE.Mesh(g, leafMat));
+        f.scale.y = 0.55;
         f.position.set(x, y, z);
         tansu.add(f);
     });
