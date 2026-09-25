@@ -285,10 +285,10 @@ export function buildDream(renderer, { low = false, head } = {}) {
     });
 
     const coinTex = coinTexture();
-    const goldSide = new THREE.MeshStandardMaterial({ color: '#e7b845', metalness: 0.9, roughness: 0.3, emissive: new THREE.Color('#5a3a08'), emissiveIntensity: 0.35 });
-    const goldFace = new THREE.MeshStandardMaterial({ color: '#f5cc5c', metalness: 0.9, roughness: 0.25, emissive: new THREE.Color('#6a4508'), emissiveIntensity: 0.4, alphaMap: coinTex, alphaTest: 0.5, side: THREE.DoubleSide });
+    const goldSide = new THREE.MeshStandardMaterial({ color: '#f0c24a', metalness: 0.75, roughness: 0.28, emissive: new THREE.Color('#9a6a10'), emissiveIntensity: 0.55 });
+    const goldFace = new THREE.MeshStandardMaterial({ color: '#ffd766', metalness: 0.75, roughness: 0.22, emissive: new THREE.Color('#a8740f'), emissiveIntensity: 0.6, alphaMap: coinTex, alphaTest: 0.5, side: THREE.DoubleSide });
     const coinCount = 260;
-    const coinMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.06, 0.06, 0.009, 22), [goldSide, goldFace, goldFace], coinCount);
+    const coinMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.085, 0.085, 0.012, 28), [goldSide, goldFace, goldFace], coinCount);
     coinMesh.castShadow = true;
     coinMesh.frustumCulled = false;
     scene.add(coinMesh);
@@ -307,6 +307,7 @@ export function buildDream(renderer, { low = false, head } = {}) {
             const a = random() * Math.PI * 2;
             const r = random() * 2.2;
             c.active = true;
+            c.floor = 0.09 + random() * 0.08;
             c.resting = false;
             c.collect = false;
             c.p.set(Math.cos(a) * r, 5 + random() * 3, Math.sin(a) * r + 0.3);
@@ -331,8 +332,9 @@ export function buildDream(renderer, { low = false, head } = {}) {
                     c.rot.x += c.spin.x * dt;
                     c.rot.y += c.spin.y * dt;
                     c.rot.z += c.spin.z * dt;
-                    if (c.p.y < 0.004) {
-                        c.p.y = 0.004;
+                    // Les pièces se posent sur l'herbe (brins de 7 à 19 cm).
+                    if (c.p.y < c.floor) {
+                        c.p.y = c.floor;
                         if (Math.abs(c.v.y) < 1.2) {
                             c.resting = true;
                             c.rot.set(0, c.rot.y, (random() - 0.5) * 0.1);
@@ -352,6 +354,31 @@ export function buildDream(renderer, { low = false, head } = {}) {
             coinMesh.setMatrixAt(i, dummy.matrix);
         });
         coinMesh.instanceMatrix.needsUpdate = true;
+    });
+
+    // Paillettes d'or et lueur chaude pendant la pluie de ryō.
+    const glitterCount = 240;
+    const glitterPos = new Float32Array(glitterCount * 3);
+    const glitterGeo = new THREE.BufferGeometry();
+    glitterGeo.setAttribute('position', new THREE.BufferAttribute(glitterPos, 3));
+    const glitterMat = new THREE.PointsMaterial({ color: '#ffd86a', size: 0.06, map: dot(), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+    const glitter = new THREE.Points(glitterGeo, glitterMat);
+    glitter.frustumCulled = false;
+    scene.add(glitter);
+    const glitterSeeds = Array.from({ length: glitterCount }, () => ({ a: random() * Math.PI * 2, r: random() * 2.4, h: random(), s: 0.4 + random() * 0.8 }));
+    const goldLight = new THREE.PointLight('#ffcf6a', 0, 7, 1.5);
+    goldLight.position.set(0, 3, 0.8);
+    scene.add(goldLight);
+    updaters.push((dt, time) => {
+        if (glitterMat.opacity <= 0) return;
+        glitterSeeds.forEach((g, i) => {
+            const y = 5.5 - ((time * g.s + g.h * 6) % 6);
+            glitterPos[i * 3] = Math.cos(g.a + time * 0.3) * g.r;
+            glitterPos[i * 3 + 1] = y;
+            glitterPos[i * 3 + 2] = Math.sin(g.a + time * 0.3) * g.r + 0.3;
+        });
+        glitterGeo.attributes.position.needsUpdate = true;
+        glitterMat.size = 0.05 + Math.sin(time * 9) * 0.015;
     });
 
     // Pièce lancée d'une pichenette, qui retombe dans la main.
@@ -445,9 +472,10 @@ export function buildDream(renderer, { low = false, head } = {}) {
         await pose(tl, 'stand', 0.4);
 
         // 4. Chef de la section économique : une pluie de ryō.
-        await shot(tl, V(2.6, 2.3, 4.6), V(0, 1.1, 0.3), 1.2);
+        await shot(tl, V(1.9, 1.75, 3.5), V(0, 1.15, 0.2), 1.2);
         say('Chef de la section économique de Konoha', 4);
         hud.hidden = false;
+        tl.tween(1.2, (k) => { glitterMat.opacity = 0.9 * k; goldLight.intensity = 2.2 * k; });
         spawnRate = 45;
         sound.coins(60, 3);
         const counting = tl.tween(8.5, (k) => counters(k), ease.inOut);
@@ -476,6 +504,7 @@ export function buildDream(renderer, { low = false, head } = {}) {
         // 5. Final : il croise les bras, le soleil se couche sur Konoha.
         spawnRate = 0;
         collecting = false;
+        tl.tween(2, (k) => { glitterMat.opacity = 0.9 * (1 - k); goldLight.intensity = 2.2 * (1 - k); });
         pose(tl, 'crossed', 0.8);
         say('Un jour…', 3.5);
         await shot(tl, V(-2.5, 4.8, 9.5), V(0, 1.2, -2), 5.5, ease.sine);
