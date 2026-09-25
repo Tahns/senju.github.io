@@ -71,7 +71,7 @@ function rockColumn(random) {
     return geo;
 }
 
-export function buildDream(renderer, { low = false } = {}) {
+export function buildDream(renderer, { low = false, head } = {}) {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 420);
     scene.fog = new THREE.Fog('#dfe0d6', 70, 270);
@@ -234,7 +234,7 @@ export function buildDream(renderer, { low = false } = {}) {
     });
 
     /* ---------------- Hoko adulte ---------------- */
-    const ninja = buildNinja();
+    const ninja = buildNinja(head);
     scene.add(ninja.root);
     updaters.push((dt, time) => {
         ninja.J.spine.position.y = 0.12 + Math.sin(time * 1.8) * 0.006;
