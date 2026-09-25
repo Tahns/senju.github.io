@@ -12,6 +12,7 @@ import { Timeline, ease } from './timeline.js';
 import { setAnisotropy } from './textures.js';
 import { SceneAudio } from './audio.js';
 import { buildDream } from './dream.js';
+import { loadHead } from './head.js';
 import { Radio } from './radio.js';
 
 const html = document.documentElement;
@@ -547,17 +548,23 @@ async function start() {
         pockets.textContent = ryo(k * k * k * 9750000);
     }
 
+    // La tête de Hoko adulte se sculpte en arrière-plan dès maintenant.
+    const headReady = loadHead();
+    let dreamReady = null;
     function prepareDream() {
-        if (!dream) {
-            dream = buildDream(renderer, { low });
-            window.__scene.dream = dream;
-            dream.resize(window.innerWidth / window.innerHeight);
-            renderer.compile(dream.scene, dream.camera);
+        if (!dreamReady) {
+            dreamReady = headReady.then((head) => {
+                dream = buildDream(renderer, { low, head });
+                window.__scene.dream = dream;
+                dream.resize(window.innerWidth / window.innerHeight);
+                renderer.compile(dream.scene, dream.camera);
+            });
         }
+        return dreamReady;
     }
 
     async function dreamSequence() {
-        prepareDream();
+        await prepareDream();
         say('Et il rêva…', 2.6);
         await timeline.wait(2.4);
         dreaming = true;
