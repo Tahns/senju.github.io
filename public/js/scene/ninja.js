@@ -108,29 +108,129 @@ function addOutlines(root) {
     });
 }
 
+// Visage anime : grands yeux (reflets, cils), sourcils, nez et bouche discrets.
+const faceTexture = () => canvasTex(512, 512, (ctx, w, h) => {
+    ctx.clearRect(0, 0, w, h);
+    const eye = (cx, flip) => {
+        const cy = 272;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(flip * 1.5, 1.5);
+        // Blanc de l'œil.
+        ctx.fillStyle = '#fbf8f4';
+        ctx.beginPath();
+        ctx.moveTo(-44, 6);
+        ctx.quadraticCurveTo(-30, -30, 18, -26);
+        ctx.quadraticCurveTo(40, -20, 46, 0);
+        ctx.quadraticCurveTo(20, 30, -20, 26);
+        ctx.quadraticCurveTo(-40, 22, -44, 6);
+        ctx.fill();
+        // Iris brun foncé (Senju), pupille, reflets.
+        const g = ctx.createLinearGradient(0, -26, 0, 26);
+        g.addColorStop(0, '#1d120c');
+        g.addColorStop(1, '#6b4128');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.ellipse(2, 0, 20, 26, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#0c0706';
+        ctx.beginPath();
+        ctx.ellipse(2, 2, 9, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.ellipse(-6, -10, 6, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(9, 10, 3, 0, Math.PI * 2);
+        ctx.fill();
+        // Trait de cils épais au-dessus.
+        ctx.strokeStyle = '#140c0a';
+        ctx.lineWidth = 9;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-48, 8);
+        ctx.quadraticCurveTo(-30, -34, 20, -29);
+        ctx.quadraticCurveTo(42, -24, 50, -4);
+        ctx.stroke();
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-18, 27);
+        ctx.quadraticCurveTo(14, 30, 36, 14);
+        ctx.stroke();
+        ctx.restore();
+        // Sourcil déterminé.
+        ctx.save();
+        ctx.translate(cx, cy - 78);
+        ctx.scale(flip * 1.35, 1.2);
+        ctx.fillStyle = '#24160f';
+        ctx.beginPath();
+        ctx.moveTo(-46, 12);
+        ctx.quadraticCurveTo(0, -12, 48, 2);
+        ctx.lineTo(46, 12);
+        ctx.quadraticCurveTo(0, -2, -44, 20);
+        ctx.fill();
+        ctx.restore();
+    };
+    eye(160, -1);
+    eye(352, 1);
+    ctx.strokeStyle = 'rgba(150,80,60,.55)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(262, 338);
+    ctx.lineTo(252, 362);
+    ctx.lineTo(264, 364);
+    ctx.stroke();
+    ctx.strokeStyle = '#6e3a2c';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(234, 404);
+    ctx.quadraticCurveTo(256, 410, 280, 402);
+    ctx.stroke();
+});
+
+// Bandes blanches (tibias, cuisse).
+const bandageTexture = () => canvasTex(64, 64, (ctx, w, h) => {
+    ctx.fillStyle = '#f1efe9';
+    ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = 'rgba(120,120,130,.45)';
+    ctx.lineWidth = 2;
+    for (let y = -64; y < 128; y += 12) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y + 20);
+        ctx.stroke();
+    }
+});
+
 export function buildNinja() {
     const ramp = toonRamp();
     const mat = (color, roughness = 0.8, extra = {}) => new THREE.MeshToonMaterial({ color, gradientMap: ramp, ...extra });
+    const bandTex = bandageTexture();
+    bandTex.wrapS = bandTex.wrapT = THREE.RepeatWrapping;
+    bandTex.repeat.set(3, 3);
     const M = {
-        skin: mat('#f0c7a6'),
-        cloth: mat('#26305a'),
+        skin: mat('#f2c9a8'),
+        cloth: mat('#252d57'),
+        clothDark: mat('#1a2044'),
         vest: mat('#7cbfae'),
         vestDark: mat('#5d9f8e'),
         apron: mat('#ffffff', 0.8, { map: apronTexture(), side: THREE.DoubleSide }),
         swirl: mat('#ffffff', 0.8, { map: swirlTexture() }),
-        hair: mat('#23160f', 0.7),
-        band: mat('#1b2033', 0.8),
+        face: mat('#ffffff', 0.8, { map: faceTexture(), transparent: true, alphaTest: 0.5 }),
+        hair: mat('#2b1a12'),
+        band: mat('#1c2350'),
         plate: new THREE.MeshStandardMaterial({ map: plateTexture(), metalness: 0.85, roughness: 0.28 }),
-        sandal: mat('#2a2522', 0.7),
-        belt: mat('#7a1e18', 0.7),
-        leather: mat('#6b4526', 0.6),
+        guard: mat('#3b3f4a'),
+        glove: mat('#16161c'),
+        bandage: mat('#ffffff', 0.8, { map: bandTex }),
+        sandal: mat('#1f2a5c'),
+        leather: mat('#7a4d2a'),
         gold: new THREE.MeshStandardMaterial({ color: '#e0b34a', metalness: 1, roughness: 0.3 }),
         black: new THREE.MeshStandardMaterial({ color: '#0d0c0c', roughness: 0.25, metalness: 0.2 }),
         steel: new THREE.MeshStandardMaterial({ color: '#dfe6ec', metalness: 1, roughness: 0.15 }),
-        eye: mat('#1a1410', 0.3),
-        white: mat('#f2eee6', 0.6)
+        eye: mat('#141020')
     };
-    M.eye.color.set('#141020');
     const shadow = (m) => { m.castShadow = true; m.receiveShadow = true; return m; };
     const mesh = (geo, m, parent, x = 0, y = 0, z = 0) => {
         const o = shadow(new THREE.Mesh(geo, m));
@@ -138,11 +238,10 @@ export function buildNinja() {
         parent.add(o);
         return o;
     };
-    const capsule = (r, len, m, parent, y) => {
-        // Segment de membre qui descend depuis l'articulation.
-        const g = new THREE.CapsuleGeometry(r, len, 6, 12);
+    const capsule = (r, len, m, parent, y = 0) => {
+        const g = new THREE.CapsuleGeometry(r, len, 6, 14);
         g.translate(0, -len / 2 - r * 0.3, 0);
-        return mesh(g, m, parent, 0, y || 0, 0);
+        return mesh(g, m, parent, 0, y, 0);
     };
     const joint = (parent, x, y, z) => {
         const g = new THREE.Group();
@@ -150,102 +249,140 @@ export function buildNinja() {
         parent.add(g);
         return g;
     };
+    const Y = new THREE.Vector3(0, 1, 0);
 
     const root = new THREE.Group();
     const J = {};
+
+    /* ---------------- Bassin, tablier, bourse ---------------- */
     J.hips = joint(root, 0, 0.98, 0);
-    mesh(new RoundedBoxGeometry(0.34, 0.2, 0.22, 3, 0.07), M.cloth, J.hips, 0, 0.02, 0);
-    mesh(new THREE.CylinderGeometry(0.175, 0.175, 0.07, 20), M.belt, J.hips, 0, 0.1, 0);
-
-    // Tablier violet à losanges blancs, autour des hanches.
-    const apron = mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.55, 24, 1, true), M.apron, J.hips, 0, -0.2, 0);
+    mesh(new THREE.CapsuleGeometry(0.15, 0.08, 6, 16), M.cloth, J.hips, 0, 0.03, 0).scale.set(1.15, 1, 0.8);
+    mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.06, 24), M.clothDark, J.hips, 0, 0.11, 0).scale.z = 0.78;
+    // Tablier violet à losanges, ouvert devant (comme les jōnin du serveur).
+    const apron = mesh(new THREE.CylinderGeometry(0.2, 0.33, 0.62, 28, 1, true, Math.PI * 0.2, Math.PI * 1.6), M.apron, J.hips, 0, -0.22, 0);
+    apron.scale.z = 0.8;
+    apron.rotation.y = Math.PI;
     apron.userData.noOutline = true;
+    const pouch = joint(J.hips, 0.2, 0.03, -0.06);
+    mesh(new THREE.SphereGeometry(0.07, 18, 14), M.leather, pouch).scale.set(1, 1.15, 0.85);
+    mesh(new THREE.TorusGeometry(0.033, 0.008, 6, 14), M.gold, pouch, 0, 0.07, 0).rotation.x = Math.PI / 2;
 
-    // Bourse de pièces à la ceinture (elle gonfle pendant le rêve).
-    const pouch = joint(J.hips, 0.19, 0.02, 0.07);
-    mesh(new THREE.SphereGeometry(0.075, 18, 14), M.leather, pouch).scale.set(1, 1.15, 0.85);
-    mesh(new THREE.TorusGeometry(0.035, 0.008, 6, 14), M.gold, pouch, 0, 0.075, 0).rotation.x = Math.PI / 2;
-
-    // Jambes.
+    /* ---------------- Jambes ---------------- */
     ['L', 'R'].forEach((side, i) => {
         const s = i === 0 ? -1 : 1;
-        const hip = J['hip' + side] = joint(J.hips, s * 0.1, -0.05, 0);
-        capsule(0.075, 0.36, M.cloth, hip);
-        const knee = J['knee' + side] = joint(hip, 0, -0.45, 0);
-        capsule(0.062, 0.34, M.cloth, knee);
-        // Bandes blanches des tibias (shinobi).
-        mesh(new THREE.CylinderGeometry(0.066, 0.058, 0.16, 14), M.white, knee, 0, -0.32, 0);
+        const hip = J['hip' + side] = joint(J.hips, s * 0.1, -0.03, 0);
+        capsule(0.078, 0.34, M.cloth, hip);
+        if (s > 0) {
+            // Étui à kunai sur la cuisse droite, tenu par une bande blanche.
+            mesh(new THREE.CylinderGeometry(0.083, 0.083, 0.07, 16), M.bandage, hip, 0, -0.24, 0);
+            mesh(new THREE.BoxGeometry(0.07, 0.1, 0.05), M.clothDark, hip, 0.07, -0.25, 0.02).rotation.y = 0.5;
+        }
+        const knee = J['knee' + side] = joint(hip, 0, -0.44, 0);
+        capsule(0.064, 0.33, M.cloth, knee);
+        mesh(new THREE.CylinderGeometry(0.069, 0.058, 0.2, 16), M.bandage, knee, 0, -0.3, 0);
         const foot = J['foot' + side] = joint(knee, 0, -0.44, 0);
-        mesh(new RoundedBoxGeometry(0.11, 0.05, 0.25, 2, 0.02), M.sandal, foot, 0, -0.02, 0.05);
+        mesh(new RoundedBoxGeometry(0.11, 0.03, 0.26, 2, 0.012), M.sandal, foot, 0, -0.035, 0.05);
+        mesh(new RoundedBoxGeometry(0.105, 0.07, 0.13, 2, 0.03), M.sandal, foot, 0, 0.0, -0.01);
+        mesh(new RoundedBoxGeometry(0.09, 0.035, 0.08, 2, 0.015), M.skin, foot, 0, -0.005, 0.13);
     });
 
-    // Buste avec la veste de jōnin.
+    /* ---------------- Buste : veste de jōnin ---------------- */
     J.spine = joint(J.hips, 0, 0.12, 0);
-    mesh(new RoundedBoxGeometry(0.4, 0.5, 0.25, 4, 0.1), M.vest, J.spine, 0, 0.26, 0);
-    mesh(new RoundedBoxGeometry(0.42, 0.14, 0.27, 3, 0.06), M.vestDark, J.spine, 0, 0.47, 0);
-    [-0.09, 0.09].forEach((x) => mesh(new RoundedBoxGeometry(0.09, 0.12, 0.04, 2, 0.015), M.vestDark, J.spine, x, 0.24, 0.135));
-    mesh(new THREE.TorusGeometry(0.11, 0.035, 8, 20), M.vestDark, J.spine, 0, 0.53, 0).rotation.x = Math.PI / 2;
+    const shirt = mesh(new THREE.CapsuleGeometry(0.15, 0.3, 8, 18), M.cloth, J.spine, 0, 0.28, 0);
+    shirt.scale.set(1.2, 1, 0.78);
+    const vest = mesh(new THREE.CylinderGeometry(0.205, 0.175, 0.46, 10), M.vest, J.spine, 0, 0.28, 0);
+    vest.scale.z = 0.72;
+    mesh(new THREE.CylinderGeometry(0.19, 0.205, 0.08, 10), M.vestDark, J.spine, 0, 0.53, 0).scale.z = 0.74;
+    // Poches à rouleaux sur la poitrine.
+    [-1, 1].forEach((sx) => {
+        [0.2, 0.32].forEach((y) => {
+            const p = mesh(new RoundedBoxGeometry(0.085, 0.1, 0.045, 2, 0.015), M.vestDark, J.spine, sx * 0.09, y, 0.125);
+            p.rotation.x = -0.05;
+        });
+    });
+    mesh(new THREE.BoxGeometry(0.012, 0.42, 0.02), M.clothDark, J.spine, 0, 0.28, 0.14);
+    // Col montant.
+    mesh(new THREE.CylinderGeometry(0.1, 0.13, 0.1, 20, 1, true), M.vest, J.spine, 0, 0.6, 0).material.side = THREE.DoubleSide;
+    // Grand tourbillon rouge dans le dos.
+    const backSwirl = mesh(new THREE.CircleGeometry(0.09, 28), M.swirl, J.spine, 0, 0.34, -0.155);
+    backSwirl.rotation.y = Math.PI;
+    backSwirl.userData.noOutline = true;
     // Fourreau du sabre, en travers du dos.
-    const back = joint(J.spine, 0, 0.3, -0.16);
+    const back = joint(J.spine, 0, 0.3, -0.17);
     back.rotation.z = 0.75;
-    const sheath = mesh(new THREE.CylinderGeometry(0.022, 0.018, 0.8, 10), M.black, back);
-    sheath.rotation.z = 0;
+    mesh(new THREE.CylinderGeometry(0.022, 0.018, 0.8, 10), M.black, back);
 
-    // Tête.
-    J.neck = joint(J.spine, 0, 0.56, 0);
-    mesh(new THREE.CylinderGeometry(0.055, 0.06, 0.1, 12), M.skin, J.neck, 0, 0.04, 0);
-    J.head = joint(J.neck, 0, 0.11, 0);
-    const skull = mesh(new THREE.SphereGeometry(0.12, 24, 18), M.skin, J.head, 0, 0.1, 0.005);
-    skull.scale.set(0.92, 1.05, 1);
-    [-0.042, 0.042].forEach((x) => {
-        mesh(new THREE.SphereGeometry(0.014, 10, 8), M.eye, J.head, x, 0.105, 0.108).scale.set(1, 1.2, 0.5);
-        mesh(new THREE.BoxGeometry(0.045, 0.009, 0.01), M.hair, J.head, x, 0.14, 0.11).rotation.z = x > 0 ? -0.18 : 0.18;
-    });
-    mesh(new THREE.ConeGeometry(0.013, 0.03, 8), M.skin, J.head, 0, 0.08, 0.12).rotation.x = Math.PI / 2;
-    // Bandeau frontal de Konoha.
-    mesh(new THREE.CylinderGeometry(0.117, 0.117, 0.045, 28, 1, true), M.band, J.head, 0, 0.16, 0.005);
-    const plate = mesh(new RoundedBoxGeometry(0.13, 0.055, 0.012, 2, 0.006), [M.steel, M.steel, M.steel, M.steel, M.plate, M.steel], J.head, 0, 0.162, 0.118);
-    plate.rotation.x = -0.08;
+    /* ---------------- Tête ---------------- */
+    J.neck = joint(J.spine, 0, 0.58, 0);
+    mesh(new THREE.CylinderGeometry(0.052, 0.058, 0.1, 14), M.skin, J.neck, 0, 0.03, 0);
+    J.head = joint(J.neck, 0, 0.1, 0);
+    const skull = mesh(new THREE.SphereGeometry(0.125, 32, 24), M.skin, J.head, 0, 0.11, 0);
+    skull.scale.set(0.9, 1.02, 0.95);
+    const jaw = mesh(new THREE.SphereGeometry(0.1, 24, 16), M.skin, J.head, 0, 0.055, 0.018);
+    jaw.scale.set(0.7, 0.92, 0.85);
+    const chin = mesh(new THREE.ConeGeometry(0.038, 0.05, 16), M.skin, J.head, 0, 0.005, 0.055);
+    chin.rotation.x = Math.PI + 0.6;
+    [-1, 1].forEach((s) => mesh(new THREE.SphereGeometry(0.026, 12, 10), M.skin, J.head, s * 0.112, 0.1, -0.005).scale.set(0.5, 1, 0.8));
+    // Visage peint sur une calotte devant la tête.
+    const face = mesh(new THREE.SphereGeometry(0.1215, 32, 24, Math.PI / 2 - 0.85, 1.7, 1.05, 1.1), M.face, J.head, 0, 0.11, 0.004);
+    face.scale.set(0.9, 1.02, 0.95);
+    face.userData.noOutline = true;
+    face.castShadow = false;
+    // Bandeau frontal.
+    mesh(new THREE.CylinderGeometry(0.119, 0.117, 0.042, 32, 1, true), M.band, J.head, 0, 0.175, 0.002).scale.set(0.93, 1, 0.98);
+    const plate = mesh(new RoundedBoxGeometry(0.13, 0.052, 0.012, 2, 0.006), [M.steel, M.steel, M.steel, M.steel, M.plate, M.steel], J.head, 0, 0.176, 0.118);
+    plate.rotation.x = -0.1;
     [-1, 1].forEach((s) => {
-        const tail = mesh(new THREE.BoxGeometry(0.03, 0.2, 0.006), M.band, J.head, s * 0.03, 0.08, -0.13);
-        tail.rotation.set(0.35, 0, s * 0.25);
+        const tail = mesh(new THREE.BoxGeometry(0.032, 0.22, 0.006), M.band, J.head, s * 0.03, 0.08, -0.13);
+        tail.rotation.set(0.4, 0, s * 0.3);
     });
-    // Cheveux en mèches, dirigées vers le haut et l'arrière.
-    const hairRandom = (() => { let x = 7; return () => { x = (x * 16807) % 2147483647; return x / 2147483647; }; })();
-    const Y = new THREE.Vector3(0, 1, 0);
-    mesh(new THREE.SphereGeometry(0.124, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.5), M.hair, J.head, 0, 0.13, -0.008).scale.set(0.95, 0.85, 1.02);
-    for (let k = 0; k < 16; k++) {
-        const a = (k / 16) * Math.PI * 2;
-        const base = new THREE.Vector3(Math.sin(a) * 0.075, 0.2 + hairRandom() * 0.02, Math.cos(a) * 0.075 - 0.02);
-        if (base.z > 0.03) base.y += 0.02; // mèches du devant, au-dessus du bandeau
-        const dir = new THREE.Vector3(base.x * 1.6, 0.9, base.z * 1.3 - 0.35).normalize();
-        const len = 0.1 + hairRandom() * 0.05;
-        const spike = mesh(new THREE.ConeGeometry(0.035, len, 5), M.hair, J.head);
-        spike.quaternion.setFromUnitVectors(Y, dir);
-        spike.position.copy(base).addScaledVector(dir, len * 0.4);
+    // Cheveux : calotte et grandes mèches pointues, style anime.
+    const hairRandom = (() => { let x = 11; return () => { x = (x * 16807) % 2147483647; return x / 2147483647; }; })();
+    mesh(new THREE.SphereGeometry(0.131, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.52), M.hair, J.head, 0, 0.125, -0.012).scale.set(0.95, 0.95, 1.02);
+    // Arrière de la tête : les cheveux descendent jusqu'à la nuque.
+    mesh(new THREE.SphereGeometry(0.133, 24, 18, Math.PI * 1.05, Math.PI * 0.9, 0.3, 2.2), M.hair, J.head, 0, 0.1, -0.008).scale.set(0.95, 1.02, 1.02);
+    const spike = (base, dir, length, radius) => {
+        const cone = mesh(new THREE.ConeGeometry(radius, length, 5), M.hair, J.head);
+        cone.scale.z = 0.55;
+        cone.quaternion.setFromUnitVectors(Y, dir.clone().normalize());
+        cone.position.copy(base).addScaledVector(dir.clone().normalize(), length * 0.42);
+    };
+    for (let k = 0; k < 20; k++) {
+        const a = Math.PI * 0.18 + (k / 19) * Math.PI * 1.64; // de l'arrière gauche à l'arrière droit
+        const base = new THREE.Vector3(Math.sin(a + Math.PI) * 0.1, 0.19 + hairRandom() * 0.04, Math.cos(a + Math.PI) * 0.1 - 0.02);
+        const dir = new THREE.Vector3(base.x * 2.2, 0.55 + hairRandom() * 0.5, base.z * 2 - 0.55);
+        spike(base, dir, 0.16 + hairRandom() * 0.1, 0.05 + hairRandom() * 0.015);
     }
+    // Mèches du dessus et du devant (au-dessus du bandeau, sur les tempes).
+    [[0, 0.24, 0.02, 0.1, 1, -0.45], [0.06, 0.23, 0.05, 0.6, 0.8, 0.1], [-0.06, 0.23, 0.05, -0.6, 0.8, 0.1], [0.1, 0.16, 0.07, 0.35, -0.9, 0.3], [-0.1, 0.16, 0.07, -0.35, -0.9, 0.3]].forEach(([x, y, z, dx, dy, dz], i) => {
+        spike(new THREE.Vector3(x, y, z), new THREE.Vector3(dx, dy, dz), i < 3 ? 0.17 : 0.12, 0.045);
+    });
 
-    // Bras.
+    /* ---------------- Bras ---------------- */
     ['L', 'R'].forEach((side, i) => {
         const s = i === 0 ? -1 : 1;
-        const shoulder = J['shoulder' + side] = joint(J.spine, s * 0.25, 0.46, 0);
-        mesh(new THREE.SphereGeometry(0.075, 14, 12), M.vestDark, shoulder);
-        // Tourbillon rouge sur l'épaule.
-        const sw = mesh(new THREE.CircleGeometry(0.045, 24), M.swirl, shoulder, s * 0.06, -0.02, 0);
+        const shoulder = J['shoulder' + side] = joint(J.spine, s * 0.25, 0.47, 0);
+        const pad = mesh(new THREE.SphereGeometry(0.078, 16, 12), M.vestDark, shoulder);
+        pad.scale.set(1, 0.8, 0.95);
+        const sw = mesh(new THREE.CircleGeometry(0.042, 24), M.swirl, shoulder, s * 0.075, -0.005, 0);
         sw.rotation.y = s * Math.PI / 2;
         sw.userData.noOutline = true;
-        capsule(0.058, 0.26, M.cloth, shoulder);
+        capsule(0.056, 0.26, M.cloth, shoulder);
         const elbow = J['elbow' + side] = joint(shoulder, 0, -0.33, 0);
         capsule(0.05, 0.24, M.cloth, elbow);
+        // Protège-avant-bras.
+        const guard = mesh(new THREE.CylinderGeometry(0.056, 0.05, 0.16, 14), M.guard, elbow, 0, -0.2, 0);
+        guard.scale.z = 0.9;
+        mesh(new THREE.BoxGeometry(0.05, 0.12, 0.012), M.steel, elbow, 0, -0.2, 0.052);
         const hand = J['hand' + side] = joint(elbow, 0, -0.32, 0);
-        mesh(new RoundedBoxGeometry(0.075, 0.1, 0.04, 2, 0.018), M.skin, hand, 0, -0.03, 0);
-        mesh(new THREE.CapsuleGeometry(0.016, 0.03, 4, 8), M.skin, hand, -s * 0.045, -0.02, 0.02).rotation.z = s * 0.6;
+        mesh(new RoundedBoxGeometry(0.075, 0.075, 0.04, 2, 0.016), M.glove, hand, 0, -0.02, 0);
+        mesh(new RoundedBoxGeometry(0.07, 0.055, 0.036, 2, 0.015), M.skin, hand, 0, -0.075, 0.002);
+        mesh(new THREE.CapsuleGeometry(0.015, 0.03, 4, 8), M.skin, hand, -s * 0.043, -0.035, 0.02).rotation.z = s * 0.6;
     });
 
-    // Sabre (d'abord dans le fourreau, sur le dos).
+    /* ---------------- Sabre (dans le fourreau, sur le dos) ---------------- */
     const katana = new THREE.Group();
-    const blade = mesh(new THREE.BoxGeometry(0.028, 0.78, 0.005), M.steel, katana, 0, 0.5, 0);
-    blade.geometry.translate(0, 0, 0);
+    mesh(new THREE.BoxGeometry(0.028, 0.78, 0.005), M.steel, katana, 0, 0.5, 0);
     mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.01, 18), M.gold, katana, 0, 0.105, 0);
     mesh(new THREE.CylinderGeometry(0.017, 0.018, 0.22, 10), M.black, katana, 0, 0, 0);
     back.add(katana);

@@ -29,7 +29,7 @@ function coinTexture() {
 export function buildDream(renderer) {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 400);
-    scene.fog = new THREE.Fog('#e9a37a', 30, 150);
+    scene.fog = new THREE.Fog('#f2c49a', 60, 220);
     const random = rng(303);
     const updaters = [];
 
@@ -39,9 +39,9 @@ export function buildDream(renderer) {
         depthWrite: false,
         fog: false,
         uniforms: {
-            top: { value: new THREE.Color('#2a2a66') },
-            mid: { value: new THREE.Color('#c9637a') },
-            low: { value: new THREE.Color('#ffc27a') },
+            top: { value: new THREE.Color('#3b6fc2') },
+            mid: { value: new THREE.Color('#e9a27e') },
+            low: { value: new THREE.Color('#ffdca4') },
             sunDir: { value: V(0.2, 0.08, -1).normalize() }
         },
         vertexShader: 'varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
@@ -57,8 +57,8 @@ export function buildDream(renderer) {
     pmrem.dispose();
 
     scene.add(new THREE.HemisphereLight('#ffd2b0', '#3a3050', 1.1));
-    const sun = new THREE.DirectionalLight('#ffc48a', 3);
-    sun.position.set(-6, 9, -14);
+    const sun = new THREE.DirectionalLight('#ffd6a0', 2.6);
+    sun.position.set(-9, 11, 8);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
     Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 1, far: 40 });
@@ -71,8 +71,8 @@ export function buildDream(renderer) {
     /* ---------------- La falaise au-dessus du village ---------------- */
     const rock = new THREE.MeshStandardMaterial({ color: '#6f6258', roughness: 0.95 });
     const grass = new THREE.MeshStandardMaterial({ color: '#5f7a3a', roughness: 1 });
-    const cliff = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 5.5, 6, 20), rock);
-    cliff.position.y = -3.02;
+    const cliff = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 6.5, 12, 20), rock);
+    cliff.position.y = -6.02;
     cliff.receiveShadow = true;
     scene.add(cliff);
     const top = new THREE.Mesh(new THREE.CircleGeometry(4.2, 40), grass);
@@ -109,62 +109,133 @@ export function buildDream(renderer) {
         return { topPart, fall: 0, dir: 1 };
     });
 
-    /* ---------------- Le village, en contrebas ---------------- */
-    const roofColors = ['#6d2a22', '#3d4a66', '#5a3a2a', '#7a3326', '#2f3a4f'];
-    const wallMat = new THREE.MeshStandardMaterial({ color: '#e9dcc0', roughness: 0.9 });
-    const roofMats = roofColors.map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 }));
+    /* ---------------- Le village, juste derrière lui ---------------- */
+    // Inspiré du village de Konoha : bâtiments ronds et carrés aux toits colorés,
+    // réservoirs d'eau sur les toits, arbres, et une grande falaise au fond.
     const village = new THREE.Group();
-    village.position.y = -16;
+    village.position.y = -6;
     scene.add(village);
-    const ground = new THREE.Mesh(new THREE.CircleGeometry(160, 48), new THREE.MeshStandardMaterial({ color: '#4d6a34', roughness: 1 }));
+    const ground = new THREE.Mesh(new THREE.CircleGeometry(170, 48), new THREE.MeshStandardMaterial({ color: '#6f9a45', roughness: 1 }));
     ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
     village.add(ground);
-    for (let i = 0; i < 180; i++) {
-        const a = -Math.PI / 2 + (random() - 0.5) * 2.4;
-        const r = 14 + random() * 55;
-        const w = 2 + random() * 3;
-        const h = 2 + random() * 4;
-        const house = new THREE.Group();
-        house.position.set(Math.cos(a) * r, 0, Math.sin(a) * r);
-        house.rotation.y = random() * Math.PI;
-        const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, w * 0.8), wallMat);
-        body.position.y = h / 2;
-        house.add(body);
-        const roof = new THREE.Mesh(new THREE.ConeGeometry(w * 0.85, 1.4, 4), roofMats[i % roofMats.length]);
-        roof.position.y = h + 0.7;
-        roof.rotation.y = Math.PI / 4;
-        house.add(roof);
-        village.add(house);
+    const walls = ['#efe2c4', '#e6d3ae', '#d8e0cf', '#f2dcc0', '#e9e4d6'].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85 }));
+    const roofs = ['#e8742c', '#c9432f', '#3f9a8c', '#e39a2e', '#4a78b5', '#b8563a'].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6 }));
+    const darkMat = new THREE.MeshStandardMaterial({ color: '#5a4636', roughness: 0.8 });
+    const tankMat = new THREE.MeshStandardMaterial({ color: '#9aa8ae', roughness: 0.5, metalness: 0.3 });
+    const add = (geo, m, parent, x, y, z) => {
+        const o = new THREE.Mesh(geo, m);
+        o.position.set(x, y, z);
+        o.castShadow = true;
+        o.receiveShadow = true;
+        parent.add(o);
+        return o;
+    };
+    const placed = [];
+    for (let i = 0; i < 230; i++) {
+        const a = -Math.PI / 2 + (random() - 0.5) * 2.7;
+        const r = 17 + Math.pow(random(), 0.8) * 75;
+        const x = Math.cos(a) * r;
+        const z = Math.sin(a) * r;
+        if (placed.some(([px, pz]) => Math.hypot(px - x, pz - z) < 4.2)) continue;
+        placed.push([x, z]);
+        const b = new THREE.Group();
+        b.position.set(x, 0, z);
+        b.rotation.y = random() * Math.PI * 2;
+        village.add(b);
+        const wall = walls[Math.floor(random() * walls.length)];
+        const roof = roofs[Math.floor(random() * roofs.length)];
+        const h = 3 + random() * 6;
+        const kind = random();
+        if (kind < 0.35) {
+            // Bâtiment rond au toit plat bordé de couleur.
+            const rad = 1.6 + random() * 1.6;
+            add(new THREE.CylinderGeometry(rad, rad, h, 24), wall, b, 0, h / 2, 0);
+            add(new THREE.CylinderGeometry(rad + 0.25, rad + 0.25, 0.5, 24), roof, b, 0, h + 0.1, 0);
+            if (random() < 0.5) add(new THREE.CylinderGeometry(rad * 0.7, rad * 0.7, 1.4, 20), wall, b, 0, h + 1, 0);
+        } else {
+            // Maison carrée, toit à deux pans ou toit plat avec auvent rayé.
+            const w = 2.6 + random() * 3;
+            const d = 2.4 + random() * 2.5;
+            add(new THREE.BoxGeometry(w, h, d), wall, b, 0, h / 2, 0);
+            if (kind < 0.7) {
+                const r2 = add(new THREE.CylinderGeometry(0.01, (Math.max(w, d) / 2) * 1.25, 1.6, 4, 1), roof, b, 0, h + 0.8, 0);
+                r2.rotation.y = Math.PI / 4;
+                r2.scale.set(w / Math.max(w, d), 1, d / Math.max(w, d));
+            } else {
+                add(new THREE.BoxGeometry(w + 0.3, 0.35, d + 0.3), roof, b, 0, h + 0.17, 0);
+                add(new THREE.BoxGeometry(w * 0.8, 0.12, 0.9), roof, b, 0, h * 0.45, d / 2 + 0.4).rotation.x = 0.35;
+            }
+            // Fenêtres sombres.
+            for (let k = 0; k < 3; k++) add(new THREE.BoxGeometry(0.5, 0.6, 0.05), darkMat, b, (k - 1) * w * 0.28, h * 0.62, d / 2 + 0.02);
+        }
+        if (random() < 0.45) {
+            // Réservoir d'eau sur le toit.
+            const tank = new THREE.Group();
+            tank.position.set((random() - 0.5) * 1.2, h + 0.3, (random() - 0.5) * 1.2);
+            b.add(tank);
+            add(new THREE.CylinderGeometry(0.55, 0.55, 1.1, 14), tankMat, tank, 0, 1.2, 0);
+            add(new THREE.ConeGeometry(0.6, 0.35, 14), roof, tank, 0, 1.9, 0);
+            [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => add(new THREE.BoxGeometry(0.08, 0.7, 0.08), darkMat, tank, sx * 0.35, 0.35, sz * 0.35));
+        }
     }
     // Grande tour ronde au centre du village.
     const tower = new THREE.Group();
-    tower.position.set(0, 0, -48);
+    tower.position.set(4, 0, -52);
     village.add(tower);
-    const towerWall = new THREE.MeshStandardMaterial({ color: '#d9c7a4', roughness: 0.8 });
-    const red = new THREE.MeshStandardMaterial({ color: '#a1261c', roughness: 0.6 });
-    [[7, 8, 0], [5.5, 5, 8], [4, 4, 13]].forEach(([r, h, y]) => {
-        const b = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 24), towerWall);
-        b.position.y = y + h / 2;
-        tower.add(b);
-        const roof = new THREE.Mesh(new THREE.ConeGeometry(r * 1.25, 1.6, 24), red);
-        roof.position.y = y + h + 0.6;
-        tower.add(roof);
+    const towerWall = new THREE.MeshStandardMaterial({ color: '#e3cfa4', roughness: 0.8 });
+    const red = new THREE.MeshStandardMaterial({ color: '#c8452d', roughness: 0.6 });
+    [[8, 8, 0], [6.5, 6, 8], [5, 4, 14]].forEach(([r, h, y]) => {
+        add(new THREE.CylinderGeometry(r, r, h, 32), towerWall, tower, 0, y + h / 2, 0);
+        add(new THREE.CylinderGeometry(r * 1.12, r * 1.12, 0.8, 32), red, tower, 0, y + h + 0.2, 0);
     });
-    // Arbres et montagnes.
-    const leafMat = new THREE.MeshStandardMaterial({ color: '#3f5f2c', roughness: 1 });
-    for (let i = 0; i < 120; i++) {
+    // Arbres aux feuillages ronds.
+    const leafMats = ['#4f8a34', '#5d9a3c', '#3f7a30'].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 1 }));
+    const trunkMat = new THREE.MeshStandardMaterial({ color: '#6b4a2f', roughness: 1 });
+    for (let i = 0; i < 160; i++) {
         const a = random() * Math.PI * 2;
-        const r = 10 + random() * 80;
-        const tree = new THREE.Mesh(new THREE.ConeGeometry(1.2 + random(), 3 + random() * 3, 7), leafMat);
-        tree.position.set(Math.cos(a) * r, 2, Math.sin(a) * r);
-        village.add(tree);
+        const r = 13 + random() * 90;
+        const x = Math.cos(a) * r;
+        const z = Math.sin(a) * r;
+        if (placed.some(([px, pz]) => Math.hypot(px - x, pz - z) < 3)) continue;
+        const t = new THREE.Group();
+        t.position.set(x, 0, z);
+        village.add(t);
+        const size = 1.4 + random() * 1.6;
+        add(new THREE.CylinderGeometry(0.2, 0.3, size * 1.4, 7), trunkMat, t, 0, size * 0.7, 0);
+        add(new THREE.IcosahedronGeometry(size, 1), leafMats[i % 3], t, 0, size * 1.9, 0);
+        add(new THREE.IcosahedronGeometry(size * 0.7, 1), leafMats[(i + 1) % 3], t, size * 0.6, size * 1.5, 0.2);
     }
-    const mountainMat = new THREE.MeshStandardMaterial({ color: '#6c6590', roughness: 1 });
-    for (let i = 0; i < 14; i++) {
-        const a = -Math.PI / 2 + (i / 13 - 0.5) * 3;
-        const m = new THREE.Mesh(new THREE.ConeGeometry(18 + random() * 20, 25 + random() * 30, 6), mountainMat);
-        m.position.set(Math.cos(a) * 130, 8, Math.sin(a) * 130);
-        village.add(m);
+    // Grande falaise de roche au fond, couronnée de forêt.
+    const rockTex = (() => {
+        const c = document.createElement('canvas');
+        c.width = 512;
+        c.height = 256;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#b99a74';
+        ctx.fillRect(0, 0, 512, 256);
+        for (let i = 0; i < 400; i++) {
+            ctx.fillStyle = random() > 0.5 ? 'rgba(90,70,50,.25)' : 'rgba(240,220,190,.2)';
+            ctx.fillRect(random() * 512, random() * 256, 2 + random() * 40, 1 + random() * 3);
+        }
+        for (let x = 0; x < 512; x += 18 + random() * 30) {
+            ctx.fillStyle = 'rgba(70,50,35,.3)';
+            ctx.fillRect(x, 0, 2 + random() * 3, 256);
+        }
+        const t = new THREE.CanvasTexture(c);
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(6, 1);
+        return t;
+    })();
+    const cliffWall = new THREE.Mesh(new THREE.CylinderGeometry(118, 118, 46, 64, 1, true, Math.PI * 0.62, Math.PI * 0.76), new THREE.MeshStandardMaterial({ map: rockTex, roughness: 0.95, side: THREE.DoubleSide }));
+    cliffWall.position.set(0, 23, 10);
+    village.add(cliffWall);
+    for (let i = 0; i < 70; i++) {
+        const a = Math.PI * 0.62 + random() * Math.PI * 0.76;
+        const bush = new THREE.Mesh(new THREE.IcosahedronGeometry(5 + random() * 4, 1), leafMats[i % 3]);
+        bush.position.set(Math.sin(a) * 116, 43 + random() * 3, Math.cos(a) * 116 + 10);
+        village.add(bush);
     }
 
     // Nuages.

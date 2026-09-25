@@ -216,8 +216,41 @@ export class Arm {
         this.cuff.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), foreDir);
 
         this.hand.position.copy(wrist);
-        this.hand.quaternion.copy(this._q);
+        this.hand.quaternion.copy(this.limitWrist(this._q, foreDir));
         this.applyGrip();
+    }
+
+    /*
+     * Un poignet humain ne tourne pas à 360° : on borne l'orientation de la
+     * main par rapport à l'avant-bras. Position neutre = « poignée de main »
+     * (doigts dans l'axe de l'avant-bras, paume tournée vers l'intérieur).
+     *   - rotation autour de l'avant-bras (paume vers le bas / le haut) : ±95°
+     *   - flexion du poignet (dans toutes les directions) : 70° au plus
+     */
+    limitWrist(q, foreDir) {
+        const Z = foreDir.clone().negate();
+        const Y = new THREE.Vector3(this.side, 0, 0);
+        Y.sub(Z.clone().multiplyScalar(Y.dot(Z)));
+        if (Y.lengthSq() < 1e-4) Y.set(0, 1, 0).sub(Z.clone().multiplyScalar(Z.y));
+        Y.normalize();
+        const X = new THREE.Vector3().crossVectors(Y, Z);
+        const frame = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Z));
+        const rel = frame.clone().invert().multiply(q);
+        if (rel.w < 0) rel.set(-rel.x, -rel.y, -rel.z, -rel.w);
+        // Décomposition « balancement × torsion » autour de l'axe de l'avant-bras.
+        let twist = new THREE.Quaternion(0, 0, rel.z, rel.w);
+        if (twist.lengthSq() < 1e-8) twist.identity();
+        else twist.normalize();
+        const swing = rel.clone().multiply(twist.clone().invert());
+        let twistAngle = 2 * Math.atan2(twist.z, twist.w);
+        twistAngle = Math.atan2(Math.sin(twistAngle), Math.cos(twistAngle));
+        twistAngle = Math.max(-1.66, Math.min(1.66, twistAngle));
+        twist = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), twistAngle);
+        if (swing.w < 0) swing.set(-swing.x, -swing.y, -swing.z, -swing.w);
+        const swingAngle = 2 * Math.acos(Math.min(1, swing.w));
+        const maxSwing = 1.22;
+        if (swingAngle > maxSwing) swing.copy(new THREE.Quaternion().slerp(swing, maxSwing / swingAngle));
+        return frame.multiply(swing.multiply(twist));
     }
 }
 
