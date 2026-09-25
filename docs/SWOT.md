@@ -1,65 +1,76 @@
 # SWOT — Carnet de Hoko Senju
 
-Revue complète du projet (fiche, scène 3D, rêve), mise à jour à chaque relance
-autonome. Les faiblesses sont classées par visibilité : on corrige d'abord ce
-qu'un visiteur remarque en premier.
+Revue complète du projet au 25 septembre (soir), après le passage de Hoko
+adulte sur un vrai modèle anime. Les faiblesses sont classées par visibilité :
+on corrige d'abord ce qu'un visiteur remarque en premier.
 
 ## Forces
 
-- **Expérience unique** : une fiche de personnage vécue comme un court film
-  interactif (entrée dans la chambre, boîte à musique, carnet qu'on feuillette,
-  rêve à la troisième personne), là où les autres fiches RP sont des pages statiques.
-- **Carnet soigné** : couverture, pages qui se courbent sous le doigt, sons de
-  papier réalistes, sommaire, chronologie, fermeture du livre.
-- **Aucune dépendance de build** : HTML, CSS et modules JS servis tels quels
-  par GitHub Pages ; three.js est embarqué.
-- **Tout est procédural** : textures, sons, musique de secours, village,
-  personnage, donc rien à télécharger en plus.
-- **Replis robustes** : sans WebGL, sans module ou en cas d'erreur, le carnet
-  s'ouvre seul ; qualité adaptative ; `?quality=low`.
-- **Rendu du rêve moderne** : ombrage lisse, herbe animée, profondeur de
-  champ, halo, village complet façon Konoha.
+- **Concept unique** : la fiche RP se vit comme un court film interactif
+  (chambre, boîte à musique, carnet qu'on feuillette, rêve à la troisième
+  personne) au lieu d'une page statique.
+- **Hoko adulte crédible** : vrai modèle anime de jeu (VRoid, CC0) en tenue de
+  jōnin (gilet olive à poches, bandeau de Konoha, sabre), animé par toutes les
+  poses du rêve, clignements, poing fermé sur le sabre.
+- **Rêve spectaculaire** : Konoha complet (maisons à étages, tour du Hokage,
+  mont des Hokage, villageois, oiseaux), herbe animée, croissants de sabre,
+  dragon d'eau, pluie de ryō dorés, profondeur de champ et halo.
+- **Carnet soigné** : couverture en cuir, pages qui se courbent sous le doigt,
+  sons de papier, sommaire, chronologie, fermeture du livre.
+- **Robustesse** : repli sur le carnet sans WebGL ou si le processeur graphique
+  lâche, tête de secours si le modèle ne se charge pas, qualité adaptative et
+  palier mobile, fichiers versionnés contre le cache.
+- **Léger à héberger** : aucun outil de build, GitHub Pages suffit ; ~5,5 Mo
+  au total dont 4,3 Mo pour le modèle, chargé en arrière-plan.
+- **Libre de droits** : tout est dessiné en code, le modèle est en CC0.
 
 ## Faiblesses
 
-| # | Faiblesse | Visibilité | État |
-|---|-----------|-----------|------|
-| F1 | Tête et visage de Hoko adulte peu crédibles (« mannequin ») | Très forte | Refaite par sculpture SDF (25/09) — à affiner (expression, regard) |
-| F2 | Animations du ninja rigides : poses interpolées, pas de respiration visible, pas de clignement | Forte | Clignements, respiration, regard et pans du bandeau ajoutés (25/09) — reste : transitions entre poses |
-| F3 | Mains simples (paume + capsules) | Moyenne | Doigts articulés, main détendue (25/09) |
-| F4 | Rêve lourd sur mobile (post-traitement, milliers de feuilles) | Moyenne | Palier « mobile » automatique + `degrade()` + qualité basse (25/09) |
-| F5 | Portrait de la fiche vide (« Portrait à venir ») + 404 dans la console | Moyenne | En attente de l'image du joueur |
-| F6 | Chargement initial : three.js 676 Ko + polices, sans barre de progression | Moyenne | Progression réelle sur le bouton (25/09) |
-| F7 | Pas de chapitrage : impossible de revoir directement le rêve ou la boîte à musique | Faible | Lien « Revoir le rêve » sur la carte de fin (25/09) |
-| F8 | Musique YouTube parfois bloquée (bloqueurs, réseaux d'entreprise) | Faible | Repli Sakura en place |
-| F9 | Accessibilité de la scène (lecteurs d'écran, clavier) | Faible | Bouton « Passer », lien direct vers le carnet |
+| # | Faiblesse | Visibilité | Piste |
+|---|-----------|-----------|-------|
+| F1 | Tourbillon rouge du dos coupé en deux par la couture du vêtement | Forte (vue de dos) | Le poser en décalque 3D sur le dos |
+| F2 | Reste de capuche : un gros col bleu nuit derrière la nuque | Moyenne | Replier davantage ses os ou le masquer dans la texture |
+| F3 | Visage toujours neutre : pas d'expression pendant les actes | Moyenne | Colère/détermination au sabre, joie sous la pluie de ryō (formes déjà présentes) |
+| F4 | Bras de la chambre (première personne) encore procéduraux, d'un autre style que Hoko adulte | Moyenne | Réutiliser les mains/manches du modèle |
+| F5 | Portrait de la fiche vide (« Portrait à venir ») + erreur 404 dans la console | Moyenne | Image du joueur, ou portrait tiré du modèle |
+| F6 | L'aperçu Claude (artifact) n'affiche pas le modèle (format .vrm refusé) : tête de secours | Faible (le site est la référence) | Servir le modèle sous un format accepté |
+| F7 | Jamais testé sur un vrai téléphone ni une vraie carte graphique (seulement un rendu logiciel) | Moyenne (risque) | Test par le propriétaire ; réglages `?quality=` en secours |
+| F8 | « Et il rêva… », les actes et la carte de fin ne sont pas présentés aux lecteurs d'écran de façon structurée | Faible | Rôles ARIA, résumé textuel du rêve |
+| F9 | Tests automatiques hors du dépôt (scripts de travail) | Faible | Ajouter des outils de test documentés dans `tools/` |
 
 ## Opportunités
 
-- **Vie du personnage** : clignements, respiration, regard qui suit la caméra,
-  cape/pans du bandeau au vent, petits gestes entre les actes.
-- **Rêve plus cinématographique** : lettrage de titre à l'écran, ralenti sur
-  les coupes, éclaboussures au sol, reflets dans l'eau.
-- **Menu des scènes** sur la carte de fin (revoir : le carnet, le rêve).
-- **Carte de partage** (image Open Graph) montrant la chambre ou le rêve.
-- **Portrait généré** à partir du modèle 3D si le joueur n'a pas d'image.
-- **Mode photo** dans le rêve (caméra libre, capture).
+- **Expressions et gestes** : regard déterminé pendant le kenjutsu, sourire sous
+  les ryō, clin d'œil final ; micro-mouvements des doigts.
+- **Cheveux et vêtements vivants** : les os « secondaires » du modèle (mèches,
+  cordons) peuvent onduler au vent.
+- **Plus de scènes dans le rêve** : combat contre un adversaire, conseil au
+  bureau du Hokage, remise de la veste de jōnin.
+- **Hoko enfant** dans la chambre (miroir, reflet dans la fenêtre) avec un
+  modèle VRoid plus jeune.
+- **Chapitres** sur la carte de fin (déjà : « Revoir le rêve ») ; mode photo.
+- **Portrait de la fiche** généré depuis le modèle 3D, dans le style du carnet.
+- **Partage** : l'image d'aperçu montre déjà le nouveau Hoko ; une courte vidéo
+  du rêve donnerait envie d'ouvrir le lien.
 
 ## Menaces
 
-- **GPU faibles / mobiles** : risque de saccades ou de perte de contexte WebGL.
-- **Navigateurs** : workers modules (Safari < 15), WebGL2 absent.
-- **Services tiers** : API YouTube, Google Fonts (bloqués ou lents).
-- **Cache GitHub Pages** : un visiteur peut garder d'anciens modules après une
-  mise à jour (versions mélangées).
-- **Poids qui grossit** à chaque amélioration : garder un œil sur le temps de
-  construction du rêve et la taille des fichiers.
+- **Appareils faibles** : modèle animé + post-traitement + milliers de feuilles
+  sur mobile d'entrée de gamme (paliers et `degrade()` en place, à vérifier en vrai).
+- **Réseau lent** : 4,3 Mo de modèle ; s'il n'est pas arrivé au moment du rêve,
+  le rêve attend (la chambre dure ~2 min, donc rarement bloquant).
+- **Services tiers** : lecteur YouTube, Google Fonts (replis en place).
+- **Navigateurs** : WebP et workers modules requis (Safari 15+), WebGL2.
+- **Mises à jour** : oublier `python3 tools/version.py` après une modification
+  peut servir un mélange d'anciens et de nouveaux fichiers pendant ~10 min.
+- **Attentes de style** : le rendu dépend du goût (Zenkai RP / Naruto Storm) ;
+  chaque retour peut remettre en cause un choix de style.
 
 ## Plan (ordre de passage)
 
-1. F1 — finaliser la tête (regard, sourcils, ombrage doux du visage).
-2. F2 — clignements, respiration, micro-mouvements, pans du bandeau.
-3. F6 — écran de chargement avec progression réelle.
-4. F7 — chapitres sur la carte de fin.
-5. F3 — mains plus fines.
-6. ~~Menace cache — paramètre de version sur les modules~~ : `tools/version.py` (25/09).
+1. F1 — tourbillon du dos en décalque 3D.
+2. F2 — capuche entièrement repliée.
+3. F3 — expressions pendant les actes du rêve.
+4. F4 — bras de la chambre au style du modèle.
+5. F5 — portrait de la fiche (si pas d'image fournie).
+6. F6/F9 — aperçu Claude avec le modèle, tests dans le dépôt.
