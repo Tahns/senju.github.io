@@ -34,3 +34,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   `?quality=low|mobile|high` pour forcer.
 - **Mains** : doigts en deux phalanges, repliés comme une main détendue,
   pouce articulé ; vraie pose « bras croisés ».
+- **Village vivant** : villageois qui marchent dans les rues, oiseaux qui
+  tournent au-dessus des toits.
+- **Visage** : tête un peu plus grande (proportions anime), cou plus
+  épais, modelé des joues ; les gros plans ne sont plus flous (mise au
+  point minimale ramenée à 30 cm).

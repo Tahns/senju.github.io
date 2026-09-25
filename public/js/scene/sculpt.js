@@ -25,7 +25,7 @@ export function headSDF(x, y, z) {
     // Arcade sourcilière très douce.
     d = smin(d, ellipsoid(ax - 0.03, y - 0.012, z - 0.088, 0.03, 0.009, 0.012), 0.01);
     // Cou.
-    d = smin(d, capsule(x, y, z, [0, -0.06, -0.032], [0, -0.21, -0.036], 0.043), 0.014);
+    d = smin(d, capsule(x, y, z, [0, -0.06, -0.03], [0, -0.21, -0.034], 0.047), 0.016);
     return d;
 }
 
