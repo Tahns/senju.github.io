@@ -23,14 +23,14 @@ const disk = Array.from({ length: TAPS }, (_, i) => {
 });
 
 export class Post {
-    constructor(renderer) {
+    constructor(renderer, { samples = 4 } = {}) {
         this.renderer = renderer;
         this.size = new THREE.Vector2();
         this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
         this.quad = new THREE.Mesh(triangle());
         this.quad.frustumCulled = false;
         const depthTexture = new THREE.DepthTexture(1, 1);
-        this.main = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4, depthTexture });
+        this.main = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples, depthTexture });
         this.bloomA = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType });
         this.bloomB = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType });
         this.focus = 7;

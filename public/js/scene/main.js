@@ -58,6 +58,8 @@ async function start() {
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     window.SceneStarted = true;
     const low = params.get('quality') === 'low';
+    // Téléphones et tablettes : un palier intermédiaire (moins d'herbe, ombres et flou plus légers).
+    const mobile = !low && (params.get('quality') === 'mobile' || (params.get('quality') !== 'high' && matchMedia('(pointer: coarse)').matches));
     let pixelRatio = low ? 0.75 : Math.min(window.devicePixelRatio || 1, 1.75);
     renderer.setPixelRatio(pixelRatio);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -554,7 +556,7 @@ async function start() {
     function prepareDream() {
         if (!dreamReady) {
             dreamReady = headReady.then((head) => {
-                dream = buildDream(renderer, { low, head });
+                dream = buildDream(renderer, { low, mobile, head });
                 window.__scene.dream = dream;
                 dream.resize(window.innerWidth / window.innerHeight);
                 renderer.compile(dream.scene, dream.camera);

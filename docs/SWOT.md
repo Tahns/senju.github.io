@@ -26,8 +26,8 @@ qu'un visiteur remarque en premier.
 |---|-----------|-----------|------|
 | F1 | Tête et visage de Hoko adulte peu crédibles (« mannequin ») | Très forte | Refaite par sculpture SDF (25/09) — à affiner (expression, regard) |
 | F2 | Animations du ninja rigides : poses interpolées, pas de respiration visible, pas de clignement | Forte | Clignements, respiration, regard et pans du bandeau ajoutés (25/09) — reste : transitions entre poses |
-| F3 | Mains simples (paume + capsules) | Moyenne | À faire |
-| F4 | Rêve lourd sur mobile (post-traitement, milliers de feuilles) | Moyenne | Replis : `degrade()`, qualité basse |
+| F3 | Mains simples (paume + capsules) | Moyenne | Doigts articulés, main détendue (25/09) |
+| F4 | Rêve lourd sur mobile (post-traitement, milliers de feuilles) | Moyenne | Palier « mobile » automatique + `degrade()` + qualité basse (25/09) |
 | F5 | Portrait de la fiche vide (« Portrait à venir ») + 404 dans la console | Moyenne | En attente de l'image du joueur |
 | F6 | Chargement initial : three.js 676 Ko + polices, sans barre de progression | Moyenne | Progression réelle sur le bouton (25/09) |
 | F7 | Pas de chapitrage : impossible de revoir directement le rêve ou la boîte à musique | Faible | Lien « Revoir le rêve » sur la carte de fin (25/09) |
