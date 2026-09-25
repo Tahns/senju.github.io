@@ -147,6 +147,31 @@ export function buildRoom(scene) {
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 2.4), new THREE.MeshBasicMaterial({ map: T.nightSky() }));
     sky.position.set(-0.6, 1.5, -D / 2 - 0.9);
     room.add(sky);
+    // Étoiles qui scintillent derrière la fenêtre ouverte.
+    const starCount = 110;
+    const starPos = new Float32Array(starCount * 3);
+    const starCol = new Float32Array(starCount * 3);
+    const starSeeds = [];
+    const starRandom = T.rng(202);
+    for (let i = 0; i < starCount; i++) {
+        starPos.set([-1.4 + starRandom() * 2.0, 1.1 + starRandom() * 1.7, -D / 2 - 0.7 - starRandom() * 0.1], i * 3);
+        starSeeds.push({ speed: 1 + starRandom() * 3, phase: starRandom() * 6.28, base: 0.35 + starRandom() * 0.65 });
+    }
+    const starGeo = new THREE.BufferGeometry();
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    starGeo.setAttribute('color', new THREE.BufferAttribute(starCol, 3));
+    const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ map: T.dot(), size: 0.06, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+    room.add(stars);
+    updaters.push((dt, time) => {
+        starSeeds.forEach((st, i) => {
+            const v = Math.min(1.6, st.base * 1.5 * (0.55 + 0.45 * Math.sin(time * st.speed + st.phase)));
+            starCol[i * 3] = v * 0.85;
+            starCol[i * 3 + 1] = v * 0.9;
+            starCol[i * 3 + 2] = v;
+        });
+        starGeo.attributes.color.needsUpdate = true;
+    });
+
     const moonPaper = new THREE.MeshStandardMaterial({ map: paperTex, roughness: 0.95, side: THREE.DoubleSide, emissive: new THREE.Color('#34467a'), emissiveIntensity: 0.9 });
     const windowPanel = (x, z) => {
         const g = new THREE.Group();
@@ -164,7 +189,7 @@ export function buildRoom(scene) {
         return g;
     };
     windowPanel(-0.95, -D / 2 - 0.02);
-    windowPanel(-0.8, -D / 2 - 0.06); // panneau glissé : la moitié droite est ouverte
+    windowPanel(-0.93, -D / 2 - 0.06); // panneau glissé : la moitié droite est ouverte
 
     const moon = new THREE.DirectionalLight('#a9bcff', 1.6);
     moon.position.set(0.4, 3.4, -7.5);
@@ -273,8 +298,8 @@ export function buildRoom(scene) {
 
     const random = T.rng(101);
     const specials = {
-        hoko: { row: 3, z: -0.3, mesh: specialBook('hoko') },
-        second: { row: 2, z: 0.28, mesh: specialBook('second') }
+        hoko: { row: 2, z: -0.3, mesh: specialBook('hoko') },
+        second: { row: 2, z: 0.3, mesh: specialBook('second') }
     };
     const books = {};
     const ROT = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
@@ -282,9 +307,10 @@ export function buildRoom(scene) {
     for (let row = 0; row < 5; row++) {
         const bottom = boards[row] + 0.0125;
         const maxH = boards[row + 1] - boards[row] - 0.05;
-        const special = Object.entries(specials).find(([, s]) => s.row === row);
+        const pending = () => Object.entries(specials).find(([, s]) => s.row === row && !s.placed);
         let z = -shelfZ + 0.04;
         while (z < shelfZ - 0.05) {
+            const special = pending();
             if (special && !special[1].placed && Math.abs(z - special[1].z) < 0.05) {
                 special[1].placed = true;
                 const { mesh } = special[1];
@@ -359,19 +385,66 @@ export function buildRoom(scene) {
         box(tansu, 0.012, 0.03, 0.09, iron, 0.215, y, 0);
     });
     const pot = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.08, 0.07, 20), new THREE.MeshStandardMaterial({ color: '#3b2a24', roughness: 0.5 })));
-    pot.position.set(0, 0.855, 0.1);
+    pot.position.set(0, 0.855, 0.22);
     tansu.add(pot);
     const trunk = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.022, 0.16, 6), darkWood));
-    trunk.position.set(0.01, 0.95, 0.1);
+    trunk.position.set(0.01, 0.95, 0.22);
     trunk.rotation.z = 0.3;
     tansu.add(trunk);
     const leafMat = new THREE.MeshStandardMaterial({ color: '#34502a', roughness: 0.9 });
-    [[-0.05, 1.04, 0.1, 0.07], [0.04, 1.06, 0.07, 0.06], [0.0, 1.1, 0.14, 0.05]].forEach(([x, y, z, r]) => {
+    [[-0.05, 1.04, 0.22, 0.07], [0.04, 1.06, 0.19, 0.06], [0.0, 1.1, 0.26, 0.05]].forEach(([x, y, z, r]) => {
         const f = shadowy(new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), leafMat));
         f.scale.y = 0.6;
         f.position.set(x, y, z);
         tansu.add(f);
     });
+
+    /* ---------------- Boîte à musique (sur le coffre) ---------------- */
+    // Face tournée vers la chambre (+x), clé du côté -z, charnière au fond.
+    const musicBox = new THREE.Group();
+    musicBox.position.set(0.02, 0.82, -0.18);
+    tansu.add(musicBox);
+    const makieTex = T.makie();
+    const lacquer = new THREE.MeshPhysicalMaterial({ color: '#ffffff', map: makieTex, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.12 });
+    const lacquerPlain = new THREE.MeshPhysicalMaterial({ color: '#0d0605', roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.15 });
+    const brass = new THREE.MeshStandardMaterial({ color: '#c79a45', roughness: 0.35, metalness: 0.9 });
+    const velvet = new THREE.MeshStandardMaterial({ color: '#6e1414', roughness: 1 });
+    const boxBody = rounded(musicBox, 0.15, 0.08, 0.22, 0.006, [lacquerPlain, lacquerPlain, lacquerPlain, lacquerPlain, lacquerPlain, lacquerPlain], 0, 0.04, 0);
+    boxBody.material = [lacquer, lacquerPlain, lacquerPlain, lacquerPlain, lacquerPlain, lacquerPlain];
+    const inside = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.2), velvet);
+    inside.rotation.x = -Math.PI / 2;
+    inside.position.y = 0.0805;
+    musicBox.add(inside);
+    const drum = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.1, 18), brass));
+    drum.rotation.x = Math.PI / 2;
+    drum.position.set(-0.02, 0.092, 0);
+    musicBox.add(drum);
+    box(musicBox, 0.03, 0.004, 0.1, brass, 0.012, 0.088, 0);
+    const lid = new THREE.Group();
+    lid.position.set(-0.075, 0.08, 0);
+    musicBox.add(lid);
+    const lidMesh = rounded(lid, 0.152, 0.02, 0.222, 0.006, lacquerPlain, 0.076, 0.01, 0);
+    lidMesh.material = [lacquerPlain, lacquerPlain, lacquer, lacquerPlain, lacquerPlain, lacquerPlain];
+    const mirrorMat = new THREE.MeshStandardMaterial({ color: '#b8c0c8', roughness: 0.1, metalness: 1 });
+    const lidMirror = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.18), mirrorMat);
+    lidMirror.rotation.x = Math.PI / 2;
+    lidMirror.position.set(0.076, -0.0005, 0);
+    lid.add(lidMirror);
+    const key = new THREE.Group();
+    key.position.set(-0.02, 0.035, -0.114);
+    musicBox.add(key);
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.02, 8), brass);
+    shaft.rotation.x = Math.PI / 2;
+    shaft.position.z = -0.01;
+    key.add(shaft);
+    box(key, 0.004, 0.034, 0.006, brass, 0, 0, -0.022).castShadow = false;
+    // Points où se posent les doigts.
+    const lidEdge = new THREE.Object3D();
+    lidEdge.position.set(0.152, 0.004, 0);
+    lid.add(lidEdge);
+    const keyGrip = new THREE.Object3D();
+    keyGrip.position.set(0, 0, -0.024);
+    key.add(keyGrip);
 
     /* ---------------- Futon ---------------- */
     const bedX = 1.88;
@@ -458,8 +531,12 @@ export function buildRoom(scene) {
         dustGeo.attributes.position.needsUpdate = true;
     });
 
+    let drumSpeed = 0;
+    updaters.push((dt) => { drum.rotation.y += dt * drumSpeed; });
+
     return {
         door,
+        musicBox: { group: musicBox, lid, key, lidEdge, keyGrip, setPlaying(speed) { drumSpeed = speed; } },
         doorHandle,
         books,
         bed: { x: bedX, z: bedZ },

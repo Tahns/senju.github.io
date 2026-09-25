@@ -1911,3 +1911,108 @@ html.book-open .scene-caption {
     margin-top: .6em;
     letter-spacing: .18em;
 }
+
+/* Bouton son de la scène */
+.scene-sound {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 12;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    color: var(--gold-light);
+    background: rgba(24, 14, 9, .7);
+    border: 1px solid rgba(214, 179, 94, .35);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.scene-sound svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.scene-sound .off,
+.scene-sound.is-off .on {
+    display: none;
+}
+
+.scene-sound.is-off .off {
+    display: inline;
+}
+
+html.book-open .scene-sound {
+    display: none;
+}
+
+/* Le rêve */
+.dream-glow {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(ellipse 70% 65% at 50% 50%, transparent 55%, rgba(255, 236, 214, .55) 100%);
+    transition: opacity 1.5s ease;
+}
+
+html.dreaming .dream-glow {
+    opacity: 1;
+}
+
+html.dreaming .scene-vignette {
+    opacity: .4;
+}
+
+.dream-hud {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    z-index: 12;
+    display: grid;
+    gap: 6px;
+    min-width: min(360px, calc(100vw - 32px));
+    padding: 12px 18px;
+    translate: -50% 0;
+    color: #fff3d6;
+    background: rgba(28, 16, 8, .72);
+    border: 1px solid rgba(240, 200, 110, .5);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    animation: hud-in .6s ease-out;
+}
+
+.dream-hud p {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    margin: 0;
+    font-size: 15px;
+}
+
+.dream-hud span {
+    font-family: var(--font-title);
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: rgba(255, 230, 180, .8);
+    align-self: center;
+}
+
+.dream-hud b {
+    font-family: var(--font-title);
+    font-variant-numeric: tabular-nums;
+    color: #ffd76e;
+}
+
+@keyframes hud-in {
+    from { opacity: 0; transform: translateY(-10px); }
+}

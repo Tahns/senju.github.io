@@ -362,7 +362,15 @@
         <a class="scene-card__link" href="#page-1" id="scene-read">Relire le carnet de Hoko</a>
     </div>
 
+    <div class="dream-glow scene-only" aria-hidden="true"></div>
+    <div class="dream-hud scene-only" id="dream-hud" hidden>
+        <p><span>Trésor de Konoha</span><b id="dream-treasury">1 200 000 ryō</b></p>
+        <p><span>Poches de Hoko</span><b id="dream-pockets">0 ryō</b></p>
+    </div>
     <p class="scene-caption scene-only" id="scene-caption" aria-live="polite"></p>
+    <button class="scene-sound scene-only" id="scene-sound" type="button" aria-pressed="true" aria-label="Couper le son" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" /><path class="on" d="M16 9a4 4 0 010 6M18.5 6.5a8 8 0 010 11" /><path class="off" d="M16 9l5 6M21 9l-5 6" /></svg>
+    </button>
     <button class="scene-skip scene-only" id="scene-skip" type="button" hidden>Passer <span aria-hidden="true">⏭</span></button>
 
     <!-- Livre interactif (construit par public/js/book.js) -->

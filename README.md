@@ -9,18 +9,23 @@ Le carnet de Hoko Senju, présenté comme un livre relié qu'on feuillette.
 Avant le carnet, une petite scène en 3D, vue à la première personne :
 
 1. Hoko arrive dans le couloir et fait glisser la porte (shoji) de sa chambre.
-2. Il se dirige vers la bibliothèque, choisit son carnet, le tire de l'étagère et l'ouvre.
-3. Le visiteur lit le carnet, puis clique sur **Ranger** : Hoko remet le livre en place.
-4. Il en prend un deuxième (un carnet vierge), le feuillette, le range.
-5. Il va s'asseoir sur son futon, s'allonge face à la fenêtre et à la lune, la lanterne baisse… Bonne nuit.
+2. Il va au coffre près de l'entrée et remonte une boîte à musique en laque : elle joue « Sakura Sakura » (mélodie traditionnelle) pendant toute la scène.
+3. Il se dirige vers la bibliothèque : l'index fait basculer son carnet, la main le prend par le dos et il l'ouvre.
+4. Le visiteur lit le carnet, puis clique sur **Ranger** : Hoko remet le livre en place et le redresse du bout du doigt.
+5. Il prend un deuxième carnet (vierge), le feuillette, le range.
+6. Il s'allonge sur son futon, regarde les étoiles par la fenêtre ouverte, la boîte à musique ralentit, ses yeux se ferment…
+7. **Le rêve** (à la troisième personne) : Hoko adulte, jōnin de Konoha, au coucher du soleil au-dessus du village. Maître du sabre, maître du Suiton, et chef de la section économique : une pluie de ryō remplit le trésor du village… et ses poches.
 
+- Bruitages et musique générés (pas, porte, livres, boîte à musique, grillons, taiko et flûte dans le rêve), activés par défaut, avec un bouton pour couper le son.
 - Bouton **Passer** pour accélérer jusqu'au prochain livre, lien « Aller directement au carnet » sur l'écran d'accueil.
 - Tout est dessiné en code (aucune image) : `public/js/scene/`.
   - `room.js` : la chambre (tatamis, porte, bibliothèque, futon, lanterne, fenêtre…)
   - `arms.js` : les bras et les mains
   - `main.js` : le scénario, étape par étape (facile à modifier)
+  - `dream.js`, `ninja.js` : le rêve et Hoko adulte
+  - `audio.js` : sons et musiques
 - Sans WebGL (vieux navigateurs), ou avec un lien direct `#page-5`, le carnet s'affiche directement.
-- Pour tester une étape : `?at=shelf`, `?at=second` ou `?at=bed`, et `?speed=3` pour accélérer.
+- Pour tester une étape : `?at=shelf`, `?at=second`, `?at=bed` ou `?at=dream`, et `?speed=3` pour accélérer.
 
 ## Le second carnet
 

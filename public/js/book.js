@@ -394,7 +394,7 @@
             const start = () => turnLeaf(i, many ? 6 : single ? 18 : 16);
             if (order === 0) start();
             else leaf._start = setTimeout(start, order * stagger);
-            if (order === 0 || order === turning.length - 1) rustle();
+            if (order === 0 || order === turning.length - 1) rustle(i === 0 || i === leaves.length - 1);
         });
 
         update(true);
@@ -500,36 +500,72 @@
     /* ------------------------------------------------------------------ */
 
     let audio = null;
-    let soundOn = store.get('senju-sound') === 'on';
+    // Son activé par défaut ; le lecteur peut le couper (choix mémorisé).
+    let soundOn = store.get('senju-sound') !== 'off';
 
-    function rustle() {
+    // Bruit d'une vraie page qui tourne, fabriqué échantillon par échantillon :
+    // le papier se soulève (souffle), crépite en passant, puis retombe (petit
+    // claquement et bruit sourd). La couverture, en cuir, est plus lourde.
+    function pageBuffer(cover) {
+        const rate = audio.sampleRate;
+        const duration = cover ? 0.95 : 0.62;
+        const length = Math.floor(rate * duration);
+        const buffer = audio.createBuffer(2, length, rate);
+        const land = duration * (cover ? 0.7 : 0.74);
+        for (let c = 0; c < 2; c++) {
+            const data = buffer.getChannelData(c);
+            let air = 0;
+            let crack = 0;
+            for (let i = 0; i < length; i++) {
+                const t = i / rate;
+                const k = t / land;
+                // Enveloppe du passage de la page : montée douce, puis retombée.
+                const env = k < 1 ? Math.pow(Math.sin(Math.PI * Math.min(1, k * 1.15) / 2), 1.5) * (1 - 0.55 * k * k) : Math.exp(-(t - land) * 40);
+                air = air * 0.965 + (Math.random() * 2 - 1) * 0.035;
+                if (Math.random() < (cover ? 0.0015 : 0.0045) * env) crack += (Math.random() * 2 - 1) * (cover ? 0.35 : 0.6);
+                crack *= cover ? 0.9 : 0.8;
+                let v = air * 2.4 * env + crack * env;
+                // Arrivée de la page.
+                const d = t - land;
+                if (d >= 0) {
+                    v += (Math.random() * 2 - 1) * Math.exp(-d * (cover ? 60 : 110)) * (cover ? 0.5 : 0.35);
+                    v += Math.sin(2 * Math.PI * (cover ? 68 : 95) * d) * Math.exp(-d * (cover ? 16 : 30)) * (cover ? 0.7 : 0.3);
+                }
+                data[i] = v;
+            }
+        }
+        return buffer;
+    }
+
+    function rustle(cover = false) {
         if (!soundOn) return;
         try {
             audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-            const duration = 0.45;
-            const buffer = audio.createBuffer(1, audio.sampleRate * duration, audio.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < data.length; i++) {
-                const t = i / data.length;
-                data[i] = (Math.random() * 2 - 1) * Math.pow(Math.sin(Math.PI * t), 2) * (0.6 + 0.4 * Math.random());
-            }
-            const noise = audio.createBufferSource();
-            noise.buffer = buffer;
-            const filter = audio.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.Q.value = 0.8;
-            filter.frequency.setValueAtTime(900, audio.currentTime);
-            filter.frequency.exponentialRampToValueAtTime(3800, audio.currentTime + duration);
+            if (audio.state === 'suspended') audio.resume();
+            const key = cover ? 'coverBuffers' : 'pageBuffers';
+            // Quelques variantes pré-calculées, pour que chaque page sonne un peu différemment.
+            rustle[key] = rustle[key] || [0, 1, 2].map(() => pageBuffer(cover));
+            const src = audio.createBufferSource();
+            src.buffer = rustle[key][Math.floor(Math.random() * 3)];
+            src.playbackRate.value = 0.92 + Math.random() * 0.16;
+            const low = audio.createBiquadFilter();
+            low.type = 'highpass';
+            low.frequency.value = cover ? 45 : 90;
+            const tone = audio.createBiquadFilter();
+            tone.type = 'lowpass';
+            tone.frequency.value = cover ? 2600 : 6500;
             const gain = audio.createGain();
-            gain.gain.value = 0.22;
-            noise.connect(filter).connect(gain).connect(audio.destination);
-            noise.start();
+            gain.gain.value = cover ? 0.5 : 0.32;
+            src.connect(low).connect(tone).connect(gain).connect(audio.destination);
+            src.start();
         } catch (e) { /* Web Audio indisponible */ }
     }
 
     function renderSound() {
         soundBtn.setAttribute('aria-pressed', String(soundOn));
         soundBtn.classList.toggle('is-on', soundOn);
+        // La scène 3D (bruitages, musique) suit le même réglage.
+        document.dispatchEvent(new CustomEvent('senju-sound', { detail: soundOn }));
     }
 
     /* ------------------------------------------------------------------ */
@@ -630,7 +666,7 @@
                 grab.offset = forward ? rect.right - grab.x : rect.left - grab.x;
                 dragged = true;
                 try { stage.setPointerCapture(e.pointerId); } catch (err) { /* ignoré */ }
-                rustle();
+                rustle(index === 0 || index === leaves.length - 1);
             }
             // Le bord libre de la page reste sous le pointeur.
             const r = Math.max(-1, Math.min(1, (e.clientX + grab.offset - grab.spine) / grab.width));
