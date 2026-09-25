@@ -39,3 +39,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Visage** : tête un peu plus grande (proportions anime), cou plus
   épais, modelé des joues ; les gros plans ne sont plus flous (mise au
   point minimale ramenée à 30 cm).
+- **Correctif** : le lien « Revoir le rêve » ouvrait le carnet (il était
+  intercepté comme « Relire le carnet »).
+- **Robustesse** : si le processeur graphique lâche (contexte WebGL
+  perdu), le carnet s'ouvre au lieu d'un écran noir.
