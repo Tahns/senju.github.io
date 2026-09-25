@@ -472,7 +472,7 @@ export function buildDream(renderer, { low = false, head } = {}) {
         await pose(tl, 'stand', 0.4);
 
         // 4. Chef de la section économique : une pluie de ryō.
-        await shot(tl, V(2.6, 2.3, 4.6), V(0, 1.1, 0.3), 1.2);
+        await shot(tl, V(1.9, 1.75, 3.5), V(0, 1.15, 0.2), 1.2);
         say('Chef de la section économique de Konoha', 4);
         hud.hidden = false;
         tl.tween(1.2, (k) => { glitterMat.opacity = 0.9 * k; goldLight.intensity = 2.2 * k; });

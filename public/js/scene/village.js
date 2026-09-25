@@ -577,7 +577,7 @@ export function buildVillage({ low = false } = {}) {
     const wire = new THREE.MeshStandardMaterial({ color: '#1d1b1a', roughness: 0.6 });
     const lantern = new THREE.MeshStandardMaterial({ color: '#d8402c', roughness: 0.6, emissive: '#b8301c', emissiveIntensity: 0.35 });
     const bark = new THREE.MeshStandardMaterial({ color: '#6a4c36', roughness: 0.95 });
-    const inner = new THREE.MeshStandardMaterial({ color: '#2f5a24', roughness: 1 });
+    const inner = new THREE.MeshStandardMaterial({ color: '#3f6e2e', roughness: 1 });
     const pick = (list) => list[Math.floor(random() * list.length)];
 
     /* ----- Sol, rues ----- */
@@ -756,9 +756,9 @@ export function buildVillage({ low = false } = {}) {
         (far ? blobs.slice(0, 4) : blobs).forEach(([bx, by, bz, br], k) => {
             const c = top.clone().add(V(bx * R, by * R, bz * R));
             const r = R * br * (far ? 1.1 : 1);
-            B.add(new THREE.SphereGeometry(r * 0.8, 12, 9), inner, I, c.x, c.y, c.z);
+            B.add(new THREE.SphereGeometry(r * 0.68, 12, 9), inner, I, c.x, c.y, c.z);
             if (!far && k > 0 && k < 5) B.add(new THREE.CylinderGeometry(0.06 * scale, 0.14 * scale, r * 1.2, 7), bark, I, (x + c.x) / 2, H * 0.85, (z + c.z) / 2, bz * 0.9, 0, -bx * 0.9);
-            (far ? farFoliage : foliage).blob(c, r, far ? 13 : 26, (far ? 2.6 : 1.6) * Math.max(0.8, scale), 1);
+            (far ? farFoliage : foliage).blob(c, r, far ? 14 : 34, (far ? 2.6 : 1.75) * Math.max(0.8, scale), 1);
         });
     }
     // Arbres autour du rocher (en dessous de lui), et forêt en bordure du village.
