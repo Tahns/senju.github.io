@@ -62,4 +62,4 @@ qu'un visiteur remarque en premier.
 3. F6 — écran de chargement avec progression réelle.
 4. F7 — chapitres sur la carte de fin.
 5. F3 — mains plus fines.
-6. Menace cache — paramètre de version sur les modules.
+6. ~~Menace cache — paramètre de version sur les modules~~ : `tools/version.py` (25/09).

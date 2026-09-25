@@ -24,7 +24,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Permanent+Marker&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap&text=%E5%8D%83%E6%89%8B%E5%BF%8D%E9%81%93%E6%B0%B4%E9%81%81%E7%81%AB%E6%84%8F%E5%BF%97">
-    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="stylesheet" href="public/css/style.css?v=69e61c97">
 </head>
 
 <body>
@@ -424,8 +424,8 @@
 
     <p class="sr-only" id="announcer" aria-live="polite"></p>
 
-    <script src="public/js/book.js"></script>
-    <script type="importmap">{ "imports": { "three": "./public/vendor/three.module.min.js" } }</script>
+    <script src="public/js/book.js?v=3a917cbe"></script>
+    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=bcaad071", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=9b6bb1cc", "./public/js/scene/head.js": "./public/js/scene/head.js?v=43dd75d7", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=c5efa158", "./public/js/scene/post.js": "./public/js/scene/post.js?v=7cf7a36d", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c7d86718", "./public/js/scene/room.js": "./public/js/scene/room.js?v=99f01d7a", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=1e9099f1", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=59b73f40", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=ad2b2fbc", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=5bd10e20", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
     <!-- Si le navigateur gère les modules, la scène se charge ; sinon, ou en cas d'erreur, le carnet s'affiche seul. -->
     <script type="module">window.SceneLoading = true;</script>
     <script>
@@ -448,7 +448,7 @@
             }).catch(function () {});
         })();
     </script>
-    <script type="module" src="public/js/scene/main.js" onerror="window.Carnet && window.Carnet.standalone()"></script>
+    <script type="module" src="public/js/scene/main.js?v=be77b8a3" onerror="window.Carnet && window.Carnet.standalone()"></script>
 </body>
 
 </html>
