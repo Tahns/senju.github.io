@@ -103,6 +103,23 @@ const pocketTexture = () => canvasTex(64, 128, (ctx, w, h) => {
     ctx.strokeRect(2, 2, w - 4, h - 4);
 });
 
+// Chevelure au vent : les pointes (loin du crâne) ondulent, les racines restent en place.
+const hairWind = { value: 0 };
+function windyHair() {
+    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6 });
+    m.onBeforeCompile = (shader) => {
+        shader.uniforms.uWind = hairWind;
+        shader.vertexShader = shader.vertexShader
+            .replace('#include <common>', '#include <common>\nuniform float uWind;')
+            .replace('#include <begin_vertex>', `#include <begin_vertex>
+                float reach = smoothstep(0.11, 0.2, length(position - vec3(0.0, 0.036, -0.016)));
+                transformed.x += sin(uWind * 2.3 + position.y * 40.0) * 0.006 * reach;
+                transformed.z += (sin(uWind * 1.7 + position.x * 35.0) * 0.5 + 0.5) * -0.008 * reach;
+                transformed.y += sin(uWind * 2.9 + position.z * 30.0) * 0.003 * reach;`);
+    };
+    return m;
+}
+
 // Bandes blanches (tibias, cuisse).
 const bandageTexture = () => canvasTex(64, 64, (ctx, w, h) => {
     ctx.fillStyle = '#f1efe9';
@@ -137,7 +154,7 @@ export function buildNinja(sculpt) {
         pocket: cloth('#8a9774', { map: pocketTexture() }),
         wrist: cloth('#161a30'),
         swirl: mat('#ffffff', 0.8, { map: swirlTexture() }),
-        hair: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6 }),
+        hair: windyHair(),
         band: cloth('#1c2350', { side: THREE.DoubleSide }),
         plate: new THREE.MeshStandardMaterial({ map: plateTexture(), metalness: 0.85, roughness: 0.28 }),
         bandage: cloth('#ffffff', { map: bandTex }),
@@ -362,6 +379,7 @@ export function buildNinja(sculpt) {
     const faceClosed = faceTexture(true);
     let nextBlink = 1.5;
     function live(time) {
+        hairWind.value = time;
         const blinking = time > nextBlink && time < nextBlink + 0.13;
         const map = blinking ? faceClosed : faceOpen;
         if (M.head.map !== map) M.head.map = map;

@@ -43,3 +43,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   intercepté comme « Relire le carnet »).
 - **Robustesse** : si le processeur graphique lâche (contexte WebGL
   perdu), le carnet s'ouvre au lieu d'un écran noir.
+- **Cheveux au vent** dans le rêve (les pointes ondulent).
+- **Crédits** : mention « Base Akuma » retirée (4ᵉ de couverture et README), à la demande.
+- README mis à jour.
