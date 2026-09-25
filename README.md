@@ -26,7 +26,8 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
   - `arms.js` : les bras et les mains
   - `main.js` : le scénario, étape par étape (facile à modifier)
   - `dream.js`, `ninja.js` : le rêve et Hoko adulte (tenue de jōnin, clignements, respiration, cheveux au vent)
-  - `sdf.js`, `sculpt.js`, `head.js`, `head-worker.js` : la tête et la chevelure sculptées d'un bloc (calculées en arrière-plan)
+  - `avatar.js` : Hoko adulte est un vrai modèle anime (`public/models/hoko.vrm`), recopiant les poses du squelette d'animation de `ninja.js`
+  - `sdf.js`, `sculpt.js`, `head.js`, `head-worker.js` : tête sculptée de secours si le modèle ne se charge pas
   - `village.js`, `post.js` : Konoha (fusionné par matériau pour rester léger, villageois, oiseaux) et le post-traitement du rêve
   - `audio.js` : sons et musiques
   - `radio.js` : la musique YouTube (pour la changer, modifie `VIDEO` et le titre dans `index.html`)
@@ -81,5 +82,6 @@ Sans image, le cadre affiche « Portrait à venir ».
 | `public/js/book.js` | Feuilletage, navigation, son, feuilles qui tombent |
 | `public/img/` | Emblème de Konoha (SVG), favicon, portrait |
 | `public/js/scene/` | Scène 3D de la chambre |
-| `public/vendor/` | Three.js (moteur 3D, licence MIT) |
+| `public/vendor/` | Three.js et son chargeur glTF (moteur 3D, licence MIT) |
+| `public/models/hoko.vrm` | Modèle de Hoko adulte : « HairSample_Male » du projet VRoid (pixiv), publié en CC0 ; allégé (textures WebP) et recoloré (yeux et cheveux bruns, gilet de jōnin peint, bleu nuit) |
 

@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from '../../vendor/RoundedBoxGeometry.js';
 import { faceTexture } from './head.js';
+import { bindAvatar, measureAvatar } from './avatar.js';
 
 const KONOHA = 'M95 8 L84 20 C58 8 24 22 16 50 C12 62 8 70 3 78 C22 86 44 88 60 87 C80 86 94 72 94 55 C94 37 79 25 62 25 C45 25 34 37 34 51 C34 64 45 72 57 72 C69 72 77 64 77 54 C77 45 70 39 62 39 C55 39 50 44 50 51 C50 57 55 60 60 60 C65 60 67 56 66 53';
 
@@ -134,8 +135,71 @@ const bandageTexture = () => canvasTex(64, 64, (ctx, w, h) => {
     }
 });
 
-// `sculpt` : la tête et la chevelure sculptées (voir head.js / loadHead).
-export function buildNinja(sculpt) {
+// Bandeau frontal ajusté à la tête du modèle anime : on mesure le visage dans
+// le repère de l'os de la tête, puis on pose le bandeau, la plaque et les pans.
+function fitHeadband(avatar, M, tails) {
+    const head = avatar.head;
+    const box = new THREE.Box3();
+    const eyes = new THREE.Vector3();
+    const v = new THREE.Vector3();
+    let n = 0;
+    avatar.model.updateMatrixWorld(true);
+    avatar.model.traverse((o) => {
+        if (!o.isSkinnedMesh) return;
+        const name = o.material.name || '';
+        const skin = /Face_00_SKIN/.test(name);
+        const iris = /EyeIris/.test(name);
+        if (!skin && !iris) return;
+        const pos = o.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i += 2) {
+            o.getVertexPosition(i, v);
+            o.localToWorld(v);
+            head.worldToLocal(v);
+            if (skin) box.expandByPoint(v);
+            else {
+                eyes.add(v);
+                n++;
+            }
+        }
+    });
+    if (!n) return;
+    eyes.divideScalar(n);
+    const c = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const forward = Math.sign(eyes.z - c.z) || 1;
+    const y = eyes.y + (box.max.y - eyes.y) * 0.4;
+    const rx = size.x * 0.43;
+    const rz = size.z * 0.47;
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, size.y * 0.16, 64, 1, true), M.band);
+    band.scale.set(rx, 1, rz);
+    band.position.set(c.x, y, c.z);
+    head.add(band);
+    const k = 1 / head.getWorldScale(v).x;
+    const plate = new THREE.Mesh(new RoundedBoxGeometry(0.13 * k, 0.05 * k, 0.012 * k, 3, 0.006 * k), [M.steel, M.steel, M.steel, M.steel, M.plate, M.steel]);
+    // La plaque passe devant la frange.
+    plate.position.set(c.x, y + size.y * 0.03, c.z + forward * (rz + 0.022 * k));
+    if (forward < 0) plate.rotation.y = Math.PI;
+    plate.castShadow = true;
+    head.add(plate);
+    const knot = new THREE.Mesh(new THREE.SphereGeometry(0.016 * k, 16, 12), M.band);
+    knot.position.set(c.x, y, c.z - forward * rz);
+    head.add(knot);
+    tails.forEach(({ pivot, s }) => {
+        const tail = pivot.children[0];
+        const mine = new THREE.Group();
+        mine.position.set(c.x + s * 0.02 * k, y, c.z - forward * (rz + 0.01 * k));
+        const m = tail.clone();
+        m.visible = true;
+        m.scale.setScalar(k);
+        m.position.multiplyScalar(k);
+        mine.add(m);
+        head.add(mine);
+        pivot.userData.follow = mine;
+    });
+}
+
+// `sculpt` : la tête sculptée (repli) ; `avatarGltf` : le modèle anime chargé (voir avatar.js).
+export function buildNinja(sculpt, avatarGltf = null) {
     // Ombrage lisse : tissus avec un léger lustre (sheen), peau satinée.
     const mat = (color, roughness = 0.8, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness, ...extra });
     const cloth = (color, extra = {}) => new THREE.MeshPhysicalMaterial({ color, roughness: 0.88, sheen: 0.5, sheenRoughness: 0.7, sheenColor: new THREE.Color(color).lerp(new THREE.Color('#ffffff'), 0.4), ...extra });
@@ -374,6 +438,69 @@ export function buildNinja(sculpt) {
     applyPose('crossed');
     root.traverse((o) => { if (o.isMesh) o.frustumCulled = false; });
 
+    /* ---------------- Le modèle anime, habillé en jōnin ---------------- */
+    // Le squelette d'animation prend les proportions du modèle ; l'équipement suit.
+    function fitToAvatar(m) {
+        if (!m.hips || !m.neck) return;
+        const oldFoot = J.footL.getWorldPosition(new THREE.Vector3()).y;
+        J.hips.position.set(0, m.hips.y, m.hips.z);
+        J.spine.position.set(0, m.spine.y - m.hips.y, m.spine.z - m.hips.z);
+        J.neck.position.set(0, m.neck.y - m.spine.y, m.neck.z - m.spine.z);
+        J.head.position.set(0, m.head.y - m.neck.y, m.head.z - m.neck.z);
+        [['L', -1], ['R', 1]].forEach(([side, s]) => {
+            J['shoulder' + side].position.set(s * m.arm.x, m.arm.y - m.spine.y, m.arm.z - m.spine.z);
+            J['elbow' + side].position.set(0, -m.arm.distanceTo(m.elbow), 0);
+            J['hand' + side].position.set(0, -m.elbow.distanceTo(m.hand), 0);
+            J['hip' + side].position.set(s * m.leg.x, m.leg.y - m.hips.y, m.leg.z - m.hips.z);
+            J['knee' + side].position.set(0, -m.leg.distanceTo(m.knee), 0);
+            J['foot' + side].position.set(0, -m.knee.distanceTo(m.foot), 0);
+        });
+        root.updateMatrixWorld(true);
+        // Sandales au sol, bandes au bas du mollet.
+        const drop = J.footL.getWorldPosition(new THREE.Vector3()).y - oldFoot;
+        ['L', 'R'].forEach((side) => {
+            J['foot' + side].children.forEach((o) => { if (o.isMesh) o.position.y -= drop; });
+            J['knee' + side].children.forEach((o) => { if (o.isMesh && o.material === M.bandage) o.position.y = J['foot' + side].position.y + 0.1; });
+        });
+        // Gilet (et sabre dans le dos) : recalé sur le buste du modèle.
+        const vest = new THREE.Group();
+        J.spine.add(vest);
+        [...J.spine.children].forEach((o) => { if (o !== vest && !Object.values(J).includes(o)) vest.attach(o); });
+        // Du bas du sweat (hanches) jusqu'au cou.
+        const bottom = m.hips.y - 0.1 - m.spine.y;
+        const top = m.neck.y + 0.012 - m.spine.y;
+        vest.scale.set(1.08, (top - bottom) / 0.625, 1.02);
+        vest.position.set(0, bottom, 0.012);
+        // Le gilet est peint sur le vêtement du modèle : on ne garde que le fourreau, plaqué au dos.
+        vest.children.forEach((o) => { if (o.isMesh) o.visible = false; });
+        back.position.z = -0.135;
+        // Bandes et étui de cuisse ajustés à la jambe du modèle.
+        J.hipR.children.forEach((o) => {
+            if (!o.isMesh) return;
+            if (o.material === M.bandage) o.scale.set(0.85, 1, 0.85);
+            else o.position.x = 0.064;
+        });
+    }
+
+    let avatar = null;
+    if (avatarGltf) {
+        fitToAvatar(measureAvatar(avatarGltf));
+        avatar = bindAvatar(avatarGltf, J, root);
+        const inModel = (o) => {
+            for (let p = o; p; p = p.parent) if (p === avatar.model) return true;
+            return false;
+        };
+        // Le corps procédural s'efface : on garde l'équipement (gilet, sabre, bourse, étui, bandes, sandales).
+        const hide = new Set([M.skin, M.head, M.cloth, M.hair, M.band, M.wrist, M.plate]);
+        root.traverse((o) => {
+            if (!o.isMesh || inModel(o)) return;
+            const mats = Array.isArray(o.material) ? o.material : [o.material];
+            const toes = (o.parent === J.footL || o.parent === J.footR) && o.material === M.skin;
+            if ((mats.some((m) => hide.has(m)) && !toes) || (o.material === M.swirl && o !== backSwirl)) o.visible = false;
+        });
+        fitHeadband(avatar, M, tails);
+    }
+
     // Vie : clignements, respiration, regard qui flâne, pans du bandeau au vent.
     const faceOpen = M.head.map;
     const faceClosed = faceTexture(true);
@@ -381,8 +508,12 @@ export function buildNinja(sculpt) {
     function live(time) {
         hairWind.value = time;
         const blinking = time > nextBlink && time < nextBlink + 0.13;
-        const map = blinking ? faceClosed : faceOpen;
-        if (M.head.map !== map) M.head.map = map;
+        if (avatar) {
+            avatar.expressions.blink(blinking ? 1 : 0);
+        } else {
+            const map = blinking ? faceClosed : faceOpen;
+            if (M.head.map !== map) M.head.map = map;
+        }
         if (time > nextBlink + 0.13) nextBlink = time + 2.2 + ((Math.sin(time * 12.9898) * 43758.5453) % 1 + 1) % 1 * 3;
         J.neck.rotation.set(Math.sin(time * 0.6) * 0.025, Math.sin(time * 0.37) * 0.09, Math.sin(time * 0.29) * 0.02);
         const chest = 1 + Math.sin(time * 1.8) * 0.012;
@@ -390,19 +521,25 @@ export function buildNinja(sculpt) {
         tails.forEach(({ pivot, s }, i) => {
             pivot.rotation.x = 0.45 + Math.sin(time * 3.1 + i) * 0.12 + Math.sin(time * 7.3 + i * 2) * 0.04;
             pivot.rotation.z = s * (0.28 + Math.sin(time * 2.3 + i) * 0.08);
+            const f = pivot.userData.follow;
+            if (f) f.rotation.set(-pivot.rotation.x, 0, pivot.rotation.z);
         });
     }
 
     return {
-        root, J, M, katana, pouch, plate, live,
+        root, J, M, katana, pouch, plate, live, avatar,
+        // Le modèle anime recopie la pose du squelette d'animation.
+        sync() { if (avatar) avatar.sync(); },
         poseValues, currentValues, setValues, plantFeet,
         // Sabre en main / rengainé.
         drawKatana() {
+            if (avatar) avatar.grip('right', true);
             J.handR.attach(katana);
             katana.position.set(0, -0.06, 0.02);
             katana.rotation.set(Math.PI / 2 + 0.1, 0, 0);
         },
         sheathe() {
+            if (avatar) avatar.grip('right', false);
             const { parent, position, quaternion } = katana.userData.sheathed;
             parent.add(katana);
             katana.position.copy(position);
