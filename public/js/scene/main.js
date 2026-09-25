@@ -550,6 +550,7 @@ async function start() {
     function prepareDream() {
         if (!dream) {
             dream = buildDream(renderer);
+            window.__scene.dream = dream;
             dream.resize(window.innerWidth / window.innerHeight);
             renderer.compile(dream.scene, dream.camera);
         }
