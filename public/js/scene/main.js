@@ -40,7 +40,8 @@ function standalone() {
 // « Aller directement au carnet » / « Relire le carnet » : sans la scène.
 document.addEventListener('click', (e) => {
     const link = e.target.closest('.scene-card__link');
-    if (!link) return;
+    // Seuls les liens internes (#…) ouvrent le carnet ; « Revoir le rêve » recharge la page.
+    if (!link || !(link.getAttribute('href') || '').startsWith('#')) return;
     e.preventDefault();
     endCard.hidden = true;
     standalone();
@@ -56,6 +57,15 @@ if (html.classList.contains('has-scene')) {
 async function start() {
     /* ---------------- Rendu ---------------- */
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+    // Si le processeur graphique lâche (fréquent sur téléphone), on ouvre le carnet au lieu d'un écran noir.
+    let lost = false;
+    canvas.addEventListener('webglcontextlost', (e) => {
+        e.preventDefault();
+        lost = true;
+        console.warn('Contexte WebGL perdu : ouverture du carnet seul.');
+        html.classList.remove('dreaming');
+        standalone();
+    });
     window.SceneStarted = true;
     const low = params.get('quality') === 'low';
     // Téléphones et tablettes : un palier intermédiaire (moins d'herbe, ombres et flou plus légers).
@@ -673,6 +683,7 @@ async function start() {
     }
 
     function frame(now) {
+        if (lost) return;
         const dt = Math.min(0.25, (now - last) / 1000);
         last = now;
         adapt(dt);
