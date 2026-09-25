@@ -63,3 +63,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   yeux. Bandeau et plaque ajustés à sa tête ; sandales, bandes, étui, bourse
   et fourreau conservés. Proportions du squelette d'animation calées sur le
   modèle. Image de partage refaite.
+- **Finitions du modèle** : tourbillon rouge en décalque 3D sur le dos (il
+  était coupé en deux), capuche masquée et col montant olive du gilet,
+  cheveux qui ondulent au vent, expressions pendant le rêve (détermination
+  au sabre et au Suiton, rire sous la pluie de ryō, sourire final) ;
+  clignements réparés (les noms des formes du visage n'étaient pas lus : on
+  passe par la table d'expressions du modèle).

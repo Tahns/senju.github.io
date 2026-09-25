@@ -465,6 +465,13 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             ninja.setValues(from.map((f, i) => f.map((v, j) => v + (to[i][j] - v) * k)));
         }, easing);
     }
+    // Expression du visage, en fondu (modèle anime uniquement).
+    const faceLevels = {};
+    function face(timeline, name, value, seconds) {
+        const from = faceLevels[name] || 0;
+        faceLevels[name] = value;
+        return timeline.tween(seconds, (k) => ninja.express(name, from + (value - from) * k));
+    }
     function slash(timeline, index, rotation, position) {
         const arc = arcs[index];
         arc.rotation.set(...rotation);
@@ -502,6 +509,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await side;
         ninja.drawKatana();
         say('Maître du kenjutsu', 3.5);
+        face(tl, 'angry', 0.75, 0.4);
         const cuts = [['slashA', [0.2, 0.9, 0.6], V(0.7, 1.15, 0.95)], ['slashB', [-0.3, 1.1, -0.4], V(1.1, 1.1, 0.35)], ['slashC', [1.2, 1.2, 0], V(1.25, 1.15, -0.2)]];
         for (let i = 0; i < 3; i++) {
             sound.whoosh();
@@ -515,6 +523,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await pose(tl, 'draw', 0.35);
         ninja.sheathe();
         tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * (1 - k); });
+        face(tl, 'angry', 0, 0.5);
         await pose(tl, 'stand', 0.4);
 
         // 3. Maître du Suiton : mudras, puis un dragon d'eau.
@@ -522,6 +531,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await pose(tl, 'seal', 0.5);
         await low;
         say('Suiton : maître de l\'eau', 3.5);
+        face(tl, 'angry', 0.5, 0.5);
         sound.water(2.6);
         waterMat.opacity = 0.55;
         const D = dragonMat.uniforms;
@@ -543,6 +553,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         // 4. Chef de la section économique : une pluie de ryō.
         await shot(tl, V(1.9, 1.75, 3.5), V(0, 1.15, 0.2), 1.2);
         say('Chef de la section économique de Konoha', 4);
+        face(tl, 'angry', 0, 0.3);
+        face(tl, 'joy', 0.7, 0.6);
         hud.hidden = false;
         tl.tween(1.2, (k) => { glitterMat.opacity = 0.9 * k; goldLight.intensity = 2.2 * k; });
         spawnRate = 45;
@@ -576,6 +588,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         tl.tween(2, (k) => { glitterMat.opacity = 0.9 * (1 - k); goldLight.intensity = 2.2 * (1 - k); });
         pose(tl, 'crossed', 0.8);
         say('Un jour…', 3.5);
+        face(tl, 'joy', 0, 0.8);
+        face(tl, 'fun', 0.4, 0.8);
         await shot(tl, V(-2.5, 4.8, 9.5), V(0, 1.2, -2), 5.5, ease.sine);
         sound.stopDream(3);
     }

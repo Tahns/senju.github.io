@@ -198,6 +198,34 @@ function fitHeadband(avatar, M, tails) {
     });
 }
 
+// Col montant du gilet et grand tourbillon rouge dans le dos, attachés au buste
+// du modèle (repère de l'os : +z local = dos, le modèle étant retourné).
+function dressAvatar(avatar, M) {
+    const chest = avatar.bone('J_Bip_C_UpperChest');
+    const neck = avatar.bone('J_Bip_C_Neck');
+    if (!chest || !neck) return;
+    const n = neck.position;
+    const gap = 0.55;
+    const collar = new THREE.Group();
+    collar.position.set(0, n.y * 0.72, n.z);
+    chest.add(collar);
+    const outer = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.085, 0.075, 48, 1, true, Math.PI + gap, Math.PI * 2 - gap * 2), M.vest);
+    const inner = new THREE.Mesh(new THREE.CylinderGeometry(0.088, 0.078, 0.075, 48, 1, true, Math.PI + gap, Math.PI * 2 - gap * 2), M.vestInner);
+    outer.scale.set(1.05, 1, 0.95);
+    inner.scale.set(1.05, 1, 0.95);
+    collar.add(outer, inner);
+    const rim = [];
+    for (let k = 0; k <= 32; k++) {
+        const t = Math.PI + gap + (k / 32) * (Math.PI * 2 - gap * 2);
+        rim.push(new THREE.Vector3(Math.sin(t) * 0.0915 * 1.05, 0.0375, Math.cos(t) * 0.0915 * 0.95));
+    }
+    collar.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rim), 64, 0.006, 8, false), M.vestDark));
+    collar.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+    const swirl = new THREE.Mesh(new THREE.CircleGeometry(0.07, 48), M.swirl);
+    swirl.position.set(0, -0.06, 0.138);
+    chest.add(swirl);
+}
+
 // `sculpt` : la tête sculptée (repli) ; `avatarGltf` : le modèle anime chargé (voir avatar.js).
 export function buildNinja(sculpt, avatarGltf = null) {
     // Ombrage lisse : tissus avec un léger lustre (sheen), peau satinée.
@@ -499,6 +527,7 @@ export function buildNinja(sculpt, avatarGltf = null) {
             if ((mats.some((m) => hide.has(m)) && !toes) || (o.material === M.swirl && o !== backSwirl)) o.visible = false;
         });
         fitHeadband(avatar, M, tails);
+        dressAvatar(avatar, M);
     }
 
     // Vie : clignements, respiration, regard qui flâne, pans du bandeau au vent.
@@ -510,6 +539,7 @@ export function buildNinja(sculpt, avatarGltf = null) {
         const blinking = time > nextBlink && time < nextBlink + 0.13;
         if (avatar) {
             avatar.expressions.blink(blinking ? 1 : 0);
+            avatar.wind(time);
         } else {
             const map = blinking ? faceClosed : faceOpen;
             if (M.head.map !== map) M.head.map = map;
@@ -530,6 +560,8 @@ export function buildNinja(sculpt, avatarGltf = null) {
         root, J, M, katana, pouch, plate, live, avatar,
         // Le modèle anime recopie la pose du squelette d'animation.
         sync() { if (avatar) avatar.sync(); },
+        // Expression du visage (angry, joy, fun) entre 0 et 1.
+        express(name, value) { if (avatar && avatar.expressions[name]) avatar.expressions[name](value); },
         poseValues, currentValues, setValues, plantFeet,
         // Sabre en main / rengainé.
         drawKatana() {
