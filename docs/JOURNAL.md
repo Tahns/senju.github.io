@@ -46,3 +46,10 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Cheveux au vent** dans le rêve (les pointes ondulent).
 - **Crédits** : mention « Base Akuma » retirée (4ᵉ de couverture et README), à la demande.
 - README mis à jour.
+- **Tête refaite (3ᵉ version)**, jugée « horrible » avant : construction
+  anime propre — crâne rond, bas du visage arrondi rogné en V par la
+  mâchoire, petit menton, cou attaché derrière la mâchoire ; plus de bosses
+  ni de coutures. Chevelure en vraies mèches (rubans épais et effilés,
+  couchés sur le crâne, rejetés en arrière, pointes dressées devant) sur une
+  calotte lisse ; construite en 0,5 s au lieu de 4 s.
+- Outil `tools/head-preview.html` : la tête seule, de face, 3/4, profil, dos.
