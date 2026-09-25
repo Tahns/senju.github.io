@@ -23,18 +23,13 @@ export function faceTexture(closed = false) {
         ctx.fillStyle = g;
         ctx.fillRect(x - r, y - r, r * 2, r * 2);
     };
-    const [, eyeY] = toCanvas(0, -0.012);
+    const [, eyeY] = toCanvas(0, -0.01);
     // Joues rosées, léger creux sous la lèvre, ombre douce du front sous le bandeau.
-    [-1, 1].forEach((s) => soft(512 + s * 205, 700, 110, 'rgba(238,125,105,.16)'));
-    soft(512, 860, 50, 'rgba(170,95,75,.12)');
+    [-1, 1].forEach((s) => soft(512 + s * 170, 660, 70, 'rgba(238,125,105,.16)'));
+    soft(512, 890, 40, 'rgba(170,95,75,.12)');
     // Modelé des joues et de la mâchoire, lumière sur l'arête du nez et le front.
-    [-1, 1].forEach((s) => soft(512 + s * 300, 780, 130, 'rgba(165,95,75,.16)'));
+    [-1, 1].forEach((s) => soft(512 + s * 230, 760, 80, 'rgba(165,95,75,.12)'));
     soft(512, 600, 40, 'rgba(255,235,220,.22)');
-    const g = ctx.createLinearGradient(0, 330, 0, 430);
-    g.addColorStop(0, 'rgba(150,90,70,.22)');
-    g.addColorStop(1, 'rgba(150,90,70,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 330, 1024, 100);
 
     const eye = (cx, flip) => {
         ctx.save();
@@ -138,11 +133,11 @@ export function faceTexture(closed = false) {
     eye(left, -1);
     eye(right, 1);
     // Nez : un reflet et une petite ombre sous la pointe.
-    const [, noseY] = toCanvas(0, -0.042);
-    soft(512 + 6, noseY + 10, 16, 'rgba(160,85,65,.4)');
+    const [, noseY] = toCanvas(0, -0.047);
+    soft(512 + 4, noseY + 12, 14, 'rgba(160,85,65,.2)');
     soft(512 - 4, noseY - 30, 20, 'rgba(255,240,225,.35)');
     // Bouche : un trait ferme, la lèvre inférieure à peine rosée.
-    const [, mouthY] = toCanvas(0, -0.068);
+    const [, mouthY] = toCanvas(0, -0.074);
     ctx.strokeStyle = '#6a2e22';
     ctx.lineWidth = 6;
     ctx.lineCap = 'round';
