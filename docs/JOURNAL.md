@@ -26,3 +26,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   file, qui s'enroule autour de Hoko puis jaillit ; embruns plus fins.
 - **Anti-cache** : chaque fichier est versionné (`tools/version.py`), la
   carte d'import redirige chaque module vers sa version.
+- **Chambre** : bonsaï refait en lisse (pot émaillé, mousse, tronc
+  tortueux, coussins de feuillage), comme le reste de la scène.
+- **Partage** : image d'aperçu (Open Graph / Twitter) tirée du rêve.
