@@ -478,3 +478,72 @@ export function dot() {
         ctx.fillRect(0, 0, w, h);
     });
 }
+
+// Peau : légères variations de teinte et grain fin (multiplié par la couleur).
+export function skin() {
+    const random = rng(77);
+    return canvasTexture(256, 256, (ctx, w, h) => {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        for (let i = 0; i < 90; i++) {
+            const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 20 + random() * 40);
+            const warm = random() > 0.5;
+            g.addColorStop(0, warm ? 'rgba(255,170,150,.18)' : 'rgba(235,215,200,.16)');
+            g.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.save();
+            ctx.translate(random() * w, random() * h);
+            ctx.fillStyle = g;
+            ctx.fillRect(-60, -60, 120, 120);
+            ctx.restore();
+        }
+        for (let i = 0; i < w * h * 0.25; i++) {
+            ctx.fillStyle = 'rgba(150,90,70,' + random() * 0.08 + ')';
+            ctx.fillRect(random() * w, random() * h, 1, 1);
+        }
+    }, { repeat: [2, 2] });
+}
+
+// Laque noire décorée à la feuille d'or (maki-e) : branche de cerisier.
+export function makie() {
+    const random = rng(88);
+    return canvasTexture(512, 512, (ctx, w, h) => {
+        const g = ctx.createLinearGradient(0, 0, w, h);
+        g.addColorStop(0, '#1a0d0a');
+        g.addColorStop(1, '#070304');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = '#c9a24a';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.moveTo(-10, h * 0.8);
+        ctx.bezierCurveTo(w * 0.3, h * 0.7, w * 0.45, h * 0.35, w * 0.9, h * 0.25);
+        ctx.stroke();
+        ctx.lineWidth = 3.5;
+        [[0.35, 0.62, 0.5, 0.8], [0.55, 0.4, 0.7, 0.55], [0.65, 0.33, 0.62, 0.12]].forEach(([x0, y0, x1, y1]) => {
+            ctx.beginPath();
+            ctx.moveTo(x0 * w, y0 * h);
+            ctx.quadraticCurveTo((x0 + x1) / 2 * w + 20, (y0 + y1) / 2 * h, x1 * w, y1 * h);
+            ctx.stroke();
+        });
+        const blossom = (x, y, r) => {
+            ctx.fillStyle = '#e8c56a';
+            for (let k = 0; k < 5; k++) {
+                const a = (k / 5) * Math.PI * 2 + random();
+                ctx.beginPath();
+                ctx.ellipse(x + Math.cos(a) * r * 0.55, y + Math.sin(a) * r * 0.55, r * 0.5, r * 0.34, a, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.fillStyle = '#8a1d14';
+            ctx.beginPath();
+            ctx.arc(x, y, r * 0.22, 0, Math.PI * 2);
+            ctx.fill();
+        };
+        [[0.3, 0.7, 26], [0.5, 0.52, 30], [0.72, 0.52, 22], [0.62, 0.16, 24], [0.86, 0.26, 20], [0.2, 0.3, 16], [0.8, 0.8, 14]].forEach(([x, y, r]) => blossom(x * w, y * h, r));
+        ctx.fillStyle = 'rgba(232,197,106,.7)';
+        for (let i = 0; i < 40; i++) ctx.fillRect(random() * w, random() * h, 2, 2);
+        ctx.strokeStyle = 'rgba(201,162,74,.8)';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(10, 10, w - 20, h - 20);
+    });
+}

@@ -10,6 +10,8 @@ import { buildRoom, EYE } from './room.js';
 import { Arm, handQuaternion } from './arms.js';
 import { Timeline, ease } from './timeline.js';
 import { setAnisotropy } from './textures.js';
+import { SceneAudio } from './audio.js';
+import { buildDream } from './dream.js';
 
 const html = document.documentElement;
 const canvas = document.getElementById('scene');
@@ -21,6 +23,7 @@ const replayBtn = document.getElementById('scene-replay');
 const skipBtn = document.getElementById('scene-skip');
 const caption = document.getElementById('scene-caption');
 const backdrop = document.getElementById('scene-backdrop');
+const soundBtn = document.getElementById('scene-sound');
 const params = new URLSearchParams(location.search);
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -82,7 +85,9 @@ async function start() {
         const horizontal = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(31)) * 1.5);
         camera.fov = camera.aspect < 1.5 ? Math.min(88, THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(horizontal / 2) / camera.aspect))) : 62;
         camera.updateProjectionMatrix();
+        if (dream) dream.resize(w / h);
     }
+    let dream = null;
     resize();
     window.addEventListener('resize', resize);
 
@@ -109,37 +114,23 @@ async function start() {
     const timeline = new Timeline();
     window.__scene = { timeline, cam, room };
 
-    /* ---------------- Son (généré, facultatif) ---------------- */
-    let audio = null;
-    function noiseBurst({ duration, freq, q = 1, gain = 0.2, sweep = null, type = 'bandpass' }) {
-        if (!window.Carnet || !window.Carnet.sound) return;
-        try {
-            audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-            const buffer = audio.createBuffer(1, Math.max(1, audio.sampleRate * duration), audio.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < data.length; i++) {
-                const k = i / data.length;
-                data[i] = (Math.random() * 2 - 1) * Math.pow(Math.sin(Math.PI * Math.min(1, k * 1.4)), 2);
-            }
-            const src = audio.createBufferSource();
-            src.buffer = buffer;
-            const filter = audio.createBiquadFilter();
-            filter.type = type;
-            filter.Q.value = q;
-            filter.frequency.setValueAtTime(freq, audio.currentTime);
-            if (sweep) filter.frequency.exponentialRampToValueAtTime(sweep, audio.currentTime + duration);
-            const g = audio.createGain();
-            g.gain.value = gain;
-            src.connect(filter).connect(g).connect(audio.destination);
-            src.start();
-        } catch (e) { /* son indisponible */ }
-    }
-    const sfx = {
-        step: () => noiseBurst({ duration: 0.09, freq: 180, q: 0.7, gain: 0.35, type: 'lowpass' }),
-        door: () => noiseBurst({ duration: 1.3, freq: 500, q: 1.5, gain: 0.12, sweep: 300 }),
-        book: () => noiseBurst({ duration: 0.35, freq: 1400, q: 0.8, gain: 0.14, sweep: 2600 }),
-        cloth: () => noiseBurst({ duration: 0.9, freq: 900, q: 0.5, gain: 0.12, sweep: 500 })
+    /* ---------------- Son ---------------- */
+    const sound = new SceneAudio();
+    window.__scene.sound = sound;
+    const renderSoundBtn = () => {
+        soundBtn.setAttribute('aria-pressed', String(sound.on));
+        soundBtn.classList.toggle('is-off', !sound.on);
+        soundBtn.setAttribute('aria-label', sound.on ? 'Couper le son' : 'Activer le son');
     };
+    // Même réglage que le bouton son du carnet.
+    document.addEventListener('senju-sound', (e) => {
+        sound.setOn(e.detail);
+        renderSoundBtn();
+    });
+    soundBtn.addEventListener('click', () => {
+        sound.unlock();
+        window.Carnet.setSound(!sound.on);
+    });
 
     /* ---------------- Outils de mise en scène ---------------- */
     const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
@@ -175,7 +166,7 @@ async function start() {
             const amount = Math.min(1, k * 6, (1 - k) * 6);
             cam.bobY = (-Math.abs(s) * 0.032 + 0.016) * amount;
             cam.bobRoll = s * 0.007 * amount;
-            if (Math.sign(s) !== Math.sign(lastSin) && k > 0.02 && k < 0.98) sfx.step();
+            if (Math.sign(s) !== Math.sign(lastSin) && k > 0.02 && k < 0.98) sound.step(cam.pos.z > 3.05 ? 'wood' : 'tatami');
             lastSin = s;
         }, easing);
     }
@@ -186,14 +177,33 @@ async function start() {
         const p0 = arm.target.position.clone();
         const q0 = arm.target.quaternion.clone();
         const g0 = { ...arm.grip };
+        const from = (key) => (g0[key] === null || g0[key] === undefined ? g0.curl : g0[key]);
+        const to = (key) => (grip[key] === null ? (grip.curl !== undefined ? grip.curl : g0.curl) : grip[key]);
         return timeline.tween(seconds, (k) => {
             arm.target.position.lerpVectors(p0, position, k);
             arm.target.quaternion.slerpQuaternions(q0, quaternion, k);
-            if (grip) Object.keys(grip).forEach((key) => { arm.grip[key] = g0[key] + (grip[key] - g0[key]) * k; });
+            if (grip) {
+                Object.keys(grip).forEach((key) => {
+                    arm.grip[key] = k >= 1 && grip[key] === null ? null : from(key) + (to(key) - from(key)) * k;
+                });
+            }
         }, easing);
     }
 
-    const rest = (arm, seconds = 0.8) => reach(arm, rig, arm.rest.position, arm.rest.quaternion, seconds, { curl: 0.25, thumb: 0.2 });
+    const rest = (arm, seconds = 0.8) => reach(arm, rig, arm.rest.position, arm.rest.quaternion, seconds, { curl: 0.25, thumb: 0.2, index: null });
+
+    // Place la main pour qu'un point précis de la main (bout d'un doigt, paume…)
+    // tombe exactement sur `point`, avec l'orientation voulue.
+    // Points de la main droite, dans son repère (doigts vers -Z) :
+    const TIP = {
+        index: V(-0.023, 0, -0.151), // bout de l'index tendu
+        middle: V(-0.0075, 0, -0.159),
+        palm: V(0, -0.012, -0.042) // centre de la paume, côté intérieur
+    };
+    function handAt(arm, point, quaternion, local) {
+        const offset = V(local.x * arm.side, local.y, local.z).applyQuaternion(quaternion);
+        return point.clone().sub(offset);
+    }
 
     // Déplace un objet sous `parent`, jusqu'à une pose locale.
     function move(object, parent, position, quaternion, seconds, easing = ease.inOut) {
@@ -226,37 +236,67 @@ async function start() {
         skipBtn.hidden = true;
     });
 
-    /* ---------------- Poses des mains sur les livres ---------------- */
+    /* ---------------- Poses des mains ---------------- */
     const quat = (palm, fingers) => handQuaternion(palm, fingers);
-    function spineGrip(book, out = 0) {
-        const { w } = book.userData.size;
-        return {
-            position: V(-w / 2 - 0.017 - out, 0.012, 0),
-            quaternion: quat(V(1, 0, 0), V(0.22, 1, 0))
-        };
+    const tiltQ = (angle) => new THREE.Quaternion().setFromAxisAngle(V(0, 0, 1), angle);
+
+    // Repère d'un livre : X = largeur (dos en -X), Y = hauteur, Z = épaisseur
+    // (couverture en +Z). Sur l'étagère, le dos fait face à la chambre.
+
+    // Index posé sur la tranche du haut, près du dos : pour faire basculer le livre.
+    function topFingerGrip(book, lift = 0) {
+        const { w, h } = book.userData.size;
+        const q = quat(V(0.15, -1, 0), V(1, -0.4, 0));
+        return { position: handAt(right, V(-w / 2 + 0.022, h / 2 + 0.006 + lift, 0), q, TIP.index), quaternion: q };
     }
+    // Main refermée sur le dos du livre (le haut, qui dépasse de l'étagère).
+    function spineGrip(book, out = 0) {
+        const { w, h } = book.userData.size;
+        const q = quat(V(1, 0, 0), V(0, 0.15, -1));
+        return { position: handAt(right, V(-w / 2 - 0.003 - out, h / 2 - 0.055, 0), q, TIP.palm), quaternion: q };
+    }
+    // Livre tenu devant soi : doigts à plat derrière, pouces sur la couverture.
     function holdGrip(book, side) {
         const { w, h, t } = book.userData.size;
-        return {
-            position: V(side * (w / 2 - 0.028), -h / 2 + 0.035, -t / 2 - 0.022),
-            quaternion: quat(V(0, 0, 1), V(-side * 0.45, 1, 0))
-        };
+        const arm = side > 0 ? right : left;
+        const q = quat(V(0, 0, 1), V(-side * 0.35, 1, 0));
+        return { position: handAt(arm, V(side * (w / 2 - 0.035), -h / 2 + 0.06, -t / 2 - 0.004), q, TIP.palm), quaternion: q };
     }
-    const tiltQ = (angle) => new THREE.Quaternion().setFromAxisAngle(V(0, 0, 1), angle);
+
+    // Pose d'un livre penché de `angle` sur son arête basse, côté dos.
+    function tiltedPose(kind, angle, out = 0) {
+        const { mesh: book, slot } = room.books[kind];
+        const { w, h } = book.userData.size;
+        const pivot = V(-w / 2, -h / 2, 0);
+        const q = slot.quaternion.clone().multiply(tiltQ(angle));
+        const pivotWorld = pivot.clone().applyQuaternion(slot.quaternion).add(slot.position);
+        const position = pivotWorld.sub(pivot.clone().applyQuaternion(q)).add(V(out, 0, 0));
+        return { position, quaternion: q };
+    }
+    function tilt(kind, from, to, seconds, out = [0, 0]) {
+        const { mesh: book } = room.books[kind];
+        scene.attach(book);
+        return timeline.tween(seconds, (k) => {
+            const pose = tiltedPose(kind, from + (to - from) * k, out[0] + (out[1] - out[0]) * k);
+            book.position.copy(pose.position);
+            book.quaternion.copy(pose.quaternion);
+        });
+    }
 
     /* ---------------- Les étapes ---------------- */
     async function enter() {
         await walk([V(0, EYE, 4.0), V(0, EYE, 3.62)], 2.6);
-        await lookAt(0.7, V(-0.2, 1.2, 2.97));
-        // Il se penche un peu vers la porte en tendant le bras.
+        await lookAt(0.7, V(-0.2, 1.1, 2.97));
+        // Il se penche vers la porte ; la main se pose à plat sur le shoji,
+        // le bout des doigts dans la poignée creuse, et la fait glisser.
         const p0 = cam.pos.clone();
         timeline.tween(0.8, (k) => cam.pos.lerpVectors(p0, V(-0.05, EYE - 0.04, 3.4), k));
-        // La main gauche se pose dans la poignée creuse et fait glisser la porte.
-        const onDoor = quat(V(0, 0, -1), V(0.1, 1, 0));
+        const onDoor = quat(V(0, 0, -1), V(0.08, 1, 0));
         const handle = room.doorHandle.position;
-        await reach(left, room.door, V(handle.x - 0.004, handle.y - 0.1, 0.045), onDoor, 0.8, { curl: 0.1, thumb: 0.1 });
-        await reach(left, room.door, V(handle.x - 0.004, handle.y - 0.1, 0.03), onDoor, 0.25, { curl: 0.45, thumb: 0.3 });
-        sfx.door();
+        const flat = (gap) => handAt(left, V(handle.x, handle.y - 0.005, 0.0175 + gap), onDoor, V(-0.0075, -0.021, -0.155));
+        await reach(left, room.door, flat(0.04), onDoor, 0.8, { curl: 0.05, thumb: 0.1, index: null });
+        await reach(left, room.door, flat(0.001), onDoor, 0.25, { curl: 0.14, thumb: 0.15 });
+        sound.door();
         const x0 = room.door.position.x;
         const slide = timeline.tween(1.5, (k) => { room.door.position.x = x0 + 0.88 * k; }, ease.inOut);
         await timeline.wait(0.9);
@@ -265,11 +305,70 @@ async function start() {
         await slide;
     }
 
+    // En entrant : il remonte la boîte à musique posée sur le coffre.
+    async function playMusic() {
+        const box = room.musicBox;
+        const boxPos = box.group.getWorldPosition(V(0, 0, 0));
+        const walking = walk([V(-0.15, EYE, 2.45), V(-1.0, EYE, 2.1), V(-1.62, EYE, boxPos.z + 0.04)], 3.0);
+        await look(1.1, { yaw: 0.35, pitch: -0.05 });
+        await lookAt(1.2, boxPos.clone().add(V(0, 0.1, 0)));
+        await walking;
+        // Il se penche au-dessus du coffre.
+        const p0 = cam.pos.clone();
+        const bend = V(-1.72, 1.2, boxPos.z + 0.02);
+        timeline.tween(0.9, (k) => cam.pos.lerpVectors(p0, bend, k));
+        await lookAt(0.9, boxPos.clone().add(V(0.02, 0.06, -0.02)), bend);
+
+        // Main gauche : le bout des doigts sous le rebord du couvercle, qui se soulève.
+        const lidQ = quat(V(0, 1, 0), V(-1, 0.2, 0));
+        const under = handAt(left, V(0.01, -0.012, 0.01), lidQ, TIP.middle);
+        await reach(left, box.lidEdge, under.clone().add(V(0.05, -0.03, 0)), lidQ, 0.7, { curl: 0.15, thumb: 0.2 });
+        await reach(left, box.lidEdge, under, lidQ, 0.25, { curl: 0.3 });
+        sound.lid();
+        await timeline.tween(0.8, (k) => { box.lid.rotation.z = 1.15 * k; }, ease.inOut);
+        rest(left, 0.7);
+        await timeline.tween(0.5, (k) => { box.lid.rotation.z = 1.15 + 0.6 * k; }, ease.out);
+
+        // Main droite : pince la clé entre le pouce et l'index, et la tourne trois fois.
+        const pivot = new THREE.Object3D();
+        box.key.getWorldPosition(pivot.position);
+        box.group.getWorldQuaternion(pivot.quaternion);
+        scene.add(pivot);
+        const keyQ = quat(V(0, 0, 1), V(-0.2, -1, 0.15));
+        const pinch = handAt(right, V(0, 0.006, -0.026), keyQ, V(-0.02, -0.004, -0.13));
+        await reach(right, pivot, pinch.clone().add(V(0, 0, -0.05)), keyQ, 0.7, { curl: 0.2, thumb: 0.2 });
+        await reach(right, pivot, pinch, keyQ, 0.25, { curl: 0.5, thumb: 0.65 });
+        for (let turn = 0; turn < 3; turn++) {
+            sound.wind(0.5);
+            const k0 = box.key.rotation.z;
+            await timeline.tween(0.5, (k) => {
+                box.key.rotation.z = k0 - (Math.PI / 2) * k;
+                pivot.rotation.z = -(Math.PI / 2) * k;
+            }, ease.inOut);
+            if (turn < 2) {
+                // Il relâche, revient, reprend la clé.
+                await timeline.tween(0.28, (k) => {
+                    pivot.rotation.z = -(Math.PI / 2) * (1 - k);
+                    right.grip.thumb = 0.65 - 0.4 * Math.sin(Math.PI * k);
+                }, ease.inOut);
+            }
+        }
+        await rest(right, 0.7);
+        pivot.removeFromParent();
+        sound.startMusic();
+        box.setPlaying(2.2);
+        // Il se redresse et écoute un instant.
+        const p1 = cam.pos.clone();
+        timeline.tween(1.1, (k) => cam.pos.lerpVectors(p1, V(-1.6, EYE, boxPos.z + 0.05), k));
+        await look(1.4, { pitch: -0.25 });
+        await timeline.wait(0.8);
+    }
+
     async function goToShelf() {
-        const walking = walk([V(0, EYE, 2.2), V(-0.8, EYE, 0.8), V(-1.62, EYE, -0.22)], 4.6);
-        await look(1.3, { yaw: -0.35, pitch: -0.08 });
-        await look(1.4, { yaw: 0.6, pitch: -0.05 });
-        await look(1.4, { yaw: Math.PI / 2, pitch: -0.1 });
+        const walking = walk([V(-1.2, EYE, 1.1), V(-1.45, EYE, 0.4), V(-1.62, EYE, -0.22)], 3.2);
+        await look(1.2, { yaw: 0.25, pitch: -0.06 });
+        await look(1.1, { yaw: 0.9, pitch: -0.05 });
+        await look(0.9, { yaw: Math.PI / 2, pitch: -0.1 });
         await walking;
         // Le regard parcourt les rayons.
         await look(0.9, { yaw: Math.PI / 2 + 0.28, pitch: 0.05 });
@@ -278,37 +377,37 @@ async function start() {
 
     async function takeBook(kind) {
         const { mesh: book } = room.books[kind];
-        const size = book.userData.size;
         const target = book.getWorldPosition(new THREE.Vector3());
         if (Math.abs(cam.pos.z - target.z) > 0.12) {
             await walk([V(cam.pos.x, EYE, target.z + 0.05)], 1.1, ease.inOut);
         }
-        await lookAt(0.8, target.clone().add(V(0, 0.02, 0)));
-        // La main s'approche du dos du livre, puis accroche le haut.
-        const grip = spineGrip(book, 0.07);
-        await reach(right, book, grip.position, grip.quaternion, 0.9, { curl: 0.05, thumb: 0.1 });
+        await lookAt(0.8, target.clone().add(V(0, 0.05, 0)));
+        // 1. L'index se pose sur la tranche du haut et fait basculer le livre vers soi.
+        const top = topFingerGrip(book, 0.04);
+        await reach(right, book, top.position, top.quaternion, 0.9, { curl: 0.85, thumb: 0.6, index: 0.05 });
+        const press = topFingerGrip(book);
+        await reach(right, book, press.position, press.quaternion, 0.25, { index: 0.22 });
+        sound.bookTilt();
+        await tilt(kind, 0, 0.36, 0.55);
+        // 2. La main se referme sur le dos du livre, qui dépasse maintenant.
+        const grip = spineGrip(book, 0.05);
+        await reach(right, book, grip.position, grip.quaternion, 0.35, { curl: 0.2, thumb: 0.3, index: null });
         const hold = spineGrip(book);
-        await reach(right, book, hold.position.clone().add(V(0, 0.03, 0)), hold.quaternion, 0.35, { curl: 0.2 });
-        await reach(right, book, hold.position, hold.quaternion, 0.25, { curl: 0.75, thumb: 0.5 });
-        sfx.book();
-        // Le livre bascule vers soi puis sort de l'étagère.
-        const slotQ = room.books[kind].slot.quaternion;
-        const slotP = room.books[kind].slot.position;
-        const out = V(0.16, 0.035, 0);
-        await move(book, scene, slotP.clone().add(V(0.03, 0.012, 0)), slotQ.clone().multiply(tiltQ(0.22)), 0.45);
-        await move(book, scene, slotP.clone().add(out), slotQ.clone().multiply(tiltQ(0.12)), 0.5);
-        // Il le ramène devant lui, couverture face à lui ; la main gauche vient aider.
+        await reach(right, book, hold.position, hold.quaternion, 0.3, { curl: 0.78, thumb: 0.75 });
+        // 3. Il le fait glisser hors de l'étagère.
+        sound.bookSlide();
+        await tilt(kind, 0.36, 0.2, 0.55, [0, 0.19]);
+        // 4. Il le ramène devant lui, couverture face à lui ; la main gauche vient aider.
         const show = new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.32, 0.12, 0.04));
         const lifting = move(book, rig, V(0.02, -0.19, -0.4), show, 1.1);
         look(1.1, { pitch: -0.12 });
         await timeline.wait(0.45);
         const l = holdGrip(book, -1);
-        reach(left, book, l.position, l.quaternion, 0.7, { curl: 0.3, thumb: 0.85 });
+        reach(left, book, l.position, l.quaternion, 0.7, { curl: 0.06, thumb: 0.85 });
         await lifting;
         const r = holdGrip(book, 1);
-        await reach(right, book, r.position, r.quaternion, 0.5, { curl: 0.3, thumb: 0.85 });
+        await reach(right, book, r.position, r.quaternion, 0.5, { curl: 0.06, thumb: 0.85 });
         await timeline.wait(0.5);
-        return { book, size };
     }
 
     async function read(kind) {
@@ -325,19 +424,30 @@ async function start() {
         await move(book, rig, V(0.02, -0.19, -0.4), new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.32, 0.12, 0.04)), 0.7);
         rest(left, 0.7);
         const hold = spineGrip(book);
-        await reach(right, book, hold.position, hold.quaternion, 0.5, { curl: 0.75, thumb: 0.5 });
-        const target = slot.position.clone();
-        lookAt(0.9, target);
-        await move(book, scene, slot.position.clone().add(V(0.16, 0.035, 0)), slot.quaternion.clone().multiply(tiltQ(0.12)), 1.1);
-        sfx.book();
-        await move(book, scene, slot.position.clone().add(V(0.02, 0.008, 0)), slot.quaternion.clone().multiply(tiltQ(0.1)), 0.45);
-        await move(book, scene, slot.position, slot.quaternion, 0.3);
-        await reach(right, book, spineGrip(book, 0.06).position, hold.quaternion, 0.35, { curl: 0.05 });
+        await reach(right, book, hold.position, hold.quaternion, 0.5, { curl: 0.78, thumb: 0.75 });
+        lookAt(0.9, slot.position);
+        // Il glisse le livre, encore penché, dans sa place…
+        const out = tiltedPose(kind, 0.2, 0.19);
+        await move(book, scene, out.position, out.quaternion, 1.1);
+        sound.bookSlide();
+        await tilt(kind, 0.2, 0.3, 0.5, [0.19, 0]);
+        // …puis le redresse du bout de l'index.
+        const grip = spineGrip(book, 0.05);
+        await reach(right, book, grip.position, grip.quaternion, 0.25, { curl: 0.15, thumb: 0.3 });
+        const push = topFingerGrip(book, 0.03);
+        await reach(right, book, push.position, push.quaternion, 0.35, { curl: 0.85, thumb: 0.6, index: 0.05 });
+        const press = topFingerGrip(book);
+        await reach(right, book, press.position, press.quaternion, 0.2, { index: 0.2 });
+        await tilt(kind, 0.3, 0, 0.4);
+        sound.bookTap();
+        book.position.copy(slot.position);
+        book.quaternion.copy(slot.quaternion);
         await rest(right, 0.7);
     }
 
     async function goToBed() {
         const { x: bx, z: bz } = room.bed;
+        prepareDream();
         await look(0.9, { yaw: Math.PI / 2 - 0.6, pitch: -0.05 });
         const walking = walk([V(-0.9, EYE, -0.35), V(0.1, EYE, -0.95), V(bx - 0.95, EYE, bz + 0.15)], 4.2);
         await look(1.6, { yaw: -0.5, pitch: -0.1 });
@@ -345,7 +455,7 @@ async function start() {
         await walking;
         // Il se retourne et s'assoit au bord du futon, face à la chambre.
         await look(1.1, { yaw: Math.PI / 2 - 0.35, pitch: -0.05 });
-        sfx.cloth();
+        sound.cloth();
         const p0 = cam.pos.clone();
         const sit = V(bx - 0.42, 0.9, bz + 0.12);
         await timeline.tween(1.3, (k) => {
@@ -358,20 +468,65 @@ async function start() {
         // Il s'allonge, la tête sur l'oreiller, tournée vers la lune.
         const p1 = cam.pos.clone();
         const lie = V(bx + 0.02, 0.55, bz + 0.72);
-        sfx.cloth();
+        sound.cloth();
         timeline.tween(2.4, (k) => cam.pos.lerpVectors(p1, lie, k), ease.inOut);
-        const moonView = anglesTo(lie, V(-0.45, 1.8, -3));
-        await look(1.2, { yaw: 0.3, pitch: 0.75, roll: 0 }, ease.in);
-        await look(1.6, { yaw: moonView.yaw, pitch: moonView.pitch, roll: -0.22 }, ease.out);
+        // Allongé, il tourne la tête vers la fenêtre ouverte et les étoiles.
+        const windowView = anglesTo(lie, V(-0.25, 1.6, -3.4));
+        await look(1.2, { yaw: 0.35, pitch: 0.6, roll: 0 }, ease.in);
+        // Le regard se fixe sur les étoiles : le champ se resserre sur la fenêtre.
+        const fov0 = camera.fov;
+        timeline.tween(2.6, (k) => { camera.fov = fov0 + (Math.min(fov0, 40) - fov0) * k; camera.updateProjectionMatrix(); }, ease.inOut);
+        await look(1.8, { yaw: windowView.yaw, pitch: windowView.pitch, roll: 0 }, ease.out);
+        sound.windDown(9);
         await timeline.tween(3.4, (k) => room.setLantern(1 - 0.75 * k), ease.inOut);
         html.classList.add('eyes-heavy');
         await timeline.wait(1.8);
         html.classList.remove('eyes-heavy');
         await timeline.wait(1.0);
         html.classList.add('eyes-closing');
+        sound.fadeAll(4);
         await timeline.wait(2.6);
         fade.style.opacity = 1;
         await timeline.wait(1.2);
+    }
+
+    /* ---------------- Le rêve ---------------- */
+    const hud = document.getElementById('dream-hud');
+    const treasury = document.getElementById('dream-treasury');
+    const pockets = document.getElementById('dream-pockets');
+    const ryo = (n) => Math.round(n).toLocaleString('fr-FR') + ' ryō';
+    function counters(k) {
+        treasury.textContent = ryo(1200000 + k * k * 48800000);
+        pockets.textContent = ryo(k * k * k * 9750000);
+    }
+
+    function prepareDream() {
+        if (!dream) {
+            dream = buildDream(renderer);
+            dream.resize(window.innerWidth / window.innerHeight);
+            renderer.compile(dream.scene, dream.camera);
+        }
+    }
+
+    async function dreamSequence() {
+        prepareDream();
+        say('Et il rêva…', 2.6);
+        await timeline.wait(2.4);
+        dreaming = true;
+        html.classList.remove('eyes-closing', 'eyes-heavy');
+        html.classList.add('dreaming');
+        renderer.shadowMap.needsUpdate = true;
+        fade.style.opacity = 0;
+        await dream.play({ timeline, sound, say, hud, counters });
+        // Le rêve s'efface dans une lumière blanche.
+        fade.style.background = '#fff8ec';
+        fade.style.opacity = 1;
+        await timeline.wait(1.6);
+        hud.hidden = true;
+        html.classList.remove('dreaming');
+        fade.style.transition = 'opacity 1.4s ease, background 1.4s ease';
+        fade.style.background = '#000';
+        await timeline.wait(1.4);
     }
 
     async function play() {
@@ -379,13 +534,24 @@ async function start() {
         allowSkip();
         // ?at=shelf|second|bed : démarre plus loin (pour les tests).
         const at = params.get('at');
+        if (at === 'dream') {
+            await dreamSequence();
+            checkpoint();
+            endCard.hidden = false;
+            replayBtn.focus();
+            return;
+        }
         if (at) {
             room.door.position.x = 0.88;
             cam.pos.set(-1.62, EYE, -0.22);
             cam.yaw = Math.PI / 2;
             cam.pitch = -0.1;
+            room.musicBox.lid.rotation.z = 1.75;
+            room.musicBox.setPlaying(2.2);
+            sound.startMusic();
         } else {
             await enter();
+            await playMusic();
             await goToShelf();
         }
         if (!at || at === 'shelf') {
@@ -400,6 +566,7 @@ async function start() {
             await putBack('second');
         }
         await goToBed();
+        await dreamSequence();
         checkpoint();
         endCard.hidden = false;
         replayBtn.focus();
@@ -410,6 +577,7 @@ async function start() {
     // moins souvent et la résolution baisse un peu.
     let last = performance.now();
     let frozen = false;
+    let dreaming = false;
     let hideTimer = 0;
     let frames = 0;
     let slowFrames = 0;
@@ -433,6 +601,11 @@ async function start() {
         if (frames % shadowEvery === 0) renderer.shadowMap.needsUpdate = true;
     }
     function renderScene(dt) {
+        if (dreaming) {
+            dream.update(dt, time);
+            renderer.render(dream.scene, dream.camera);
+            return;
+        }
         room.update(dt, time);
         applyCamera();
         arms.forEach((arm) => arm.update());
@@ -480,6 +653,14 @@ async function start() {
     startBtn.disabled = false;
     startBtn.textContent = 'Entrer';
     startBtn.addEventListener('click', () => {
+        sound.unlock();
+        let pref = null;
+        try { pref = localStorage.getItem('senju-sound'); } catch (e) { /* stockage indisponible */ }
+        window.Carnet.setSound(pref !== 'off');
+        sound.setOn(pref !== 'off');
+        renderSoundBtn();
+        soundBtn.hidden = false;
+        sound.startCrickets();
         intro.classList.add('is-leaving');
         setTimeout(() => { intro.hidden = true; }, 900);
         play();
