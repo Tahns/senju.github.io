@@ -289,12 +289,22 @@ export function buildNinja(sculpt) {
         mesh(new THREE.CylinderGeometry(0.034, 0.036, 0.04, 20), M.skin, hand, 0, 0.03, 0);
         const palm = mesh(new RoundedBoxGeometry(0.072, 0.078, 0.032, 4, 0.014), M.skin, hand, 0, -0.025, 0);
         palm.scale.x = 0.95;
+        // Doigts en deux phalanges, légèrement repliés vers la paume : main détendue.
         [-0.024, -0.008, 0.008, 0.024].forEach((fx, k) => {
-            const len = 0.05 - Math.abs(k - 1.5) * 0.007;
-            const f = mesh(new THREE.CapsuleGeometry(0.0082, len, 6, 12), M.skin, hand, fx, -0.075 - len / 2, 0.004);
-            f.rotation.x = 0.3;
+            const len = 0.052 - Math.abs(k - 1.5) * 0.007;
+            const knuckle = joint(hand, fx, -0.06, 0.003);
+            knuckle.rotation.set(-0.3 - k * 0.05, 0, (k - 1.5) * 0.04);
+            capsule(0.0086, len * 0.5, M.skin, knuckle);
+            const tip = joint(knuckle, 0, -len * 0.5 - 0.009, 0);
+            tip.rotation.x = -0.55 - k * 0.08;
+            capsule(0.0078, len * 0.42, M.skin, tip);
         });
-        mesh(new THREE.CapsuleGeometry(0.011, 0.034, 6, 12), M.skin, hand, -s * 0.04, -0.035, 0.018).rotation.z = s * 0.6;
+        const thumb = joint(hand, -s * 0.034, -0.02, 0.014);
+        thumb.rotation.set(-0.5, 0, s * 0.55);
+        capsule(0.0105, 0.022, M.skin, thumb);
+        const thumbTip = joint(thumb, 0, -0.03, 0);
+        thumbTip.rotation.x = -0.35;
+        capsule(0.0095, 0.018, M.skin, thumbTip);
     });
 
     /* ---------------- Sabre (dans le fourreau, sur le dos) ---------------- */
@@ -313,7 +323,7 @@ export function buildNinja(sculpt) {
     // Poses : angles (en radians) des articulations.
     const POSES = {
         stand: { spine: [0, 0, 0], head: [0, 0, 0], shoulderL: [0.05, 0, -0.18], shoulderR: [0.05, 0, 0.18], elbowL: [-0.2, 0, 0], elbowR: [-0.2, 0, 0], hipL: [0, 0, 0.04], hipR: [0, 0, -0.04], kneeL: [0.05, 0, 0], kneeR: [0.05, 0, 0] },
-        crossed: { spine: [0, 0, 0], head: [0.05, 0, 0], shoulderL: [-0.55, 0.35, -0.25], shoulderR: [-0.6, -0.35, 0.25], elbowL: [-1.9, 0.2, 0.3], elbowR: [-1.85, -0.2, -0.3], hipL: [0, 0, 0.1], hipR: [0, 0, -0.1] },
+        crossed: { spine: [0, 0, 0], head: [0.05, 0, 0], shoulderL: [-0.42, 0.95, -0.12], shoulderR: [-0.3, -0.95, 0.12], elbowL: [-1.3, 0, 0], elbowR: [-1.42, 0, 0], hipL: [0, 0, 0.1], hipR: [0, 0, -0.1] },
         draw: { spine: [0.05, 0.4, 0], head: [0, -0.3, 0], shoulderR: [-2.6, 0, 0.35], elbowR: [-0.9, 0, 0], shoulderL: [-0.3, 0, -0.3], elbowL: [-0.6, 0, 0], hipL: [-0.3, 0, 0.12], kneeL: [0.5, 0, 0], hipR: [0.25, 0, -0.1], kneeR: [0.2, 0, 0] },
         slashA: { spine: [0.15, -0.55, 0], head: [0, 0.35, 0], shoulderR: [-1.3, 0, 1.2], elbowR: [-0.15, 0, 0], shoulderL: [-0.2, 0, -0.5], elbowL: [-0.4, 0, 0], hipL: [-0.45, 0, 0.15], kneeL: [0.6, 0, 0], hipR: [0.35, 0, -0.15], kneeR: [0.25, 0, 0] },
         slashB: { spine: [0.1, 0.5, 0], head: [0, -0.3, 0], shoulderR: [-1.5, 0, -0.5], elbowR: [-0.2, 0, 0], shoulderL: [-0.3, 0, -0.9], elbowL: [-0.3, 0, 0], hipL: [-0.45, 0, 0.15], kneeL: [0.6, 0, 0], hipR: [0.35, 0, -0.15], kneeR: [0.25, 0, 0] },

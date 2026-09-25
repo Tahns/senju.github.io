@@ -29,3 +29,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Chambre** : bonsaï refait en lisse (pot émaillé, mousse, tronc
   tortueux, coussins de feuillage), comme le reste de la scène.
 - **Partage** : image d'aperçu (Open Graph / Twitter) tirée du rêve.
+- **Mobile** : palier de qualité intermédiaire automatique sur écran
+  tactile (moins d'herbe, ombres 1024, flou sans multi-échantillonnage) ;
+  `?quality=low|mobile|high` pour forcer.
+- **Mains** : doigts en deux phalanges, repliés comme une main détendue,
+  pouce articulé ; vraie pose « bras croisés ».

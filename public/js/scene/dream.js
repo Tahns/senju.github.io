@@ -71,7 +71,7 @@ function rockColumn(random) {
     return geo;
 }
 
-export function buildDream(renderer, { low = false, head } = {}) {
+export function buildDream(renderer, { low = false, mobile = false, head } = {}) {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 420);
     scene.fog = new THREE.Fog('#dfe0d6', 70, 270);
@@ -103,12 +103,13 @@ export function buildDream(renderer, { low = false, head } = {}) {
 
     scene.add(new THREE.HemisphereLight('#dbe8ff', '#6d5c42', 1.15));
     const sun = new THREE.DirectionalLight('#ffe3bd', 3.1);
-    const sunTarget = low ? V(0, 0, 0) : V(0, -3, -10);
+    const sunTarget = low ? V(0, 0, 0) : mobile ? V(0, -2, -5) : V(0, -3, -10);
     sun.target.position.copy(sunTarget);
     sun.position.copy(sunTarget).add(V(-9, 11, 8).normalize().multiplyScalar(60));
     sun.castShadow = true;
-    const span = low ? 7 : 26;
-    sun.shadow.mapSize.set(low ? 1024 : 2048, low ? 1024 : 2048);
+    const span = low ? 7 : mobile ? 14 : 26;
+    const mapSize = low || mobile ? 1024 : 2048;
+    sun.shadow.mapSize.set(mapSize, mapSize);
     Object.assign(sun.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 20, far: 110 });
     sun.shadow.bias = -0.0004;
     sun.shadow.normalBias = 0.02;
@@ -157,7 +158,7 @@ export function buildDream(renderer, { low = false, head } = {}) {
     top.rotation.x = -Math.PI / 2;
     top.receiveShadow = true;
     scene.add(top);
-    const grass = buildGrass(4.1, low ? 5000 : 16000, random);
+    const grass = buildGrass(4.1, low ? 5000 : mobile ? 9000 : 16000, random);
     scene.add(grass.mesh);
     updaters.push((dt, time) => grass.update(time));
     for (let i = 0; i < 9; i++) {
@@ -578,7 +579,7 @@ export function buildDream(renderer, { low = false, head } = {}) {
         sound.stopDream(3);
     }
 
-    let post = low ? null : new Post(renderer);
+    let post = low ? null : new Post(renderer, { samples: mobile ? 0 : 4 });
     const focusPoint = V();
 
     // Pose initiale, pour les premières images.
