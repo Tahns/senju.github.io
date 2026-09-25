@@ -14,10 +14,10 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
 4. Le visiteur lit le carnet, puis clique sur **Ranger** : Hoko remet le livre en place et le redresse du bout du doigt.
 5. Il prend un deuxième carnet (vierge), le feuillette, le range.
 6. Il s'allonge sur son futon, regarde les étoiles par la fenêtre ouverte, la boîte à musique ralentit, ses yeux se ferment…
-7. **Le rêve** (à la troisième personne) : Hoko adulte, jōnin de Konoha, au coucher du soleil au-dessus du village. Maître du sabre, maître du Suiton, et chef de la section économique : une pluie de ryō remplit le trésor du village… et ses poches.
+7. **Le rêve** (à la troisième personne) : Hoko adulte, jōnin de Konoha, sur un rocher d'entraînement au-dessus du village. Maître du sabre, maître du Suiton, et chef de la section économique : une pluie de ryō remplit le trésor du village… et ses poches.
 
 - Bouton son en haut à droite : volumes Musique / Ambiance / Effets, mémorisés.
-- Style des écrans inspiré des serveurs Naruto RP (lettrage pinceau, violet et magenta), rêve en rendu « anime » (ombrage en aplats et contours).
+- Style des écrans inspiré des serveurs Naruto RP (lettrage pinceau, violet et magenta), rêve au rendu lisse façon Zenkai RP : ombrage doux, herbe qui ondule, profondeur de champ et halo lumineux. Konoha est construit en entier : rues en terre, maisons à étages en bois et enduit, balcons, auvents, enseignes, réservoirs d'eau ronds, poteaux électriques, arbres touffus, tour du Hokage et mont des Hokage.
 - Bruitages et musique générés (pas, porte, livres, boîte à musique, grillons, taiko et flûte dans le rêve), activés par défaut, avec un bouton pour couper le son.
 - Bouton **Passer** pour accélérer jusqu'au prochain livre, lien « Aller directement au carnet » sur l'écran d'accueil.
 - Tout est dessiné en code (aucune image) : `public/js/scene/`.
@@ -25,6 +25,7 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
   - `arms.js` : les bras et les mains
   - `main.js` : le scénario, étape par étape (facile à modifier)
   - `dream.js`, `ninja.js` : le rêve et Hoko adulte
+  - `village.js`, `post.js` : Konoha (fusionné par matériau pour rester léger) et le post-traitement du rêve
   - `audio.js` : sons et musiques
   - `radio.js` : la musique YouTube (pour la changer, modifie `VIDEO` et le titre dans `index.html`)
 - Sans WebGL (vieux navigateurs), ou avec un lien direct `#page-5`, le carnet s'affiche directement.

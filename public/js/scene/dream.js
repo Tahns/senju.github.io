@@ -7,6 +7,8 @@ import * as THREE from 'three';
 import { buildNinja } from './ninja.js';
 import { ease } from './timeline.js';
 import { rng, dot } from './textures.js';
+import { buildVillage, buildGrass, grassTexture } from './village.js';
+import { Post } from './post.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 
@@ -26,65 +28,148 @@ function coinTexture() {
     return t;
 }
 
-export function buildDream(renderer) {
+// Nuage cumulus peint : des bouffées douces sur une base plus plate.
+function cloudTexture(random) {
+    const c = document.createElement('canvas');
+    c.width = 512;
+    c.height = 256;
+    const ctx = c.getContext('2d');
+    for (let i = 0; i < 70; i++) {
+        const x = 90 + random() * 332;
+        const top = 1 - Math.abs(x - 256) / 200;
+        const y = 190 - random() * 110 * top;
+        const r = 30 + random() * 50 * (0.5 + top);
+        const g = ctx.createRadialGradient(x, y - r * 0.2, 0, x, y, r);
+        const shade = 235 + Math.round(random() * 20);
+        g.addColorStop(0, `rgba(${shade},${shade},${shade + 5},.55)`);
+        g.addColorStop(0.6, `rgba(${shade - 15},${shade - 10},${shade},.3)`);
+        g.addColorStop(1, 'rgba(220,225,235,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+}
+
+// Roche du rocher d'entraînement : cylindre sculpté, lisse, bosselé.
+function rockColumn(random) {
+    const geo = new THREE.CylinderGeometry(4.2, 6.2, 12, 96, 18, true);
+    const p = geo.attributes.position;
+    const v = new THREE.Vector3();
+    const seeds = Array.from({ length: 5 }, () => [random() * 6, 3 + random() * 9, random() * 0.5]);
+    for (let i = 0; i < p.count; i++) {
+        v.fromBufferAttribute(p, i);
+        const a = Math.atan2(v.x, v.z);
+        const top = THREE.MathUtils.smoothstep(v.y, 4.6, 6);
+        let bump = 0;
+        seeds.forEach(([ph, f, amp]) => { bump += Math.sin(a * f + ph + v.y * 0.4) * (0.12 + amp); });
+        const k = 1 + (bump * 0.08) * (1 - top * 0.999);
+        p.setXYZ(i, v.x * k, v.y, v.z * k);
+    }
+    geo.computeVertexNormals();
+    return geo;
+}
+
+export function buildDream(renderer, { low = false } = {}) {
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 400);
-    scene.fog = new THREE.Fog('#f2c49a', 60, 220);
+    const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 420);
+    scene.fog = new THREE.Fog('#dfe0d6', 70, 270);
     const random = rng(303);
     const updaters = [];
 
-    /* ---------------- Ciel de coucher de soleil ---------------- */
-    const sky = new THREE.Mesh(new THREE.SphereGeometry(300, 32, 16), new THREE.ShaderMaterial({
+    /* ---------------- Ciel clair de fin d'après-midi ---------------- */
+    const sky = new THREE.Mesh(new THREE.SphereGeometry(300, 48, 24), new THREE.ShaderMaterial({
         side: THREE.BackSide,
         depthWrite: false,
         fog: false,
         uniforms: {
-            top: { value: new THREE.Color('#3b6fc2') },
-            mid: { value: new THREE.Color('#e9a27e') },
-            low: { value: new THREE.Color('#ffdca4') },
-            sunDir: { value: V(0.2, 0.08, -1).normalize() }
+            top: { value: new THREE.Color('#2d6fd0') },
+            mid: { value: new THREE.Color('#8cc0ec') },
+            low: { value: new THREE.Color('#f1e6cf') },
+            sunDir: { value: V(-0.35, 0.16, -1).normalize() }
         },
         vertexShader: 'varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-        fragmentShader: 'uniform vec3 top; uniform vec3 mid; uniform vec3 low; uniform vec3 sunDir; varying vec3 vDir; void main(){ float h = vDir.y; vec3 c = h > 0.12 ? mix(mid, top, smoothstep(0.12, 0.6, h)) : mix(low, mid, smoothstep(-0.05, 0.12, h)); float s = max(dot(normalize(vDir), sunDir), 0.0); c += vec3(1.0,0.75,0.45) * pow(s, 60.0) * 1.6 + vec3(1.0,0.6,0.35) * pow(s, 6.0) * 0.35; gl_FragColor = vec4(c, 1.0); }'
+        fragmentShader: 'uniform vec3 top; uniform vec3 mid; uniform vec3 low; uniform vec3 sunDir; varying vec3 vDir; void main(){ float h = vDir.y; vec3 c = h > 0.1 ? mix(mid, top, smoothstep(0.1, 0.7, h)) : mix(low, mid, smoothstep(-0.02, 0.1, h)); float s = max(dot(normalize(vDir), sunDir), 0.0); c += vec3(1.0,0.85,0.6) * pow(s, 200.0) * 3.0 + vec3(1.0,0.8,0.55) * pow(s, 8.0) * 0.35; gl_FragColor = vec4(c, 1.0); }'
     }));
     scene.add(sky);
-    // Reflets : l'or et l'acier renvoient les couleurs du couchant.
+    // Reflets : l'or, l'acier et les tissus renvoient la couleur du ciel.
     const envScene = new THREE.Scene();
     envScene.add(sky.clone());
     const pmrem = new THREE.PMREMGenerator(renderer);
     scene.environment = pmrem.fromScene(envScene, 0.02).texture;
-    scene.environmentIntensity = 0.9;
+    scene.environmentIntensity = 0.8;
     pmrem.dispose();
 
-    scene.add(new THREE.HemisphereLight('#ffd2b0', '#3a3050', 1.1));
-    const sun = new THREE.DirectionalLight('#ffd6a0', 2.6);
-    sun.position.set(-9, 11, 8);
+    scene.add(new THREE.HemisphereLight('#dbe8ff', '#6d5c42', 1.15));
+    const sun = new THREE.DirectionalLight('#ffe3bd', 3.1);
+    const sunTarget = low ? V(0, 0, 0) : V(0, -3, -10);
+    sun.target.position.copy(sunTarget);
+    sun.position.copy(sunTarget).add(V(-9, 11, 8).normalize().multiplyScalar(60));
     sun.castShadow = true;
-    sun.shadow.mapSize.set(1024, 1024);
-    Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 1, far: 40 });
-    sun.shadow.bias = -0.0005;
-    scene.add(sun);
-    const front = new THREE.DirectionalLight('#9fb0ff', 0.9);
+    const span = low ? 7 : 26;
+    sun.shadow.mapSize.set(low ? 1024 : 2048, low ? 1024 : 2048);
+    Object.assign(sun.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 20, far: 110 });
+    sun.shadow.bias = -0.0004;
+    sun.shadow.normalBias = 0.02;
+    scene.add(sun, sun.target);
+    // Contre-jour chaud : un liseré de lumière sur les cheveux et les épaules.
+    const rim = new THREE.DirectionalLight('#ffd9a6', 1.7);
+    rim.position.set(3, 6, -9);
+    scene.add(rim);
+    const front = new THREE.DirectionalLight('#b8c8ff', 0.45);
     front.position.set(4, 5, 10);
     scene.add(front);
 
-    /* ---------------- La falaise au-dessus du village ---------------- */
-    const rock = new THREE.MeshStandardMaterial({ color: '#6f6258', roughness: 0.95 });
-    const grass = new THREE.MeshStandardMaterial({ color: '#5f7a3a', roughness: 1 });
-    const cliff = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 6.5, 12, 20), rock);
+    /* ---------------- Le rocher d'entraînement ---------------- */
+    const rockTex = (() => {
+        const c = document.createElement('canvas');
+        c.width = c.height = 256;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#8a7a68';
+        ctx.fillRect(0, 0, 256, 256);
+        for (let i = 0; i < 60; i++) {
+            const x = random() * 256;
+            const y = random() * 256;
+            const r = 10 + random() * 40;
+            const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+            g.addColorStop(0, random() > 0.5 ? 'rgba(60,50,40,.3)' : 'rgba(200,185,165,.3)');
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g;
+            ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        }
+        const t = new THREE.CanvasTexture(c);
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(6, 2);
+        return t;
+    })();
+    const rock = new THREE.MeshStandardMaterial({ map: rockTex, roughness: 0.9 });
+    const pebble = new THREE.MeshStandardMaterial({ color: '#8b7d6c', roughness: 0.85 });
+    const cliff = new THREE.Mesh(rockColumn(random), rock);
     cliff.position.y = -6.02;
     cliff.receiveShadow = true;
+    cliff.castShadow = true;
     scene.add(cliff);
-    const top = new THREE.Mesh(new THREE.CircleGeometry(4.2, 40), grass);
+    const grassTex = grassTexture(random);
+    grassTex.repeat.set(3, 3);
+    const top = new THREE.Mesh(new THREE.CircleGeometry(4.25, 96), new THREE.MeshStandardMaterial({ map: grassTex, roughness: 1 }));
     top.rotation.x = -Math.PI / 2;
     top.receiveShadow = true;
     scene.add(top);
+    const grass = buildGrass(4.1, low ? 5000 : 16000, random);
+    scene.add(grass.mesh);
+    updaters.push((dt, time) => grass.update(time));
     for (let i = 0; i < 9; i++) {
         const a = random() * Math.PI * 2;
         const r = 2.6 + random() * 1.4;
-        const stone = new THREE.Mesh(new THREE.DodecahedronGeometry(0.15 + random() * 0.25), rock);
-        stone.position.set(Math.cos(a) * r, 0.05, Math.sin(a) * r);
+        const size = 0.15 + random() * 0.25;
+        const stone = new THREE.Mesh(new THREE.SphereGeometry(size, 20, 14), pebble);
+        stone.scale.set(1 + random() * 0.4, 0.55 + random() * 0.3, 0.9 + random() * 0.3);
+        stone.rotation.y = random() * 3;
+        stone.position.set(Math.cos(a) * r, size * 0.25, Math.sin(a) * r);
         stone.castShadow = true;
+        stone.receiveShadow = true;
         scene.add(stone);
     }
 
@@ -92,169 +177,45 @@ export function buildDream(renderer) {
     const wood = new THREE.MeshStandardMaterial({ color: '#8a6440', roughness: 0.8 });
     const straw = new THREE.MeshStandardMaterial({ color: '#d4b877', roughness: 1 });
     const posts = [[0.95, 1.25], [1.55, 0.45], [1.85, -0.45]].map(([x, z]) => {
-        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.1, 1.05, 14), wood);
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.1, 1.05, 24), wood);
         base.position.set(x, 0.525, z);
         base.castShadow = true;
         scene.add(base);
         const topPart = new THREE.Group();
         topPart.position.set(x, 1.05, z);
-        const t = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.45, 14), wood);
+        const t = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.45, 24), wood);
         t.position.y = 0.225;
         t.castShadow = true;
         topPart.add(t);
-        const wrap = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.2, 14), straw);
+        const wrap = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.2, 24), straw);
         wrap.position.y = 0.22;
+        wrap.castShadow = true;
         topPart.add(wrap);
         scene.add(topPart);
         return { topPart, fall: 0, dir: 1 };
     });
 
-    /* ---------------- Le village, juste derrière lui ---------------- */
-    // Inspiré du village de Konoha : bâtiments ronds et carrés aux toits colorés,
-    // réservoirs d'eau sur les toits, arbres, et une grande falaise au fond.
-    const village = new THREE.Group();
-    village.position.y = -6;
-    scene.add(village);
-    const ground = new THREE.Mesh(new THREE.CircleGeometry(170, 48), new THREE.MeshStandardMaterial({ color: '#6f9a45', roughness: 1 }));
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    village.add(ground);
-    const walls = ['#efe2c4', '#e6d3ae', '#d8e0cf', '#f2dcc0', '#e9e4d6'].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85 }));
-    const roofs = ['#e8742c', '#c9432f', '#3f9a8c', '#e39a2e', '#4a78b5', '#b8563a'].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6 }));
-    const darkMat = new THREE.MeshStandardMaterial({ color: '#5a4636', roughness: 0.8 });
-    const tankMat = new THREE.MeshStandardMaterial({ color: '#9aa8ae', roughness: 0.5, metalness: 0.3 });
-    const add = (geo, m, parent, x, y, z) => {
-        const o = new THREE.Mesh(geo, m);
-        o.position.set(x, y, z);
-        o.castShadow = true;
-        o.receiveShadow = true;
-        parent.add(o);
-        return o;
-    };
-    const placed = [];
-    for (let i = 0; i < 230; i++) {
-        const a = -Math.PI / 2 + (random() - 0.5) * 2.7;
-        const r = 17 + Math.pow(random(), 0.8) * 75;
-        const x = Math.cos(a) * r;
-        const z = Math.sin(a) * r;
-        if (placed.some(([px, pz]) => Math.hypot(px - x, pz - z) < 4.2)) continue;
-        placed.push([x, z]);
-        const b = new THREE.Group();
-        b.position.set(x, 0, z);
-        b.rotation.y = random() * Math.PI * 2;
-        village.add(b);
-        const wall = walls[Math.floor(random() * walls.length)];
-        const roof = roofs[Math.floor(random() * roofs.length)];
-        const h = 3 + random() * 6;
-        const kind = random();
-        if (kind < 0.35) {
-            // Bâtiment rond au toit plat bordé de couleur.
-            const rad = 1.6 + random() * 1.6;
-            add(new THREE.CylinderGeometry(rad, rad, h, 24), wall, b, 0, h / 2, 0);
-            add(new THREE.CylinderGeometry(rad + 0.25, rad + 0.25, 0.5, 24), roof, b, 0, h + 0.1, 0);
-            if (random() < 0.5) add(new THREE.CylinderGeometry(rad * 0.7, rad * 0.7, 1.4, 20), wall, b, 0, h + 1, 0);
-        } else {
-            // Maison carrée, toit à deux pans ou toit plat avec auvent rayé.
-            const w = 2.6 + random() * 3;
-            const d = 2.4 + random() * 2.5;
-            add(new THREE.BoxGeometry(w, h, d), wall, b, 0, h / 2, 0);
-            if (kind < 0.7) {
-                const r2 = add(new THREE.CylinderGeometry(0.01, (Math.max(w, d) / 2) * 1.25, 1.6, 4, 1), roof, b, 0, h + 0.8, 0);
-                r2.rotation.y = Math.PI / 4;
-                r2.scale.set(w / Math.max(w, d), 1, d / Math.max(w, d));
-            } else {
-                add(new THREE.BoxGeometry(w + 0.3, 0.35, d + 0.3), roof, b, 0, h + 0.17, 0);
-                add(new THREE.BoxGeometry(w * 0.8, 0.12, 0.9), roof, b, 0, h * 0.45, d / 2 + 0.4).rotation.x = 0.35;
-            }
-            // Fenêtres sombres.
-            for (let k = 0; k < 3; k++) add(new THREE.BoxGeometry(0.5, 0.6, 0.05), darkMat, b, (k - 1) * w * 0.28, h * 0.62, d / 2 + 0.02);
-        }
-        if (random() < 0.45) {
-            // Réservoir d'eau sur le toit.
-            const tank = new THREE.Group();
-            tank.position.set((random() - 0.5) * 1.2, h + 0.3, (random() - 0.5) * 1.2);
-            b.add(tank);
-            add(new THREE.CylinderGeometry(0.55, 0.55, 1.1, 14), tankMat, tank, 0, 1.2, 0);
-            add(new THREE.ConeGeometry(0.6, 0.35, 14), roof, tank, 0, 1.9, 0);
-            [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => add(new THREE.BoxGeometry(0.08, 0.7, 0.08), darkMat, tank, sx * 0.35, 0.35, sz * 0.35));
-        }
-    }
-    // Grande tour ronde au centre du village.
-    const tower = new THREE.Group();
-    tower.position.set(4, 0, -52);
-    village.add(tower);
-    const towerWall = new THREE.MeshStandardMaterial({ color: '#e3cfa4', roughness: 0.8 });
-    const red = new THREE.MeshStandardMaterial({ color: '#c8452d', roughness: 0.6 });
-    [[8, 8, 0], [6.5, 6, 8], [5, 4, 14]].forEach(([r, h, y]) => {
-        add(new THREE.CylinderGeometry(r, r, h, 32), towerWall, tower, 0, y + h / 2, 0);
-        add(new THREE.CylinderGeometry(r * 1.12, r * 1.12, 0.8, 32), red, tower, 0, y + h + 0.2, 0);
-    });
-    // Arbres aux feuillages ronds.
-    const leafMats = ['#4f8a34', '#5d9a3c', '#3f7a30'].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 1 }));
-    const trunkMat = new THREE.MeshStandardMaterial({ color: '#6b4a2f', roughness: 1 });
-    for (let i = 0; i < 160; i++) {
-        const a = random() * Math.PI * 2;
-        const r = 13 + random() * 90;
-        const x = Math.cos(a) * r;
-        const z = Math.sin(a) * r;
-        if (placed.some(([px, pz]) => Math.hypot(px - x, pz - z) < 3)) continue;
-        const t = new THREE.Group();
-        t.position.set(x, 0, z);
-        village.add(t);
-        const size = 1.4 + random() * 1.6;
-        add(new THREE.CylinderGeometry(0.2, 0.3, size * 1.4, 7), trunkMat, t, 0, size * 0.7, 0);
-        add(new THREE.IcosahedronGeometry(size, 1), leafMats[i % 3], t, 0, size * 1.9, 0);
-        add(new THREE.IcosahedronGeometry(size * 0.7, 1), leafMats[(i + 1) % 3], t, size * 0.6, size * 1.5, 0.2);
-    }
-    // Grande falaise de roche au fond, couronnée de forêt.
-    const rockTex = (() => {
-        const c = document.createElement('canvas');
-        c.width = 512;
-        c.height = 256;
-        const ctx = c.getContext('2d');
-        ctx.fillStyle = '#b99a74';
-        ctx.fillRect(0, 0, 512, 256);
-        for (let i = 0; i < 400; i++) {
-            ctx.fillStyle = random() > 0.5 ? 'rgba(90,70,50,.25)' : 'rgba(240,220,190,.2)';
-            ctx.fillRect(random() * 512, random() * 256, 2 + random() * 40, 1 + random() * 3);
-        }
-        for (let x = 0; x < 512; x += 18 + random() * 30) {
-            ctx.fillStyle = 'rgba(70,50,35,.3)';
-            ctx.fillRect(x, 0, 2 + random() * 3, 256);
-        }
-        const t = new THREE.CanvasTexture(c);
-        t.colorSpace = THREE.SRGBColorSpace;
-        t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(6, 1);
-        return t;
-    })();
-    const cliffWall = new THREE.Mesh(new THREE.CylinderGeometry(118, 118, 46, 64, 1, true, Math.PI * 0.62, Math.PI * 0.76), new THREE.MeshStandardMaterial({ map: rockTex, roughness: 0.95, side: THREE.DoubleSide }));
-    cliffWall.position.set(0, 23, 10);
-    village.add(cliffWall);
-    for (let i = 0; i < 70; i++) {
-        const a = Math.PI * 0.62 + random() * Math.PI * 0.76;
-        const bush = new THREE.Mesh(new THREE.IcosahedronGeometry(5 + random() * 4, 1), leafMats[i % 3]);
-        bush.position.set(Math.sin(a) * 116, 43 + random() * 3, Math.cos(a) * 116 + 10);
-        village.add(bush);
-    }
+    /* ---------------- Konoha, en contrebas ---------------- */
+    const village = buildVillage({ low });
+    village.group.position.y = -6;
+    scene.add(village.group);
+    updaters.push((dt, time) => village.update(dt, time));
 
-    // Nuages.
-    const cloudMat = new THREE.MeshStandardMaterial({ color: '#ffe0d0', roughness: 1, transparent: true, opacity: 0.85 });
+    // Nuages : de grands cumulus doux qui dérivent lentement.
+    const cloudTex = cloudTexture(random);
     const clouds = [];
-    for (let i = 0; i < 16; i++) {
-        const c = new THREE.Group();
-        for (let k = 0; k < 4; k++) {
-            const puff = new THREE.Mesh(new THREE.SphereGeometry(3 + random() * 3, 14, 10), cloudMat);
-            puff.position.set(k * 3.5 - 5, random() * 1.5, random() * 2);
-            puff.scale.y = 0.45;
-            c.add(puff);
-        }
-        const a = -Math.PI / 2 + (random() - 0.5) * 3;
-        c.position.set(Math.cos(a) * (60 + random() * 60), 8 + random() * 20, Math.sin(a) * (60 + random() * 60));
-        scene.add(c);
-        clouds.push(c);
+    for (let i = 0; i < 14; i++) {
+        const cloud = new THREE.Sprite(new THREE.SpriteMaterial({ map: cloudTex, transparent: true, depthWrite: false, fog: false, opacity: 0.8 + random() * 0.2 }));
+        const a = -Math.PI / 2 + (random() - 0.5) * 3.2;
+        const r = 200 + random() * 70;
+        const w = 70 + random() * 60;
+        cloud.scale.set(w, w * 0.45, 1);
+        cloud.position.set(Math.cos(a) * r, 45 + random() * 55, Math.sin(a) * r);
+        cloud.material.rotation = (random() - 0.5) * 0.1;
+        scene.add(cloud);
+        clouds.push(cloud);
     }
-    updaters.push((dt) => clouds.forEach((c, i) => { c.position.x += dt * (0.4 + (i % 3) * 0.2); }));
+    updaters.push((dt) => clouds.forEach((c, i) => { c.position.x += dt * (0.6 + (i % 3) * 0.3); }));
 
     // Feuilles qui volent dans le vent.
     const leafCount = 140;
@@ -520,6 +481,9 @@ export function buildDream(renderer) {
         sound.stopDream(3);
     }
 
+    let post = low ? null : new Post(renderer);
+    const focusPoint = V();
+
     // Pose initiale, pour les premières images.
     camera.position.set(0.5, 1.9, 7.5);
     camera.lookAt(0, 1.5, 0);
@@ -529,6 +493,17 @@ export function buildDream(renderer) {
         camera,
         play,
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
+        // Rendu avec profondeur de champ : la mise au point suit Hoko.
+        render() {
+            if (!post) {
+                renderer.render(scene, camera);
+                return;
+            }
+            ninja.J.head.getWorldPosition(focusPoint);
+            post.focus = Math.max(1.5, camera.position.distanceTo(focusPoint));
+            post.render(scene, camera);
+        },
+        degrade() { post = null; },
         resize(aspect) {
             camera.aspect = aspect;
             camera.fov = aspect < 1 ? 70 : 48;

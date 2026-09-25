@@ -549,7 +549,7 @@ async function start() {
 
     function prepareDream() {
         if (!dream) {
-            dream = buildDream(renderer);
+            dream = buildDream(renderer, { low });
             window.__scene.dream = dream;
             dream.resize(window.innerWidth / window.innerHeight);
             renderer.compile(dream.scene, dream.camera);
@@ -643,6 +643,9 @@ async function start() {
                     renderer.setPixelRatio(pixelRatio);
                     resize();
                 }
+            } else if (slowFrames > 45 && dreaming) {
+                // Toujours trop lent : le rêve se passe du flou et du halo.
+                dream.degrade();
             }
             slowFrames = 0;
         }
@@ -651,7 +654,7 @@ async function start() {
     function renderScene(dt) {
         if (dreaming) {
             dream.update(dt, time);
-            renderer.render(dream.scene, dream.camera);
+            dream.render();
             return;
         }
         room.update(dt, time);
