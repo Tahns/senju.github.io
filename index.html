@@ -360,6 +360,7 @@
         <p class="scene-card__kana" lang="ja" aria-hidden="true">おやすみなさい</p>
         <h2 class="scene-card__title" id="end-title">Bonne nuit</h2>
         <button class="scene-button" id="scene-replay" type="button">Recommencer</button>
+        <a class="scene-card__link" href="?at=dream" id="scene-dream">Revoir le rêve</a>
         <a class="scene-card__link" href="#page-1" id="scene-read">Relire le carnet de Hoko</a>
     </div>
 
@@ -427,6 +428,26 @@
     <script type="importmap">{ "imports": { "three": "./public/vendor/three.module.min.js" } }</script>
     <!-- Si le navigateur gère les modules, la scène se charge ; sinon, ou en cas d'erreur, le carnet s'affiche seul. -->
     <script type="module">window.SceneLoading = true;</script>
+    <script>
+        // Progression réelle du chargement : three.js est le plus gros fichier ;
+        // on le télécharge ici (le module le reprendra depuis le cache).
+        (function () {
+            var btn = document.getElementById('scene-start');
+            if (!btn || !document.documentElement.classList.contains('has-scene') || !window.fetch || !window.ReadableStream) return;
+            fetch('public/vendor/three.module.min.js').then(function (res) {
+                var total = 691648; // octets décompressés du fichier
+                var done = 0;
+                var reader = res.body.getReader();
+                function step(r) {
+                    if (r.done) return;
+                    done += r.value.length;
+                    if (btn.disabled) btn.textContent = 'Chargement… ' + Math.min(99, Math.round(done / total * 100)) + ' %';
+                    return reader.read().then(step);
+                }
+                return reader.read().then(step);
+            }).catch(function () {});
+        })();
+    </script>
     <script type="module" src="public/js/scene/main.js" onerror="window.Carnet && window.Carnet.standalone()"></script>
 </body>
 

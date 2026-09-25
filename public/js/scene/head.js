@@ -9,7 +9,8 @@ import { SPAN } from './sculpt.js';
 /* ---------------- Visage peint (projection de face) ---------------- */
 const toCanvas = (x, y) => [512 + (x / SPAN) * 1024, 512 - (y / SPAN) * 1024];
 
-export function faceTexture() {
+// `closed` : même visage, yeux fermés (pour les clignements).
+export function faceTexture(closed = false) {
     const c = document.createElement('canvas');
     c.width = c.height = 1024;
     const ctx = c.getContext('2d');
@@ -36,6 +37,25 @@ export function faceTexture() {
         ctx.save();
         ctx.translate(cx, eyeY);
         ctx.scale(flip * 1.6, 1.6);
+        if (closed) {
+            // Paupière close : un trait de cils arqué et le pli au-dessus.
+            ctx.strokeStyle = '#120a08';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(-44, 2);
+            ctx.quadraticCurveTo(6, 16, 56, -4);
+            ctx.stroke();
+            ctx.strokeStyle = 'rgba(90,45,35,.45)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-30, -8);
+            ctx.quadraticCurveTo(10, -2, 44, -12);
+            ctx.stroke();
+            ctx.restore();
+            brow(cx, flip);
+            return;
+        }
         // Blanc de l'œil, en amande effilée vers l'extérieur.
         ctx.fillStyle = '#fbf8f4';
         ctx.beginPath();
@@ -93,7 +113,10 @@ export function faceTexture() {
         ctx.quadraticCurveTo(10, -31, 44, -21);
         ctx.stroke();
         ctx.restore();
-        // Sourcil anguleux, déterminé.
+        brow(cx, flip);
+    };
+    // Sourcil anguleux, déterminé.
+    const brow = (cx, flip) => {
         ctx.save();
         ctx.translate(cx + flip * 8, eyeY - 88);
         ctx.scale(flip * 1.45, 1.35);
