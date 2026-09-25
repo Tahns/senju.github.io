@@ -537,6 +537,8 @@
         return buffer;
     }
 
+    let effectsVolume = 1; // réglé depuis le panneau son de la scène
+
     function rustle(cover = false) {
         if (!soundOn) return;
         try {
@@ -555,7 +557,7 @@
             tone.type = 'lowpass';
             tone.frequency.value = cover ? 2600 : 6500;
             const gain = audio.createGain();
-            gain.gain.value = cover ? 0.5 : 0.32;
+            gain.gain.value = (cover ? 0.5 : 0.32) * effectsVolume;
             src.connect(low).connect(tone).connect(gain).connect(audio.destination);
             src.start();
         } catch (e) { /* Web Audio indisponible */ }
@@ -974,6 +976,7 @@
         shelve,
         standalone,
         setSound,
+        setEffectsVolume(v) { effectsVolume = v; },
         get sound() { return soundOn; },
         get isOpen() { return shown; },
         get isClosed() { return flipped === 0 || flipped === leaves.length; }

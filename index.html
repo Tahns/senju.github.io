@@ -22,7 +22,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Permanent+Marker&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap&text=%E5%8D%83%E6%89%8B%E5%BF%8D%E9%81%93%E6%B0%B4%E9%81%81%E7%81%AB%E6%84%8F%E5%BF%97">
     <link rel="stylesheet" href="public/css/style.css">
 </head>
@@ -348,8 +348,9 @@
     <div class="scene-fade scene-only" id="scene-fade" aria-hidden="true"></div>
 
     <div class="scene-card scene-only" id="scene-intro" role="dialog" aria-labelledby="intro-title">
-        <p class="scene-card__seal" aria-hidden="true">千手</p>
-        <h1 class="scene-card__title" id="intro-title">Hoko Senju</h1>
+        <svg class="shuriken" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 2 L60 40 L98 50 L60 60 L50 98 L40 60 L2 50 L40 40 Z" /><circle cx="50" cy="50" r="7" /></svg>
+        <h1 class="scene-card__title" id="intro-title"><span>Hoko</span> Senju</h1>
+        <p class="scene-card__tag">千手 · Konoha</p>
         <p class="scene-card__text">Domaine Senju, Konoha. La nuit est tombée…</p>
         <button class="scene-button" id="scene-start" type="button" disabled>Chargement…</button>
         <a class="scene-card__link" href="#page-1">Aller directement au carnet</a>
@@ -368,9 +369,20 @@
         <p><span>Poches de Hoko</span><b id="dream-pockets">0 ryō</b></p>
     </div>
     <p class="scene-caption scene-only" id="scene-caption" aria-live="polite"></p>
-    <button class="scene-sound scene-only" id="scene-sound" type="button" aria-pressed="true" aria-label="Couper le son" hidden>
+    <button class="scene-sound scene-only" id="scene-sound" type="button" aria-expanded="false" aria-controls="sound-panel" aria-label="Réglages du son" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" /><path class="on" d="M16 9a4 4 0 010 6M18.5 6.5a8 8 0 010 11" /><path class="off" d="M16 9l5 6M21 9l-5 6" /></svg>
     </button>
+    <div class="sound-panel scene-only" id="sound-panel" role="group" aria-label="Volume" hidden>
+        <p class="sound-panel__title">Volume</p>
+        <label><span>Musique</span><input type="range" id="vol-music" min="0" max="100" step="1"></label>
+        <label><span>Ambiance</span><input type="range" id="vol-ambience" min="0" max="100" step="1"></label>
+        <label><span>Effets</span><input type="range" id="vol-sfx" min="0" max="100" step="1"></label>
+        <button type="button" id="sound-mute" class="sound-panel__mute">Couper tout le son</button>
+    </div>
+    <aside class="radio scene-only" id="radio" aria-label="Musique en cours" hidden>
+        <p class="radio__title"><span aria-hidden="true">♪</span> <b>SD NIGHT</b> <small>VEN1</small></p>
+        <div class="radio__player"><div id="radio-player"></div></div>
+    </aside>
     <button class="scene-skip scene-only" id="scene-skip" type="button" hidden>Passer <span aria-hidden="true">⏭</span></button>
 
     <!-- Livre interactif (construit par public/js/book.js) -->

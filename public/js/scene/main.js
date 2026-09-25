@@ -12,6 +12,7 @@ import { Timeline, ease } from './timeline.js';
 import { setAnisotropy } from './textures.js';
 import { SceneAudio } from './audio.js';
 import { buildDream } from './dream.js';
+import { Radio } from './radio.js';
 
 const html = document.documentElement;
 const canvas = document.getElementById('scene');
@@ -116,21 +117,62 @@ async function start() {
 
     /* ---------------- Son ---------------- */
     const sound = new SceneAudio();
+    const radio = new Radio();
     window.__scene.sound = sound;
+    const panel = document.getElementById('sound-panel');
+    const sliders = { music: document.getElementById('vol-music'), ambience: document.getElementById('vol-ambience'), sfx: document.getElementById('vol-sfx') };
+    const muteBtn = document.getElementById('sound-mute');
+    let volumes = { music: 0.7, ambience: 0.6, sfx: 0.85 };
+    try { volumes = { ...volumes, ...JSON.parse(localStorage.getItem('senju-volumes') || '{}') }; } catch (e) { /* réglages par défaut */ }
+
+    function applyVolumes() {
+        sound.setVolumes(volumes);
+        radio.setVolume(sound.on ? volumes.music : 0);
+        if (window.Carnet && window.Carnet.setEffectsVolume) window.Carnet.setEffectsVolume(volumes.sfx);
+        Object.keys(sliders).forEach((k) => { sliders[k].value = Math.round(volumes[k] * 100); });
+    }
+    Object.keys(sliders).forEach((k) => {
+        sliders[k].addEventListener('input', () => {
+            volumes[k] = sliders[k].value / 100;
+            applyVolumes();
+            try { localStorage.setItem('senju-volumes', JSON.stringify(volumes)); } catch (e) { /* stockage indisponible */ }
+        });
+    });
+    applyVolumes();
+
     const renderSoundBtn = () => {
-        soundBtn.setAttribute('aria-pressed', String(sound.on));
         soundBtn.classList.toggle('is-off', !sound.on);
-        soundBtn.setAttribute('aria-label', sound.on ? 'Couper le son' : 'Activer le son');
+        muteBtn.textContent = sound.on ? 'Couper tout le son' : 'Remettre le son';
     };
     // Même réglage que le bouton son du carnet.
     document.addEventListener('senju-sound', (e) => {
         sound.setOn(e.detail);
+        radio.setVolume(e.detail ? volumes.music : 0);
         renderSoundBtn();
     });
     soundBtn.addEventListener('click', () => {
         sound.unlock();
+        const open = panel.hidden;
+        panel.hidden = !open;
+        soundBtn.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', (e) => {
+        if (!panel.hidden && !e.target.closest('#sound-panel, #scene-sound')) {
+            panel.hidden = true;
+            soundBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
+    muteBtn.addEventListener('click', () => {
+        sound.unlock();
         window.Carnet.setSound(!sound.on);
     });
+
+    // Musique de la chambre : SD NIGHT (YouTube), ou la boîte à musique en secours.
+    function startRoomMusic() {
+        radio.play().then((ok) => {
+            if (!ok) sound.startMusic();
+        });
+    }
 
     /* ---------------- Outils de mise en scène ---------------- */
     const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
@@ -244,16 +286,19 @@ async function start() {
     // (couverture en +Z). Sur l'étagère, le dos fait face à la chambre.
 
     // Index posé sur la tranche du haut, près du dos : pour faire basculer le livre.
+    // Les livres se prennent de la main gauche : une fois tourné vers soi, le dos
+    // est à gauche, donc la main gauche reste de son côté (les bras ne se croisent pas).
+    const taker = left;
     function topFingerGrip(book, lift = 0) {
         const { w, h } = book.userData.size;
         const q = quat(V(0.15, -1, 0), V(1, -0.4, 0));
-        return { position: handAt(right, V(-w / 2 + 0.022, h / 2 + 0.006 + lift, 0), q, TIP.index), quaternion: q };
+        return { position: handAt(taker, V(-w / 2 + 0.022, h / 2 + 0.006 + lift, 0), q, TIP.index), quaternion: q };
     }
     // Main refermée sur le dos du livre (le haut, qui dépasse de l'étagère).
     function spineGrip(book, out = 0) {
         const { w, h } = book.userData.size;
-        const q = quat(V(1, 0, 0), V(0, 0.15, -1));
-        return { position: handAt(right, V(-w / 2 - 0.003 - out, h / 2 - 0.055, 0), q, TIP.palm), quaternion: q };
+        const q = quat(V(1, 0, 0), V(0, 0.15, -taker.side));
+        return { position: handAt(taker, V(-w / 2 - 0.003 - out, h / 2 - 0.055, 0), q, TIP.palm), quaternion: q };
     }
     // Livre tenu devant soi : doigts à plat derrière, pouces sur la couverture.
     function holdGrip(book, side) {
@@ -355,7 +400,7 @@ async function start() {
         }
         await rest(right, 0.7);
         pivot.removeFromParent();
-        sound.startMusic();
+        startRoomMusic();
         box.setPlaying(2.2);
         // Il se redresse et écoute un instant.
         const p1 = cam.pos.clone();
@@ -384,29 +429,30 @@ async function start() {
         await lookAt(0.8, target.clone().add(V(0, 0.05, 0)));
         // 1. L'index se pose sur la tranche du haut et fait basculer le livre vers soi.
         const top = topFingerGrip(book, 0.04);
-        await reach(right, book, top.position, top.quaternion, 0.9, { curl: 0.85, thumb: 0.6, index: 0.05 });
+        await reach(taker, book, top.position, top.quaternion, 0.9, { curl: 0.85, thumb: 0.6, index: 0.05 });
         const press = topFingerGrip(book);
-        await reach(right, book, press.position, press.quaternion, 0.25, { index: 0.22 });
+        await reach(taker, book, press.position, press.quaternion, 0.25, { index: 0.22 });
         sound.bookTilt();
         await tilt(kind, 0, 0.36, 0.55);
         // 2. La main se referme sur le dos du livre, qui dépasse maintenant.
         const grip = spineGrip(book, 0.05);
-        await reach(right, book, grip.position, grip.quaternion, 0.35, { curl: 0.2, thumb: 0.3, index: null });
+        await reach(taker, book, grip.position, grip.quaternion, 0.35, { curl: 0.2, thumb: 0.3, index: null });
         const hold = spineGrip(book);
-        await reach(right, book, hold.position, hold.quaternion, 0.3, { curl: 0.78, thumb: 0.75 });
+        await reach(taker, book, hold.position, hold.quaternion, 0.3, { curl: 0.78, thumb: 0.75 });
         // 3. Il le fait glisser hors de l'étagère.
         sound.bookSlide();
         await tilt(kind, 0.36, 0.2, 0.55, [0, 0.19]);
-        // 4. Il le ramène devant lui, couverture face à lui ; la main gauche vient aider.
-        const show = new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.32, 0.12, 0.04));
-        const lifting = move(book, rig, V(0.02, -0.19, -0.4), show, 1.1);
+        // 4. Il le ramène devant lui, couverture face à lui : le dos passe à gauche,
+        // dans la main gauche ; la main droite vient tenir le côté droit.
+        const show = new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.32, -0.12, -0.04));
+        const lifting = move(book, rig, V(-0.02, -0.19, -0.4), show, 1.1);
         look(1.1, { pitch: -0.12 });
-        await timeline.wait(0.45);
-        const l = holdGrip(book, -1);
-        reach(left, book, l.position, l.quaternion, 0.7, { curl: 0.06, thumb: 0.85 });
-        await lifting;
+        await timeline.wait(0.5);
         const r = holdGrip(book, 1);
-        await reach(right, book, r.position, r.quaternion, 0.5, { curl: 0.06, thumb: 0.85 });
+        reach(right, book, r.position, r.quaternion, 0.6, { curl: 0.06, thumb: 0.85 });
+        await lifting;
+        const l = holdGrip(book, -1);
+        await reach(left, book, l.position, l.quaternion, 0.45, { curl: 0.06, thumb: 0.85, index: null });
         await timeline.wait(0.5);
     }
 
@@ -421,10 +467,10 @@ async function start() {
 
     async function putBack(kind) {
         const { mesh: book, slot } = room.books[kind];
-        await move(book, rig, V(0.02, -0.19, -0.4), new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.32, 0.12, 0.04)), 0.7);
-        rest(left, 0.7);
+        await move(book, rig, V(-0.02, -0.19, -0.4), new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.32, -0.12, -0.04)), 0.7);
+        rest(right, 0.7);
         const hold = spineGrip(book);
-        await reach(right, book, hold.position, hold.quaternion, 0.5, { curl: 0.78, thumb: 0.75 });
+        await reach(taker, book, hold.position, hold.quaternion, 0.5, { curl: 0.78, thumb: 0.75 });
         lookAt(0.9, slot.position);
         // Il glisse le livre, encore penché, dans sa place…
         const out = tiltedPose(kind, 0.2, 0.19);
@@ -433,16 +479,16 @@ async function start() {
         await tilt(kind, 0.2, 0.3, 0.5, [0.19, 0]);
         // …puis le redresse du bout de l'index.
         const grip = spineGrip(book, 0.05);
-        await reach(right, book, grip.position, grip.quaternion, 0.25, { curl: 0.15, thumb: 0.3 });
+        await reach(taker, book, grip.position, grip.quaternion, 0.25, { curl: 0.15, thumb: 0.3 });
         const push = topFingerGrip(book, 0.03);
-        await reach(right, book, push.position, push.quaternion, 0.35, { curl: 0.85, thumb: 0.6, index: 0.05 });
+        await reach(taker, book, push.position, push.quaternion, 0.35, { curl: 0.85, thumb: 0.6, index: 0.05 });
         const press = topFingerGrip(book);
-        await reach(right, book, press.position, press.quaternion, 0.2, { index: 0.2 });
+        await reach(taker, book, press.position, press.quaternion, 0.2, { index: 0.2 });
         await tilt(kind, 0.3, 0, 0.4);
         sound.bookTap();
         book.position.copy(slot.position);
         book.quaternion.copy(slot.quaternion);
-        await rest(right, 0.7);
+        await rest(taker, 0.7);
     }
 
     async function goToBed() {
@@ -478,6 +524,7 @@ async function start() {
         timeline.tween(2.6, (k) => { camera.fov = fov0 + (Math.min(fov0, 40) - fov0) * k; camera.updateProjectionMatrix(); }, ease.inOut);
         await look(1.8, { yaw: windowView.yaw, pitch: windowView.pitch, roll: 0 }, ease.out);
         sound.windDown(9);
+        radio.fadeOut(8);
         await timeline.tween(3.4, (k) => room.setLantern(1 - 0.75 * k), ease.inOut);
         html.classList.add('eyes-heavy');
         await timeline.wait(1.8);
@@ -548,7 +595,7 @@ async function start() {
             cam.pitch = -0.1;
             room.musicBox.lid.rotation.z = 1.75;
             room.musicBox.setPlaying(2.2);
-            sound.startMusic();
+            if (at !== 'dream') startRoomMusic();
         } else {
             await enter();
             await playMusic();
@@ -654,10 +701,12 @@ async function start() {
     startBtn.textContent = 'Entrer';
     startBtn.addEventListener('click', () => {
         sound.unlock();
+        radio.load();
         let pref = null;
         try { pref = localStorage.getItem('senju-sound'); } catch (e) { /* stockage indisponible */ }
         window.Carnet.setSound(pref !== 'off');
         sound.setOn(pref !== 'off');
+        applyVolumes();
         renderSoundBtn();
         soundBtn.hidden = false;
         sound.startCrickets();
