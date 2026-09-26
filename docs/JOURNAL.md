@@ -110,3 +110,4 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   sabre, la lame se charge de foudre — arcs électriques qui crépitent,
   halo et lumière bleutés — avec le sous-titre « Kiminari : la lame
   chargée de foudre ».
+- **Son de la foudre** : crépitement électrique quand la lame se charge.
