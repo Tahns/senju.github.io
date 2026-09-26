@@ -2106,10 +2106,12 @@ html.dreaming .scene-vignette {
     line-height: 1;
     color: #fff;
     transform: rotate(-4deg);
+    /* Contour et relief proportionnels à la taille du titre (en px, le relief se
+       détachait comme un titre fantôme sur les petits écrans). */
     text-shadow:
-        3px 3px 0 var(--zk-deep), -3px -3px 0 var(--zk-deep), 3px -3px 0 var(--zk-deep), -3px 3px 0 var(--zk-deep),
-        0 4px 0 var(--zk-deep), 4px 0 0 var(--zk-deep), 0 -4px 0 var(--zk-deep), -4px 0 0 var(--zk-deep),
-        7px 8px 0 var(--zk-purple), 0 0 28px rgba(229, 53, 127, .55);
+        .036em .036em 0 var(--zk-deep), -.036em -.036em 0 var(--zk-deep), .036em -.036em 0 var(--zk-deep), -.036em .036em 0 var(--zk-deep),
+        0 .048em 0 var(--zk-deep), .048em 0 0 var(--zk-deep), 0 -.048em 0 var(--zk-deep), -.048em 0 0 var(--zk-deep),
+        .06em .07em 0 var(--zk-purple), 0 0 .33em rgba(229, 53, 127, .55);
     isolation: isolate;
 }
 
