@@ -32,3 +32,14 @@ Place la caméra du rêve à chaque position `[caméra, cible]` et enregistre
 
 Si Playwright n'est pas installé globalement, indiquer son chemin avec la
 variable `PLAYWRIGHT`.
+
+## Vidéo du rêve
+
+```sh
+node tools/test/record-dream.js video 960 540 24 "0.3-4.6,7.8-14.2,15.3-20.2,21.2-24.5,29.6-34" "&quality=mobile"
+cat video/f*.jpg | ffmpeg -f image2pipe -framerate 24 -c:v mjpeg -i - -c:v libvpx -b:v 1.6M -pix_fmt yuv420p reve.webm
+```
+
+La scène avance d'un pas fixe (`__scene.step(dt, dessiner)`), donc la vidéo
+est fluide même si le rendu logiciel est lent ; hors des passages demandés,
+le rêve avance sans être dessiné. Les intervalles sont en secondes de rêve.

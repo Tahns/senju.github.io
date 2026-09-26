@@ -50,8 +50,8 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
   modèle VRoid plus jeune.
 - **Chapitres** sur la carte de fin (déjà : « Revoir le rêve ») ; mode photo.
 - **Portrait de la fiche** généré depuis le modèle 3D, dans le style du carnet.
-- **Partage** : l'image d'aperçu montre déjà le nouveau Hoko ; une courte vidéo
-  du rêve donnerait envie d'ouvrir le lien.
+- **Partage** : l'image d'aperçu montre le nouveau Hoko ; une vidéo des temps
+  forts du rêve est prête à partager (`docs/media/reve.webm`).
 
 ## Menaces
 

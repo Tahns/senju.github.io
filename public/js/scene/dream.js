@@ -638,9 +638,14 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         trailGeo.attributes.alpha.needsUpdate = true;
     });
 
-    const flipCoin = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.008, 22), [goldSide, goldFace, goldFace]);
+    const flipCoin = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.01, 24), [goldSide, goldFace, goldFace]);
     flipCoin.visible = false;
     scene.add(flipCoin);
+    // Éclat doré qui suit la pièce lancée (sinon elle se perd dans l'image).
+    const glintMat = new THREE.SpriteMaterial({ map: dot(), color: '#ffe08a', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+    const glint = new THREE.Sprite(glintMat);
+    glint.scale.setScalar(0.35);
+    flipCoin.add(glint);
 
     /* ---------------- Mise en scène ---------------- */
     const look = V();
@@ -825,6 +830,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await tl.tween(1.1, (k) => {
             flipCoin.position.set(hand.x, hand.y + 0.05 + Math.sin(Math.PI * k) * 0.9, hand.z + 0.05);
             flipCoin.rotation.x = k * 26;
+            // La pièce scintille à chaque fois qu'elle présente sa face.
+            glintMat.opacity = 0.35 + 0.65 * Math.abs(Math.cos(k * 26));
         }, ease.linear);
         sound.coin(0, 0.08);
         flipCoin.visible = false;
