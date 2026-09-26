@@ -196,3 +196,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   tonnerre et roulement quand la lame chargée de foudre frappe.
 - **Vidéo refaite** (28 s) : plan héroïque, dragon à tête, foudre visible,
   village qui s'allume au coucher du soleil.
+- **Bras croisés** refaits : les avant-bras se croisent vraiment contre la
+  poitrine et les mains se referment sur les bras (avant, mains à plat,
+  doigts tendus qui dépassaient — visible dans le gros plan du titre).
