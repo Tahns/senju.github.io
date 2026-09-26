@@ -100,3 +100,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   de sabre (seulement quand elle bouge vite), le geste se lit en entier.
 - **Aura de chakra** : pendant les mudras du Suiton, une flamme bleue
   translucide monte autour de Hoko, avec des étincelles qui s'élèvent.
+- **Lucioles** : elles dérivent et clignotent dans le jardin, derrière la
+  fenêtre ouverte de la chambre.

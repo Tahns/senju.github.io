@@ -172,6 +172,35 @@ export function buildRoom(scene) {
         starGeo.attributes.color.needsUpdate = true;
     });
 
+    // Lucioles qui dérivent dans le jardin, derrière la fenêtre ouverte.
+    const flyCount = 18;
+    const flyPos = new Float32Array(flyCount * 3);
+    const flyCol = new Float32Array(flyCount * 3);
+    const flySeeds = Array.from({ length: flyCount }, () => ({
+        x: -0.58 + starRandom() * 0.3, y: 1.0 + starRandom() * 0.9, z: -D / 2 - 0.25 - starRandom() * 0.35,
+        sx: 0.3 + starRandom() * 0.5, sy: 0.4 + starRandom() * 0.6, ph: starRandom() * 6.28, blink: 0.6 + starRandom() * 1.2
+    }));
+    const flyGeo = new THREE.BufferGeometry();
+    flyGeo.setAttribute('position', new THREE.BufferAttribute(flyPos, 3));
+    flyGeo.setAttribute('color', new THREE.BufferAttribute(flyCol, 3));
+    const flies = new THREE.Points(flyGeo, new THREE.PointsMaterial({ map: T.dot(), size: 0.12, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+    flies.frustumCulled = false; // positions calculées à chaque image
+    room.add(flies);
+    updaters.push((dt, time) => {
+        flySeeds.forEach((f, i) => {
+            flyPos[i * 3] = f.x + Math.sin(time * f.sx + f.ph) * 0.12;
+            flyPos[i * 3 + 1] = f.y + Math.sin(time * f.sy + f.ph * 2) * 0.1;
+            flyPos[i * 3 + 2] = f.z + Math.cos(time * f.sx * 0.7 + f.ph) * 0.08;
+            // Lueur qui s'allume et s'éteint doucement.
+            const glow = 0.25 + Math.pow(Math.max(0, Math.sin(time * f.blink + f.ph)), 3) * 2;
+            flyCol[i * 3] = glow * 0.85;
+            flyCol[i * 3 + 1] = glow;
+            flyCol[i * 3 + 2] = glow * 0.35;
+        });
+        flyGeo.attributes.position.needsUpdate = true;
+        flyGeo.attributes.color.needsUpdate = true;
+    });
+
     const moonPaper = new THREE.MeshStandardMaterial({ map: paperTex, roughness: 0.95, side: THREE.DoubleSide, emissive: new THREE.Color('#34467a'), emissiveIntensity: 0.9 });
     const windowPanel = (x, z) => {
         const g = new THREE.Group();
