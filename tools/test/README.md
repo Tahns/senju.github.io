@@ -19,6 +19,8 @@ par `end` et une capture `full-end.png` quand tout va bien. Troisième
 argument : des instants (en secondes de scène) où prendre des captures, par
 exemple `"5,10,15"`.
 
+Téléphone en portrait (écran tactile simulé) : `VIEWPORT=390x780 node tools/test/flow.js …`.
+
 ## Plans du rêve
 
 ```sh

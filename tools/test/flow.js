@@ -3,7 +3,10 @@ const { chromium } = require(process.env.PLAYWRIGHT || 'playwright');
 (async () => {
   const [query, prefix] = process.argv.slice(2);
   const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-  const p = await b.newPage({ viewport: { width: 960, height: 600 }, ignoreHTTPSErrors: true });
+  // VIEWPORT=390x780 : téléphone en portrait (écran tactile simulé).
+  const [w, h] = (process.env.VIEWPORT || '960x600').split('x').map(Number);
+  const touch = w < h;
+  const p = await b.newPage({ viewport: { width: w, height: h }, isMobile: touch, hasTouch: touch, deviceScaleFactor: 1, ignoreHTTPSErrors: true });
   const t0 = Date.now(); const T = () => ((Date.now() - t0) / 1000).toFixed(0);
   p.on('pageerror', e => console.log(T(), 'PAGEERROR', e.stack));
   p.on('crash', () => console.log(T(), 'CRASH')); p.on('console', m => { if (m.type() === 'error' && !/404|RETRIES/.test(m.text())) console.log(T(), 'console', m.text().slice(0, 200)); });

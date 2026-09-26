@@ -119,3 +119,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   quand Hoko dégaine (la traînée de la lame repart à zéro quand le sabre
   passe du dos à la main) ; dernier plan recadré, Hoko n'est plus coupé au
   bord de l'écran.
+- **Téléphone en portrait (suite)** : le compteur de ryō tient dans l'écran
+  (il débordait sous le bouton son) ; pendant le rêve, si un plan pensé pour
+  l'écran large allait couper Hoko au bord, la caméra pivote juste assez pour
+  le garder dans le cadre. Test : `VIEWPORT=390x780 node tools/test/flow.js …`.

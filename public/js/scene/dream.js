@@ -854,6 +854,25 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     camera.position.set(0.5, 1.9, 7.5);
     camera.lookAt(0, 1.5, 0);
 
+    // Téléphone en portrait : l'image est étroite, un plan pensé pour l'écran
+    // large coupe Hoko au bord. On tourne la caméra juste assez pour qu'il reste
+    // dans le cadre (sans toucher aux plans où il est déjà bien placé).
+    const framePoint = V();
+    const up = V(0, 1, 0);
+    function keepInFrame() {
+        if (camera.aspect >= 1) return;
+        camera.lookAt(look);
+        camera.updateMatrixWorld();
+        ninja.J.head.getWorldPosition(framePoint);
+        framePoint.y -= 0.45;
+        framePoint.project(camera);
+        const x = framePoint.x;
+        if (framePoint.z > 1 || Math.abs(x) < 0.55 || Math.abs(x) > 2.2) return;
+        const half = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
+        const turn = Math.atan(x * half) - Math.atan(Math.sign(x) * 0.55 * half);
+        camera.rotateOnWorldAxis(up, -turn);
+    }
+
     return {
         scene,
         camera,
@@ -865,6 +884,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
         // Rendu avec profondeur de champ : la mise au point suit Hoko.
         render() {
+            keepInFrame();
             if (!post) {
                 renderer.render(scene, camera);
                 return;
