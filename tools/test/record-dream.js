@@ -36,16 +36,17 @@ const wins = WIN.split(',').map(s => s.split('-').map(Number));
       return c.toDataURL('image/jpeg', 0.92);
     };
   });
-  const dt = 1 / +FPS; let t = 0; let n = 0; const t0 = Date.now();
+  const dt = 1 / +FPS; let lastCap = ''; let t = 0; let n = 0; const t0 = Date.now();
   const end = wins[wins.length - 1][1];
   while (t < end) {
     const w = wins.find(([a, z]) => t >= a && t < z);
-    const step = w ? dt : 0.1;
+    const step = dt; // même pas partout : le scénario ne prend pas de retard
     let alpha = 1;
     if (w) { const fade = 0.35; alpha = Math.min(1, (t - w[0]) / fade, (w[1] - t) / fade); }
     const url = await p.evaluate(async ([step, alpha, rec]) => {
       window.__scene.step(step, rec); const u = rec ? window.__grab(alpha) : null; await new Promise(r => setTimeout(r, 0));
-      return u; }, [step, alpha, !!w]);
+      const cap = document.getElementById('scene-caption');
+      return [u, cap.classList.contains('is-visible') ? cap.textContent : '']; }, [step, alpha, !!w]).then(([u, cap]) => { if (cap !== lastCap) { lastCap = cap; if (cap) console.log('sous-titre', t.toFixed(1), cap); } return u; });
     t += step;
     if (url) { fs.writeFileSync(`${dir}/f${String(n).padStart(4, '0')}.jpg`, Buffer.from(url.split(',')[1], 'base64')); n++; if (n % 48 === 0) console.log('frames', n, 't', t.toFixed(1), ((Date.now() - t0) / n / 1000).toFixed(2) + 's/f'); }
   }

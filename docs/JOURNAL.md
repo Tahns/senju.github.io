@@ -140,3 +140,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   `tools/test/record-dream.js`, donc fluide malgré le rendu logiciel.
 - **Pièce lancée** plus grande et scintillante : on la voit enfin monter
   au-dessus de Hoko pendant la pluie de ryō.
+- **Coucher de soleil** pour le final du rêve : pendant « Un jour… », le
+  ciel passe à l'indigo et à l'orangé, la lumière devient dorée et le
+  contre-jour s'embrase sur Hoko et le village. La dernière image de la
+  carte de fin garde cette lumière.
+- Enregistreur vidéo : même pas de temps partout (le scénario ne prend plus
+  de retard pendant l'avance rapide), instants des sous-titres affichés.

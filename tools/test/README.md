@@ -42,4 +42,6 @@ cat video/f*.jpg | ffmpeg -f image2pipe -framerate 24 -c:v mjpeg -i - -c:v libvp
 
 La scène avance d'un pas fixe (`__scene.step(dt, dessiner)`), donc la vidéo
 est fluide même si le rendu logiciel est lent ; hors des passages demandés,
-le rêve avance sans être dessiné. Les intervalles sont en secondes de rêve.
+le rêve avance au même pas sans être dessiné. Les intervalles sont en
+secondes de rêve ; le script affiche l'instant de chaque sous-titre pour les
+choisir.
