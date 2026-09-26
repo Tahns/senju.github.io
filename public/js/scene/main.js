@@ -745,8 +745,9 @@ async function start() {
 
     function frame(now, manual = false, draw = true) {
         if (lost) return;
-        const dt = Math.min(0.25, (now - last) / 1000);
-        last = now;
+        // Jamais de pas négatif (un horodatage en retard ferait reculer la scène).
+        const dt = Math.max(0, Math.min(0.25, (now - last) / 1000));
+        last = Math.max(last, now);
         adapt(dt);
         time += dt * timeline.scale;
         timeline.update(dt);

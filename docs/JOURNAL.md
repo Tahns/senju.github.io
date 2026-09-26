@@ -150,3 +150,12 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   « Un jour… ». Le rêve défile en silence, écran noir, jusqu'au chapitre
   choisi (quelques secondes), puis s'ouvre en iris
   (`?at=dream&chapitre=suiton`).
+- **Caméra plus douce** (retour : « mouvements trop brusques ») : la caméra
+  suit ses plans avec un amorti (plus de départ ni d'arrêt sec), les plans
+  courts durent plus longtemps avec une accélération douce, la secousse
+  d'atterrissage est plus légère.
+- **Traînée du coup final** : le ruban de la lame garde tout l'arc du geste
+  et s'efface doucement ; au coup chargé de foudre, il est plus long, plus
+  large et bleu électrique.
+- **Correctif** : un horodatage d'image en retard pouvait faire reculer la
+  scène d'un instant (pas de temps négatif) ; c'est bloqué.
