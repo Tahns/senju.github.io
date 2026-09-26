@@ -179,3 +179,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   embruns l'accompagnent.
 - Outil `dream-shots.js` : compatible avec la caméra amortie (`setCamera`),
   option `DRAGON=0.5` pour voir le dragon déroulé.
+- **Plan héroïque** pendant « Hoko Senju — jōnin de Konoha » : la caméra
+  s'approche en trois-quarts puis pousse jusqu'à un gros plan sur le visage
+  et le bandeau (léger sourire assuré), avant de repartir pour le kenjutsu ;
+  Hoko ne porte la main au sabre qu'une fois la caméra éloignée.

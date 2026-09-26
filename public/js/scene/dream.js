@@ -870,12 +870,20 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         say('Hoko Senju — jōnin de Konoha', 4.5);
         tl.tween(0.9, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * (1 - k); }, ease.inOut);
         pose(tl, 'crossed', 0.9);
-        await shot(tl, V(3.6, 1.7, 3.6), V(0, 1.55, 0), 5.5, ease.sine);
+        // Plan héroïque : la caméra s'approche en trois-quarts, puis pousse
+        // lentement jusqu'au visage (bandeau, regard assuré, léger sourire).
+        await shot(tl, V(1.5, 1.5, 2.6), V(0, 1.45, 0), 3, ease.sine);
+        face(tl, 'fun', 0.3, 0.8);
+        await shot(tl, V(0.5, 1.76, 0.82), V(0, 1.7, 0), 2.6, ease.sine);
+        await tl.wait(0.6);
+        face(tl, 'fun', 0, 0.5);
 
         // 2. Maître du kenjutsu : trois coups de sabre, trois poteaux tranchés.
         onAct('kenjutsu');
-        const side = shot(tl, V(-2.6, 1.55, 3.6), V(0.8, 1.1, 0.4), 2.2);
+        const side = shot(tl, V(-2.6, 1.55, 3.6), V(0.8, 1.1, 0.4), 2.6);
         tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * k; });
+        // Il ne porte la main au sabre qu'une fois la caméra éloignée du gros plan.
+        await tl.wait(0.9);
         await pose(tl, 'draw', 0.5);
         await side;
         ninja.drawKatana();
