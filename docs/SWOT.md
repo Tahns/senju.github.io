@@ -13,10 +13,12 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
   jōnin (gilet olive à poches, bandeau de Konoha, sabre), animé par toutes les
   poses du rêve, clignements, poing fermé sur le sabre.
 - **Rêve spectaculaire** : entrée en iris de lumière, Hoko qui tombe du ciel,
-  Konoha complet (maisons à étages, tour du Hokage, mont des Hokage,
-  villageois, oiseaux), herbe animée, coups de sabre amples avec traînée et
-  foudre (Kiminari), aura de chakra, dragon d'eau et arc-en-ciel, pluie de
-  ryō, coucher de soleil final ; ambiance sonore de jour (oiseaux, vent).
+  plan héroïque sur son visage, Konoha complet (maisons à étages, tour du
+  Hokage, mont des Hokage, villageois, oiseaux), herbe animée, coups de sabre
+  amples avec traînée et foudre (Kiminari), aura de chakra en flammes, dragon
+  d'eau avec une tête qui s'envole, arc-en-ciel, pluie de ryō, coucher de
+  soleil final ; caméra amortie, sans à-coups ; ambiance sonore de jour
+  (oiseaux, vent) ; chapitres pour revoir un passage.
 - **Pensé aussi pour le téléphone** : cadrage qui garde Hoko dans l'image en
   portrait, compteur et carnet adaptés, palier de qualité mobile.
 - **Vidéo à partager** : 27 s de temps forts, enregistrée image par image.

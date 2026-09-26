@@ -42,7 +42,8 @@ const wins = WIN.split(',').map(s => s.split('-').map(Number));
     const w = wins.find(([a, z]) => t >= a && t < z);
     const step = dt; // même pas partout : le scénario ne prend pas de retard
     let alpha = 1;
-    if (w) { const fade = 0.35; alpha = Math.min(1, (t - w[0]) / fade, (w[1] - t) / fade); }
+    // FADE=0.001 : pas de fondu entre les passages (captures isolées).
+    if (w) { const fade = +(process.env.FADE || 0.35); alpha = Math.min(1, (t - w[0]) / fade, (w[1] - t) / fade); }
     const url = await p.evaluate(async ([step, alpha, rec]) => {
       window.__scene.step(step, rec); const u = rec ? window.__grab(alpha) : null; await new Promise(r => setTimeout(r, 0));
       const cap = document.getElementById('scene-caption');

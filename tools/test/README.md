@@ -36,7 +36,7 @@ variable `PLAYWRIGHT`.
 ## Vidéo du rêve
 
 ```sh
-node tools/test/record-dream.js video 960 540 24 "0.3-4.6,8.8-15.2,15.6-21.4,22.2-26.5,31-37" "&quality=mobile"
+node tools/test/record-dream.js video 960 540 24 "0.3-3.2,5.0-8.2,10.0-16.4,18.0-24.2,25.1-28.8,33.6-39.5" "&quality=mobile"
 cat video/f*.jpg | ffmpeg -f image2pipe -framerate 24 -c:v mjpeg -i - -c:v libvpx -b:v 1.6M -pix_fmt yuv420p reve.webm
 ```
 
