@@ -233,3 +233,10 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   Discord et les réseaux ne gardent pas l'ancienne en cache ; `twitter:image`.
 - **Vidéo refaite** avec le cou épaissi, les nouvelles couleurs, les vrais
   bras croisés et les copeaux.
+
+## Dimanche 27 septembre
+
+- **Couvertures des carnets** : le sceau en bas à droite était cassé
+  (écriture verticale écrasée : un trait rouge et « 手 » seul) ; il affiche
+  maintenant « 千手 » (et « 忍道 » sur le carnet indigo) en entier.
+  « Ouvrir le carnet » ne disparaît plus entre deux pulsations.
