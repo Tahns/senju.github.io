@@ -21,7 +21,7 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
   (oiseaux, vent) ; chapitres pour revoir un passage.
 - **Pensé aussi pour le téléphone** : cadrage qui garde Hoko dans l'image en
   portrait, compteur et carnet adaptés, palier de qualité mobile.
-- **Vidéo à partager** : 27 s de temps forts, enregistrée image par image.
+- **Vidéo à partager** : 28 s de temps forts, enregistrée image par image.
 - **Carnet soigné** : couverture en cuir, pages qui se courbent sous le doigt,
   sons de papier, sommaire, chronologie, fermeture du livre.
 - **Robustesse** : repli sur le carnet sans WebGL ou si le processeur graphique
