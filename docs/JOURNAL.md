@@ -165,3 +165,17 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   ne marquent plus d'arrêt au milieu.
 - **Vidéo refaite** avec la caméra douce, la traînée du coup final, le
   Suiton en entier et le coucher de soleil (27 s).
+- **Futon** : la couverture indigo à motif asanoha était presque noire à la
+  lueur de la lanterne (une dalle sombre) ; indigo plus clair, motif plus
+  net.
+- **Aura de chakra** refaite : plus de « tube de verre » ; des langues de
+  flamme irrégulières qui montent et s'effilent, surtout visibles sur les
+  bords, et une silhouette qui ondule.
+- **Dragon d'eau** : il a enfin une tête (crâne, museau, mâchoire
+  entrouverte, cornes, moustaches, crinière, yeux lumineux) au bout du
+  ruban ; il monte en spirale autour de Hoko, marque une pause en haut, puis
+  s'envole vers le ciel au-dessus du village (avant, il partait vers la
+  caméra, hors de l'image) ; la caméra lève les yeux pour le suivre et les
+  embruns l'accompagnent.
+- Outil `dream-shots.js` : compatible avec la caméra amortie (`setCamera`),
+  option `DRAGON=0.5` pour voir le dragon déroulé.

@@ -17,6 +17,7 @@ const port = process.argv[6] || '8765';
   await p.evaluate(() => { window.__scene.timeline.update = () => {}; window.requestAnimationFrame = () => 0; });
   await p.waitForTimeout(6000);
   if (process.env.T) await p.evaluate((t) => { window.__T = t; }, process.env.T);
+  if (process.env.DRAGON) await p.evaluate((h) => { window.__DRAGON = h; }, process.env.DRAGON); // DRAGON=0.5 : dragon d'eau déroulé à moitié
   const shots = JSON.parse(process.argv[7] || 'null') || [
     [[0.12, 1.92, 0.62], [0, 1.9, 0]],
     [[0.5, 1.9, 7.5], [0, 1.5, 0]],
@@ -27,8 +28,11 @@ const port = process.argv[6] || '8765';
   ];
   for (let i = 0; i < shots.length; i++) {
     const url = await p.evaluate(([pos, look]) => {
-      const d = window.__scene.dream; const c = d.camera; c.position.set(...pos); c.lookAt(...look);
+      const d = window.__scene.dream; const c = d.camera;
+      if (window.__DRAGON && d.setDragon) d.setDragon(+window.__DRAGON);
+      if (d.setCamera) d.setCamera(pos, look); else { c.position.set(...pos); c.lookAt(...look); }
       d.update(0.016, +(window.__T || 10));
+      if (d.setCamera) d.setCamera(pos, look);
       const t = performance.now();
       if (d.render) d.render(); else window.__scene.renderer.render(d.scene, d.camera);
       const url = document.getElementById('scene').toDataURL('image/jpeg', 0.9);

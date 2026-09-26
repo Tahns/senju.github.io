@@ -391,10 +391,11 @@ export function bookSpine(kind) {
 // Motif asanoha (feuille de chanvre) blanc sur indigo.
 export function asanoha(repeat) {
     return canvasTexture(256, 256, (ctx, w, h) => {
-        ctx.fillStyle = '#1e2a52';
+        // Indigo moyen (un indigo trop sombre devient une dalle noire à la lueur de la lanterne).
+        ctx.fillStyle = '#34467f';
         ctx.fillRect(0, 0, w, h);
-        ctx.strokeStyle = 'rgba(220,228,245,.55)';
-        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = 'rgba(232,238,250,.75)';
+        ctx.lineWidth = 2;
         const s = 64;
         const hh = s * Math.sqrt(3) / 2;
         for (let row = -1; row < h / hh + 1; row++) {
