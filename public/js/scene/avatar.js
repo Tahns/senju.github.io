@@ -67,10 +67,57 @@ function mergeHair(model) {
     });
 }
 
+// Le cou du modèle VRoid est très fin (style « bishōnen ») : on écarte de
+// l'axe du cou les sommets qui suivent son os, en proportion de leur poids,
+// pour un cou de ninja adulte. Tête et épaules ne bougent pas.
+function thickenNeck(model, factor = 1.35) {
+    model.updateMatrixWorld(true);
+    const bindInv = new THREE.Matrix4();
+    const axis = new THREE.Vector3();
+    const v = new THREE.Vector3();
+    model.traverse((o) => {
+        // Seulement la peau (le col du haut garde sa forme).
+        if (!o.isSkinnedMesh || !/_SKIN/.test(o.material.name || '')) return;
+        const n = o.skeleton.bones.findIndex((b) => b.name === 'J_Bip_C_Neck');
+        if (n < 0) return;
+        // Position de l'os du cou dans l'espace de liaison du maillage.
+        axis.setFromMatrixPosition(bindInv.copy(o.skeleton.boneInverses[n]).invert()).applyMatrix4(o.bindMatrixInverse);
+        const pos = o.geometry.attributes.position;
+        const idx = o.geometry.attributes.skinIndex;
+        const wt = o.geometry.attributes.skinWeight;
+        let moved = 0;
+        for (let i = 0; i < pos.count; i++) {
+            let w = 0;
+            for (let k = 0; k < 4; k++) if (idx.getComponent(i, k) === n) w += wt.getComponent(i, k);
+            if (w < 0.05) continue;
+            v.fromBufferAttribute(pos, i);
+            // Seulement le fût du cou : rien au-delà de 9 cm de l'axe (épaules,
+            // haut de la poitrine, qui suivent aussi un peu l'os du cou).
+            const r = Math.hypot(v.x - axis.x, v.z - axis.z);
+            const near = THREE.MathUtils.smoothstep(r, 0.09, 0.055) > 0 ? 1 - THREE.MathUtils.smoothstep(r, 0.055, 0.09) : 1;
+            // La base du cou (sous le col) reste en place : l'élargissement monte
+            // progressivement au-dessus, sans entonnoir ni peau qui perce le col.
+            const rise = THREE.MathUtils.smoothstep(v.y, axis.y + 0.01, axis.y + 0.05);
+            if (near <= 0 || rise <= 0) continue;
+            const s = 1 + (factor - 1) * w * near * rise;
+            pos.setXYZ(i, axis.x + (v.x - axis.x) * s, v.y, axis.z + (v.z - axis.z) * s);
+            moved++;
+        }
+        if (moved) {
+            // Normales d'origine conservées (l'élargissement est radial et doux).
+            pos.needsUpdate = true;
+            o.geometry.computeBoundingSphere();
+        }
+    });
+}
+
 function restyle(model) {
     mergeHair(model);
+    thickenNeck(model);
     // Le haut porte déjà le gilet de jōnin peint dans sa texture ; le bas passe au bleu nuit.
     const tints = { Bottoms: '#8f9ad8' };
+    // Peau un peu plus chaude (le blanc VRoid paraissait délavé sous le soleil).
+    const skin = '#ffe0cc';
     model.traverse((o) => {
         if (!o.isMesh) return;
         o.castShadow = true;
@@ -90,8 +137,13 @@ function restyle(model) {
                 metalness: 0,
                 emissive: new THREE.Color('#ffffff'),
                 emissiveMap: m.map,
-                emissiveIntensity: /SKIN|FACE|EYE/.test(name) ? 0.12 : 0.14
+                // Lueur propre plus faible : le relief et les couleurs ressortent.
+                emissiveIntensity: /SKIN|FACE|EYE/.test(name) ? 0.07 : 0.08
             });
+            if (/_SKIN/.test(name)) {
+                std.color.set(skin);
+                std.emissive.set(skin);
+            }
             Object.entries(tints).forEach(([k, c]) => {
                 if (!name.includes(k)) return;
                 std.color.set(c);
