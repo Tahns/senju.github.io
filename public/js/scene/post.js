@@ -100,7 +100,7 @@ export class Post {
                         }
                         col = sum / wsum;
                     }
-                    col += texture2D(tBloom, vUv).rgb * 0.35;
+                    col += texture2D(tBloom, vUv).rgb * 0.26;
                     // Étalonnage : couleurs un peu plus riches, ombres légèrement bleutées.
                     float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
                     col = mix(vec3(l), col, 1.14);
@@ -108,6 +108,12 @@ export class Post {
                     gl_FragColor = vec4(max(col, 0.0), 1.0);
                     #include <tonemapping_fragment>
                     #include <colorspace_fragment>
+                    // Après le tone mapping (qui écrase le contraste) : petite courbe
+                    // en S et couleurs plus franches, façon anime, sans voile laiteux.
+                    vec3 g = clamp(gl_FragColor.rgb, 0.0, 1.0);
+                    g = mix(g, g * g * (3.0 - 2.0 * g), 0.3);
+                    float gl = dot(g, vec3(0.2126, 0.7152, 0.0722));
+                    gl_FragColor.rgb = mix(vec3(gl), g, 1.1);
                     vec2 v = vUv - 0.5;
                     gl_FragColor.rgb *= 1.0 - dot(v, v) * 0.55;
                 }`,

@@ -216,3 +216,11 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (114 appels de dessin, autant pour les ombres) ; elles sont fusionnées au
   chargement en un seul maillage. Hoko passe de 169 à 56 appels de dessin,
   le rêve de ~550 à ~440 par image (plus les ombres) — rendu identique.
+- **Retour « cou trop fin, couleurs à refaire »** :
+  - **Cou** épaissi (×1,35) : au chargement, les sommets de peau qui suivent
+    l'os du cou s'écartent de son axe, seulement sur le fût du cou (la base
+    sous le col et les épaules ne bougent pas, pas d'entonnoir).
+  - **Couleurs** : peau plus chaude (le blanc VRoid paraissait délavé), lueur
+    propre du modèle réduite pour que le relief ressorte ; étalonnage du rêve
+    avec une légère courbe en S et plus de saturation après le tone mapping,
+    halo modéré — fini le voile laiteux.
