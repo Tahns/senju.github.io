@@ -535,6 +535,13 @@ export class SceneAudio {
     }
 
     // Tintement de pièces d'or.
+    // Carillon qui monte, pour l'ouverture du rêve.
+    shimmer() {
+        [0, 2, 5, 7, 9, 12, 14, 17].forEach((st, i) => {
+            this.tone({ at: i * 0.09, freq: 880 * Math.pow(2, st / 12), duration: 1.4, gain: 0.03 - i * 0.002 });
+        });
+    }
+
     coin(at = 0, gain = 0.05) {
         const f = 2400 + Math.random() * 1800;
         [1, 1.51, 2.37].forEach((r, k) => this.tone({ at, freq: f * r, duration: 0.25 - k * 0.06, gain: gain / (k + 1) }));

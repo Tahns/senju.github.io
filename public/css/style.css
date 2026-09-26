@@ -1704,6 +1704,23 @@ html.eyes-heavy .eyelid--bottom {
     transition: opacity 1.2s ease;
 }
 
+/* Ouverture du rêve : un cercle de lumière chaude s'élargit depuis le centre. */
+@property --iris {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 160%;
+}
+
+.scene-fade.is-iris {
+    background: radial-gradient(circle at 50% 52%, transparent calc(var(--iris) - 22%), rgba(255, 236, 200, .9) calc(var(--iris) - 8%), #000 var(--iris)) !important;
+    animation: iris-open 2.8s cubic-bezier(.4, 0, .7, 1) forwards;
+}
+
+@keyframes iris-open {
+    from { --iris: 0%; }
+    to { --iris: 145%; }
+}
+
 /* Cartes d'intro et de fin */
 .scene-card {
     position: fixed;
