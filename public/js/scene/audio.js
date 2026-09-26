@@ -43,7 +43,11 @@ export class SceneAudio {
         this.sfx.gain.setTargetAtTime(this.volumes.sfx, t, 0.05);
         if (this.crickets) this.ambience.gain.setTargetAtTime(1.3 * this.volumes.ambience, t, 0.05);
         if (this.music) this.musicBus.gain.setTargetAtTime(this.volumes.music, t, 0.05);
-        if (this.dream) this.dreamBus.gain.setTargetAtTime(this.volumes.music, t, 0.05);
+        if (this.dream) {
+            this.dreamBus.gain.setTargetAtTime(this.volumes.music, t, 0.05);
+            this.dayBus.gain.setTargetAtTime(this.volumes.ambience, t, 0.05);
+            this.ambience.gain.setTargetAtTime(0.0001, t, 0.05);
+        }
     }
 
     // À appeler lors d'un clic (les navigateurs l'exigent).
@@ -392,6 +396,7 @@ export class SceneAudio {
             [E5, 1], [G5, 1], [A5, 1.5], [G5, 0.5], [E5, 1], [D5, 1], [B4, 2],
             [D5, 4], [null, 4]
         ];
+        this.startDay();
         const drums = [1, 0, 0.6, 0.6, 1, 0, 0.5, 0]; // motif « DON . don don DON . don . »
         const beat = 60 / 88;
         const state = { next: ctx.currentTime + 0.3, i: 0, drum: 0, drumNext: ctx.currentTime + 0.3 };
@@ -421,6 +426,75 @@ export class SceneAudio {
         const state = this.dream;
         setTimeout(() => clearTimeout(state.timer), seconds * 1000);
         this.dream = null;
+        // Réveil : le jour s'efface, les grillons de la nuit reviennent.
+        const day = this.day;
+        this.day = null;
+        day.bus.gain.setTargetAtTime(0.0001, this.ctx.currentTime, seconds / 3);
+        setTimeout(() => { clearTimeout(day.timer); day.wind.stop(); }, seconds * 1000 + 200);
+        if (this.crickets) this.ambience.gain.setTargetAtTime(1.3 * this.volumes.ambience, this.ctx.currentTime, seconds / 2);
+    }
+
+    /* ---------------- Ambiance du rêve : oiseaux et vent, en plein jour ---------------- */
+
+    startDay() {
+        const ctx = this.ctx;
+        const t = ctx.currentTime;
+        const bus = ctx.createGain();
+        bus.gain.value = 0.0001;
+        bus.connect(this.master);
+        bus.gain.setTargetAtTime(this.volumes.ambience, t, 1);
+        this.dayBus = bus;
+        // Les grillons de la chambre se taisent (il fait jour dans le rêve).
+        this.ambience.gain.setTargetAtTime(0.0001, t, 0.8);
+        // Vent : souffle grave qui enfle et retombe lentement.
+        const wind = ctx.createBufferSource();
+        wind.buffer = this.noiseBuffer;
+        wind.loop = true;
+        const band = ctx.createBiquadFilter();
+        band.type = 'bandpass';
+        band.frequency.value = 420;
+        band.Q.value = 0.6;
+        const level = ctx.createGain();
+        level.gain.value = 0.035;
+        const gust = ctx.createOscillator();
+        gust.frequency.value = 0.09;
+        const gustDepth = ctx.createGain();
+        gustDepth.gain.value = 0.025;
+        gust.connect(gustDepth).connect(level.gain);
+        wind.connect(band).connect(level).connect(bus);
+        wind.start(t);
+        gust.start(t);
+        wind.onended = () => gust.stop();
+        const day = { bus, wind, timer: 0 };
+        this.day = day;
+        // Oiseaux : petites phrases de 2 à 5 notes sifflées, de part et d'autre.
+        const song = () => {
+            const notes = 2 + Math.floor(Math.random() * 4);
+            const base = 2600 + Math.random() * 1400;
+            const pan = (Math.random() - 0.5) * 1.6;
+            const up = Math.random() < 0.5;
+            let at = ctx.currentTime + 0.05;
+            for (let i = 0; i < notes; i++) {
+                const d = 0.05 + Math.random() * 0.07;
+                const f = base * (1 + (Math.random() - 0.5) * 0.25);
+                const osc = ctx.createOscillator();
+                osc.frequency.setValueAtTime(f, at);
+                osc.frequency.exponentialRampToValueAtTime(f * (up ? 1.35 : 0.7), at + d);
+                const env = ctx.createGain();
+                env.gain.setValueAtTime(0.0001, at);
+                env.gain.exponentialRampToValueAtTime(0.012 + Math.random() * 0.01, at + 0.01);
+                env.gain.exponentialRampToValueAtTime(0.0001, at + d);
+                const p = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+                if (p) p.pan.value = pan;
+                osc.connect(env);
+                (p ? env.connect(p) : env).connect(bus);
+                osc.start(at);
+                osc.stop(at + d + 0.05);
+                at += d + 0.03 + Math.random() * 0.06;
+            }
+            day.timer = setTimeout(song, 1200 + Math.random() * 3000);
+        };
+        day.timer = setTimeout(song, 900);
     }
 
     whoosh() {
