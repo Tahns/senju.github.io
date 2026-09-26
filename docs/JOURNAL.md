@@ -87,3 +87,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   poing (« Un jour… ») ; le compteur de ryō s'efface pour ce dernier plan.
 - **Accessibilité** : résumé de la scène pour les lecteurs d'écran, lié à
   la carte d'accueil.
+- **Katana dans le bon sens** : rengainé, la lame est dans le fourreau et
+  la poignée dépasse au-dessus de l'épaule (avant, c'était l'inverse) ;
+  lame argentée bien lisible en main.
+- Tests : les scripts coupent les ressources externes et n'attendent plus
+  le chargement complet (le worker de la tête bloquait Playwright).

@@ -31,7 +31,7 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
 | F1 | ~~Tourbillon rouge du dos coupé en deux~~ | — | Corrigé : décalque 3D sur le dos |
 | F2 | ~~Reste de capuche~~ | — | Corrigé : capuche masquée, col montant olive du gilet |
 | F3 | ~~Visage toujours neutre~~ | — | Corrigé : détermination au sabre et au Suiton, joie sous les ryō, sourire final ; clignements réparés |
-| F4 | Bras de la chambre (première personne) encore procéduraux, d'un autre style que Hoko adulte | Moyenne | Réutiliser les mains/manches du modèle |
+| F4 | ~~Bras de la chambre d'un autre style~~ | — | Revu : même rendu lisse que la chambre, manches bleu nuit comme Hoko adulte ; pas de changement nécessaire |
 | F5 | Portrait de la fiche vide (« Portrait à venir ») + erreur 404 dans la console | Moyenne | Image du joueur (la fiche décrit Hoko à 12 ans : un portrait du modèle adulte ne conviendrait pas) |
 | F6 | ~~L'aperçu Claude n'affiche pas le modèle~~ | — | Corrigé : repli sur une copie base64 du modèle |
 | F7 | Jamais testé sur un vrai téléphone ni une vraie carte graphique (seulement un rendu logiciel) | Moyenne (risque) | Test par le propriétaire ; réglages `?quality=` en secours |

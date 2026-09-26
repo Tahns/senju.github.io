@@ -8,7 +8,9 @@ const port = process.argv[6] || '8765';
   const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const p = await b.newPage({ viewport: { width: W, height: H } });
   const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') errs.push(m.text().slice(0, 200)); });
-  await p.goto(`http://localhost:${port}/?at=dream&speed=0.8` + q, { waitUntil: 'domcontentloaded' });
+  // Hors-ligne : on coupe les ressources externes (polices, YouTube) qui peuvent bloquer.
+  await p.route('**/*', (r) => (r.request().url().startsWith('http://localhost') ? r.continue() : r.abort()));
+  await p.goto(`http://localhost:${port}/?at=dream&speed=0.8` + q, { waitUntil: 'commit' });
   await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Entrer', null, { timeout: 90000 });
   await p.click('#scene-start');
   await p.waitForFunction(() => window.__scene.dream && document.documentElement.classList.contains('dreaming'), null, { timeout: 120000 });
