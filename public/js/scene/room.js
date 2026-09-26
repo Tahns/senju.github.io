@@ -242,7 +242,7 @@ export function buildRoom(scene) {
     const lantern = new THREE.Group();
     lantern.position.set(0.95, 0, -2.62);
     room.add(lantern);
-    const glowMat = new THREE.MeshStandardMaterial({ map: paperTex, emissive: new THREE.Color('#ffb25e'), emissiveIntensity: 2.2, roughness: 1, side: THREE.DoubleSide });
+    const glowMat = new THREE.MeshStandardMaterial({ map: paperTex, emissive: new THREE.Color('#ffc988'), emissiveMap: T.andonGlow(), emissiveIntensity: 2.6, roughness: 1, side: THREE.DoubleSide });
     [[0, 0.14, 0], [Math.PI / 2, 0, 0.14], [Math.PI, -0.14, 0], [-Math.PI / 2, 0, -0.14]].forEach(([ry, x, z], i) => {
         const panel = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.46), glowMat);
         panel.rotation.y = ry + Math.PI / 2;
@@ -253,6 +253,9 @@ export function buildRoom(scene) {
         const leg = box(lantern, 0.022, 0.66, 0.022, darkWood, sx * 0.14, 0.33, sz * 0.14);
         leg.castShadow = false;
     });
+    // Chapeau et socle : une andon, pas une simple boîte.
+    box(lantern, 0.36, 0.03, 0.36, darkWood, 0, 0.675, 0).castShadow = false;
+    box(lantern, 0.34, 0.03, 0.34, darkWood, 0, 0.135, 0).castShadow = false;
     [0.16, 0.64].forEach((y) => {
         box(lantern, 0.3, 0.02, 0.02, darkWood, 0, y, 0.14).castShadow = false;
         box(lantern, 0.3, 0.02, 0.02, darkWood, 0, y, -0.14).castShadow = false;

@@ -209,3 +209,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Carnet, fin de la chronologie** : vignette à l'encre rouge sous
   « Refermer le carnet » — le mont des Hokage et ses quatre visages, la tour
   du Hokage, les toits et les arbres de Konoha — là où la page restait vide.
+- **Lanterne (andon)** de la chambre : papier éclairé depuis le centre (bords
+  plus sombres), croisillons de bois en ombre, chapeau et socle — avant,
+  un rectangle blanc uniforme dans un cadre.

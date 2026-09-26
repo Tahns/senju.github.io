@@ -548,3 +548,20 @@ export function makie() {
         ctx.strokeRect(10, 10, w - 20, h - 20);
     });
 }
+
+// Panneau d'andon allumé (carte d'émission) : la flamme éclaire le centre du
+// papier, les bords restent plus sombres, et les croisillons de bois du cadre
+// se découpent en ombre.
+export function andonGlow() {
+    return canvasTexture(128, 256, (ctx, w, h) => {
+        const g = ctx.createRadialGradient(w / 2, h * 0.55, 8, w / 2, h * 0.55, h * 0.62);
+        g.addColorStop(0, '#fff3dc');
+        g.addColorStop(0.45, '#e8a860');
+        g.addColorStop(1, '#6e3a14');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = 'rgba(40,18,6,.75)';
+        ctx.fillRect(w / 2 - 1.5, 0, 3, h);
+        [h / 3, (2 * h) / 3].forEach((y) => ctx.fillRect(0, y - 1.5, w, 3));
+    });
+}
