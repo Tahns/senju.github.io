@@ -111,3 +111,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   halo et lumière bleutés — avec le sous-titre « Kiminari : la lame
   chargée de foudre ».
 - **Son de la foudre** : crépitement électrique quand la lame se charge.
+- **Carte de fin** : la dernière image du rêve (Hoko face au mont des
+  Hokage) reste en fond, floutée, qui dérive lentement derrière « Bonne nuit ».
