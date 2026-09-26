@@ -92,3 +92,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   lame argentée bien lisible en main.
 - Tests : les scripts coupent les ressources externes et n'attendent plus
   le chargement complet (le worker de la tête bloquait Playwright).
+- **Coups de sabre plus larges et naturels** : chaque coup s'arme (sabre
+  loin derrière l'épaule, tiré en arrière, ou bas) puis balaie tout l'arc
+  en fente : diagonale descendante, balayage horizontal, coupe remontante ;
+  croissants de lumière agrandis.
