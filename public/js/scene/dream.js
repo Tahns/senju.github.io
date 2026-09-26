@@ -660,11 +660,16 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         spawnRate = 0;
         collecting = false;
         tl.tween(2, (k) => { glitterMat.opacity = 0.9 * (1 - k); goldLight.intensity = 2.2 * (1 - k); });
-        pose(tl, 'crossed', 0.8);
+        // Il se tourne vers le mont des Hokage et lève le poing : « Un jour… »
+        hud.hidden = true;
+        tl.tween(1, (k) => { ninja.root.rotation.y = Math.PI * k; }, ease.inOut);
+        if (ninja.avatar) ninja.avatar.grip('right', true);
+        pose(tl, 'vow', 1);
         say('Un jour…', 3.5);
         face(tl, 'joy', 0, 0.8);
         face(tl, 'fun', 0.4, 0.8);
-        await shot(tl, V(-2.5, 4.8, 9.5), V(0, 1.2, -2), 5.5, ease.sine);
+        await shot(tl, V(-1.6, 1.2, 3.4), V(0, 2.2, -8), 3.5, ease.sine);
+        await shot(tl, V(-2.5, 4.8, 9.5), V(0, 1.2, -2), 4, ease.sine);
         sound.stopDream(3);
     }
 

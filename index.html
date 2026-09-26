@@ -352,11 +352,12 @@
     <div class="eyelid eyelid--bottom scene-only" aria-hidden="true"></div>
     <div class="scene-fade scene-only" id="scene-fade" aria-hidden="true"></div>
 
-    <div class="scene-card scene-only" id="scene-intro" role="dialog" aria-labelledby="intro-title">
+    <div class="scene-card scene-only" id="scene-intro" role="dialog" aria-labelledby="intro-title" aria-describedby="intro-summary">
         <svg class="shuriken" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 2 L60 40 L98 50 L60 60 L50 98 L40 60 L2 50 L40 40 Z" /><circle cx="50" cy="50" r="7" /></svg>
         <h1 class="scene-card__title" id="intro-title"><span>Hoko</span> Senju</h1>
         <p class="scene-card__tag">千手 · Konoha</p>
         <p class="scene-card__text">Domaine Senju, Konoha. La nuit est tombée…</p>
+        <p class="sr-only" id="intro-summary">Courte scène animée en 3D, vue par les yeux de Hoko : il entre dans sa chambre, lance une boîte à musique, lit son carnet (lisible au clavier et au lecteur d'écran), en prend un second, puis s'endort. Il rêve alors de lui adulte, jōnin de Konoha : maître du sabre, du Suiton, et chef de la section économique qui fait pleuvoir les ryō. Les sous-titres sont annoncés à mesure.</p>
         <button class="scene-button" id="scene-start" type="button" disabled>Chargement…</button>
         <a class="scene-card__link" href="#page-1">Aller directement au carnet</a>
     </div>
@@ -430,7 +431,7 @@
     <p class="sr-only" id="announcer" aria-live="polite"></p>
 
     <script src="public/js/book.js?v=3a917cbe"></script>
-    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=44509a78", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=987cf919", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=2476856c", "./public/js/scene/head.js": "./public/js/scene/head.js?v=62b56609", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=683ffcb6", "./public/js/scene/post.js": "./public/js/scene/post.js?v=658259d9", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c7d86718", "./public/js/scene/room.js": "./public/js/scene/room.js?v=4f7b9211", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=b13bfe7b", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=59b73f40", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=ad2b2fbc", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=d4057c6b", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
+    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=44509a78", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=987cf919", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=0d1cb435", "./public/js/scene/head.js": "./public/js/scene/head.js?v=62b56609", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=19aeac63", "./public/js/scene/post.js": "./public/js/scene/post.js?v=658259d9", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c7d86718", "./public/js/scene/room.js": "./public/js/scene/room.js?v=4f7b9211", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=b13bfe7b", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=59b73f40", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=ad2b2fbc", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=d4057c6b", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
     <!-- Si le navigateur gère les modules, la scène se charge ; sinon, ou en cas d'erreur, le carnet s'affiche seul. -->
     <script type="module">window.SceneLoading = true;</script>
     <script>

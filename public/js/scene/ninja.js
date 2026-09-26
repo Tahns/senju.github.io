@@ -443,6 +443,8 @@ export function buildNinja(sculpt, avatarGltf = null) {
         pocket: { spine: [0.05, -0.15, 0], head: [0.3, -0.25, 0], shoulderR: [0.2, 0, 0.35], elbowR: [-0.9, 0.3, 0], shoulderL: [-0.4, 0, -0.2], elbowL: [-1.2, 0, 0], hipL: [0, 0, 0.08], hipR: [0, 0, -0.08] },
         fall: { spine: [0.25, 0, 0], head: [-0.2, 0, 0], shoulderL: [-0.6, 0, -1.1], shoulderR: [-0.6, 0, 1.1], elbowL: [-0.5, 0, 0], elbowR: [-0.5, 0, 0], hipL: [-1.1, 0, 0.1], kneeL: [1.7, 0, 0], hipR: [-0.5, 0, -0.1], kneeR: [1.3, 0, 0] },
         land: { spine: [0.45, 0, 0], head: [-0.4, 0, 0], hipL: [-1.4, 0, 0.15], kneeL: [1.95, 0, 0], hipR: [-0.15, 0, -0.12], kneeR: [1.4, 0, 0], shoulderR: [-0.55, 0, 0.3], elbowR: [-0.25, 0, 0], shoulderL: [0.55, 0, -0.55], elbowL: [-0.4, 0, 0] },
+        // Poing levé vers le mont des Hokage (au loin, derrière lui).
+        vow: { spine: [-0.05, 0, 0], head: [-0.15, 0, 0], shoulderR: [-2.9, 0, 0.15], elbowR: [-0.2, 0, 0], shoulderL: [0.05, 0, -0.2], elbowL: [-0.3, 0, 0], hipL: [0, 0, 0.1], hipR: [0, 0, -0.1] },
         flip: { spine: [0, 0.1, 0], head: [-0.25, 0.15, 0], shoulderR: [-1.0, 0, 0.3], elbowR: [-1.6, 0, 0], shoulderL: [0.05, 0, -0.18], elbowL: [-0.2, 0, 0], hipL: [0, 0, 0.08], hipR: [0, 0, -0.08] }
     };
     const NAMES = ['spine', 'head', 'shoulderL', 'shoulderR', 'elbowL', 'elbowR', 'hipL', 'hipR', 'kneeL', 'kneeR'];
