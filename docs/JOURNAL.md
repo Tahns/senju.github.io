@@ -83,3 +83,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Aperçu Claude avec le vrai modèle** : si le `.vrm` n'est pas servi, le
   modèle est chargé depuis une copie en base64 (`hoko.vrm.txt`, publiée
   seulement avec l'aperçu).
+- **Final du rêve** : Hoko se tourne vers le mont des Hokage et lève le
+  poing (« Un jour… ») ; le compteur de ryō s'efface pour ce dernier plan.
+- **Accessibilité** : résumé de la scène pour les lecteurs d'écran, lié à
+  la carte d'accueil.
