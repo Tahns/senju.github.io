@@ -599,6 +599,7 @@ export function buildRoom(scene) {
     const dustGeo = new THREE.BufferGeometry();
     dustGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ map: T.dot(), size: 0.018, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending, color: '#ffe2b8' }));
+    dust.frustumCulled = false; // positions calculées à chaque image
     room.add(dust);
     updaters.push((dt, time) => {
         seeds.forEach((p, i) => {

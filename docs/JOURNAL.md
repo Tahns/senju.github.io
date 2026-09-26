@@ -102,3 +102,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   translucide monte autour de Hoko, avec des étincelles qui s'élèvent.
 - **Lucioles** : elles dérivent et clignotent dans le jardin, derrière la
   fenêtre ouverte de la chambre.
+- **Correctif particules** : la poussière dans la lumière de la chambre et
+  les feuilles qui volent dans le rêve disparaissaient selon l'angle de vue
+  (volume englobant calculé avant leur placement) ; elles sont toujours
+  dessinées maintenant.
