@@ -608,8 +608,33 @@ async function start() {
         html.classList.remove('eyes-closing', 'eyes-heavy');
         html.classList.add('dreaming');
         renderer.shadowMap.needsUpdate = true;
-        openIris();
-        await dream.play({ timeline, sound, say, hud, counters });
+        // ?at=dream&chapitre=suiton : le rêve défile en silence, écran noir,
+        // jusqu'au chapitre demandé (liens de la carte de fin).
+        const chapter = params.get('chapitre');
+        let skipping = ['kenjutsu', 'suiton', 'ryo', 'final'].includes(chapter);
+        if (skipping) {
+            fade.style.transition = 'none';
+            fade.style.opacity = 1;
+            timeline.scale = 80;
+            if (sound.master) {
+                sound.master.gain.cancelScheduledValues(0);
+                sound.master.gain.value = 0;
+            }
+            caption.hidden = true;
+            skipBtn.hidden = true;
+        } else {
+            openIris();
+        }
+        const onAct = (name) => {
+            if (!skipping || name !== chapter) return;
+            skipping = false;
+            timeline.scale = baseSpeed;
+            sound.setOn(sound.on);
+            caption.hidden = false;
+            allowSkip();
+            openIris();
+        };
+        await dream.play({ timeline, sound, say, hud, counters, onAct });
         // Dernière image du rêve, gardée en fond de la carte de fin.
         try {
             dream.render();

@@ -714,7 +714,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         }, ease.in);
     }
 
-    async function play({ timeline, sound, say, hud, counters }) {
+    // onAct(nom) : appelé au début de chaque chapitre (kenjutsu, suiton, ryo, final).
+    async function play({ timeline, sound, say, hud, counters, onAct = () => {} }) {
         const tl = timeline;
         camera.position.set(0.5, 1.9, 7.5);
         look.set(0, 1.5, 0);
@@ -747,6 +748,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await shot(tl, V(3.6, 1.7, 3.6), V(0, 1.55, 0), 5.5, ease.sine);
 
         // 2. Maître du kenjutsu : trois coups de sabre, trois poteaux tranchés.
+        onAct('kenjutsu');
         const side = shot(tl, V(-2.6, 1.55, 3.6), V(0.8, 1.1, 0.4), 1.2);
         tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * k; });
         await pose(tl, 'draw', 0.5);
@@ -796,6 +798,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await pose(tl, 'stand', 0.4);
 
         // 3. Maître du Suiton : mudras, puis un dragon d'eau.
+        onAct('suiton');
         const low = shot(tl, V(0.2, 0.9, 4.6), V(0, 1.45, 0), 1.2);
         await pose(tl, 'seal', 0.5);
         tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = k; }, ease.out);
@@ -828,6 +831,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await pose(tl, 'stand', 0.4);
 
         // 4. Chef de la section économique : une pluie de ryō.
+        onAct('ryo');
         await shot(tl, V(1.9, 1.75, 3.5), V(0, 1.15, 0.2), 1.2);
         say('Chef de la section économique de Konoha', 4);
         face(tl, 'angry', 0, 0.3);
@@ -862,6 +866,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await counting;
 
         // 5. Final : il croise les bras, le soleil se couche sur Konoha.
+        onAct('final');
         spawnRate = 0;
         collecting = false;
         tl.tween(2, (k) => { glitterMat.opacity = 0.9 * (1 - k); goldLight.intensity = 2.2 * (1 - k); });
