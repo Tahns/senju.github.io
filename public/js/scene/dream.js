@@ -546,7 +546,23 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     scene.add(dust);
     const dustSeeds = Array.from({ length: dustCount }, () => ({ a: random() * Math.PI * 2, s: 0.5 + random(), h: random() }));
     // Onde de choc qui court sur l'herbe.
-    const ring = new THREE.Mesh(new THREE.RingGeometry(0.85, 1, 64), new THREE.MeshBasicMaterial({ color: '#fff4dc', transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
+    // Front de l'onde doux (dégradé vers l'intérieur, bord déchiqueté), pas un anneau plein.
+    const ringMat = new THREE.ShaderMaterial({
+        uniforms: { opacity: { value: 0 } },
+        vertexShader: 'varying vec2 vP; void main(){ vP = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: `uniform float opacity; varying vec2 vP;
+            void main(){
+                float r = length(vP);
+                float a = atan(vP.y, vP.x);
+                float edge = 0.93 + 0.05 * sin(a * 11.0) * sin(a * 7.0 + 1.3);
+                float front = smoothstep(0.45, edge, r) * (1.0 - smoothstep(edge, edge + 0.04, r));
+                gl_FragColor = vec4(vec3(1.0, 0.96, 0.86), front * front * opacity);
+            }`,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide
+    });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.4, 1, 64, 1), ringMat);
     ring.rotation.x = -Math.PI / 2;
     ring.position.y = 0.12;
     scene.add(ring);
@@ -555,7 +571,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     updaters.push((dt) => {
         if (dustAge > 2) {
             dustMat.opacity = 0;
-            ring.material.opacity = 0;
+            ringMat.uniforms.opacity.value = 0;
             return;
         }
         dustAge += dt;
@@ -570,7 +586,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         dustGeo.attributes.position.needsUpdate = true;
         dustMat.opacity = 0.95 * (1 - k * k);
         ring.scale.setScalar(0.3 + e * 3.2);
-        ring.material.opacity = 0.7 * (1 - k);
+        ringMat.uniforms.opacity.value = 0.6 * Math.pow(1 - k, 1.5);
     });
 
     // Pièce lancée d'une pichenette, qui retombe dans la main.
@@ -662,10 +678,15 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     // Kiminari (foudre) : des arcs électriques crépitent le long de la lame.
     const boltSegs = 10;
     const boltMat = new THREE.MeshBasicMaterial({ color: '#d8ecff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
-    const bolts = [0, 1, 2, 3].map(() => {
+    // Chaque arc : un cœur blanc et une lueur bleue plus large autour.
+    const glowMat = new THREE.MeshBasicMaterial({ color: '#4f9dff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+    const bolts = [0, 1, 2, 3, 4].map(() => {
         const m = new THREE.Mesh(new THREE.BufferGeometry(), boltMat);
+        const glow = new THREE.Mesh(new THREE.BufferGeometry(), glowMat);
         m.frustumCulled = false;
-        scene.add(m);
+        glow.frustumCulled = false;
+        m.userData.glow = glow;
+        scene.add(m, glow);
         return m;
     });
     // Halo bleuté autour de la lame chargée.
@@ -682,24 +703,30 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     updaters.push(() => {
         const on = raiton > 0 && ninja.katana.parent !== ninja.katana.userData.sheathed.parent;
         boltMat.opacity = on ? raiton * (0.7 + Math.random() * 0.3) : 0;
+        glowMat.opacity = on ? raiton * (0.3 + Math.random() * 0.2) : 0;
         haloMat.opacity = on ? raiton * 0.55 : 0;
         boltLight.intensity = on ? raiton * (1.5 + Math.random() * 2) : 0;
-        bolts.forEach((m) => { m.visible = on; });
+        bolts.forEach((m) => { m.visible = on; m.userData.glow.visible = on; });
         if (!on || boltFrame++ % 2) return;
         ninja.katana.localToWorld(bA.set(0, 0.5, 0));
         halo.position.copy(bA);
         boltLight.position.copy(bA);
-        bolts.forEach((m) => {
+        bolts.forEach((m, n) => {
             ninja.katana.localToWorld(bA.set(0, 0.12 + Math.random() * 0.25, 0));
-            ninja.katana.localToWorld(bB.set(0, 0.55 + Math.random() * 0.34, 0));
+            // Le dernier arc jaillit de la pointe dans l'air, les autres courent le long de la lame.
+            if (n === bolts.length - 1) ninja.katana.localToWorld(bB.set((Math.random() - 0.5) * 0.5, 1.05 + Math.random() * 0.2, (Math.random() - 0.5) * 0.5));
+            else ninja.katana.localToWorld(bB.set(0, 0.55 + Math.random() * 0.34, 0));
             const pts = [];
             for (let i = 0; i <= boltSegs; i++) {
                 const t = i / boltSegs;
-                const j = i === 0 || i === boltSegs ? 0 : 0.07;
+                const j = i === 0 || i === boltSegs ? 0 : 0.13;
                 pts.push(V(bA.x + (bB.x - bA.x) * t + (Math.random() - 0.5) * j, bA.y + (bB.y - bA.y) * t + (Math.random() - 0.5) * j, bA.z + (bB.z - bA.z) * t + (Math.random() - 0.5) * j));
             }
+            const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.1);
             m.geometry.dispose();
-            m.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.1), 20, 0.005, 4, false);
+            m.geometry = new THREE.TubeGeometry(curve, 20, 0.011, 4, false);
+            m.userData.glow.geometry.dispose();
+            m.userData.glow.geometry = new THREE.TubeGeometry(curve, 20, 0.04, 5, false);
         });
     });
 
@@ -899,6 +926,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
                 raiton = 1;
             }
             await pose(tl, cuts[i][3], i === 2 ? 0.5 : 0.24, ease.inOut);
+            // La foudre monte le long de la lame avant le coup final.
+            if (i === 2) await tl.wait(0.45);
             sound.whoosh();
             await pose(tl, cuts[i][0], 0.16, ease.out);
             slash(tl, i, cuts[i][1], cuts[i][2]);

@@ -183,3 +183,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   s'approche en trois-quarts puis pousse jusqu'à un gros plan sur le visage
   et le bandeau (léger sourire assuré), avant de repartir pour le kenjutsu ;
   Hoko ne porte la main au sabre qu'une fois la caméra éloignée.
+- **Onde de choc** à l'atterrissage : une nappe claire au front déchiqueté
+  qui court sur l'herbe, au lieu d'un anneau blanc plein.
+- **Foudre du Kiminari** enfin visible : arcs plus épais (cœur blanc et
+  lueur bleue), zigzags plus amples, un arc qui jaillit de la pointe ; la
+  lame se charge un instant avant le coup final.
