@@ -612,9 +612,11 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         });
     });
 
-    // Traînée de la lame : un ruban lumineux qui suit la pointe et le talon
-    // du sabre quand il bouge vite (seulement sabre en main).
-    const TRAIL = 14;
+    // Traînée de la lame : un ruban lumineux qui suit la pointe et le talon du
+    // sabre. Chaque point garde l'élan qu'avait la lame à cet instant et
+    // s'efface en quelques dixièmes de seconde : tout l'arc du coup reste
+    // visible. Sabre chargé de foudre (coup final) : ruban plus long, bleu électrique.
+    const TRAIL = 40;
     const trailPos = new Float32Array(TRAIL * 2 * 3);
     const trailAlpha = new Float32Array(TRAIL * 2);
     const trailGeo = new THREE.BufferGeometry();
@@ -623,9 +625,11 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     const trailIdx = [];
     for (let i = 0; i < TRAIL - 1; i++) trailIdx.push(i * 2, i * 2 + 1, i * 2 + 2, i * 2 + 1, i * 2 + 3, i * 2 + 2);
     trailGeo.setIndex(trailIdx);
+    const trailColor = { value: new THREE.Color(0.85, 0.95, 1.0) };
     const trail = new THREE.Mesh(trailGeo, new THREE.ShaderMaterial({
+        uniforms: { uColor: trailColor, uBoost: { value: 1.5 } },
         vertexShader: 'attribute float alpha; varying float vA; void main(){ vA = alpha; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-        fragmentShader: 'varying float vA; void main(){ gl_FragColor = vec4(vec3(0.85, 0.95, 1.0) * 1.4, vA); }',
+        fragmentShader: 'uniform vec3 uColor; uniform float uBoost; varying float vA; void main(){ gl_FragColor = vec4(uColor * uBoost, vA); }',
         transparent: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
@@ -635,9 +639,11 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     scene.add(trail);
     const tipLocal = V(0, 0.89, 0);
     const baseLocal = V(0, 0.35, 0);
+    const steelColor = new THREE.Color(0.85, 0.95, 1.0);
+    const boltColor = new THREE.Color(0.22, 0.5, 1.0);
     const trailPts = [];
     let trailParent = null;
-    updaters.push(() => {
+    updaters.push((dt) => {
         const inHand = ninja.katana.parent !== ninja.katana.userData.sheathed.parent;
         // Sabre dégainé ou rengainé : il « saute » d'un parent à l'autre, on repart à zéro
         // (sinon la traînée dessinerait un trait du dos jusqu'à la main).
@@ -645,17 +651,27 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             trailParent = ninja.katana.parent;
             trailPts.length = 0;
         }
+        const charged = raiton > 0.05;
+        const life = charged ? 1.0 : 0.3;
+        trail.material.uniforms.uBoost.value = charged ? 2.0 : 1.5;
+        trailColor.value.lerpColors(steelColor, boltColor, Math.min(1, raiton));
+        trailPts.forEach((pt) => { pt.age += dt; });
         const tip = ninja.katana.localToWorld(tipLocal.clone());
         const base = ninja.katana.localToWorld(baseLocal.clone());
-        trailPts.unshift([tip, base]);
-        if (trailPts.length > TRAIL) trailPts.pop();
-        const speed = trailPts.length > 1 ? trailPts[0][0].distanceTo(trailPts[1][0]) : 0;
+        // Élan de la lame (m/s à la pointe) ; au ralenti du coup final, on le renforce.
+        const speed = trailPts.length && dt > 0 ? trailPts[0].tip.distanceTo(tip) / dt : 0;
+        const energy = inHand ? Math.min(1, speed / (charged ? 1.5 : 4.5)) : 0;
+        if (charged) base.lerp(tip, -0.5); // ruban plus large : il déborde vers la garde
+        trailPts.unshift({ tip, base, energy, age: 0 });
+        while (trailPts.length > TRAIL || (trailPts.length && trailPts[trailPts.length - 1].age > life)) trailPts.pop();
         for (let i = 0; i < TRAIL; i++) {
-            const [t, b] = trailPts[Math.min(i, trailPts.length - 1)];
-            trailPos.set([t.x, t.y, t.z, b.x, b.y, b.z], i * 6);
-            const a = inHand ? Math.min(1, speed * 12) * (1 - i / (TRAIL - 1)) * 0.6 : 0;
+            const pt = trailPts[Math.min(i, trailPts.length - 1)];
+            if (!pt) continue;
+            trailPos.set([pt.tip.x, pt.tip.y, pt.tip.z, pt.base.x, pt.base.y, pt.base.z], i * 6);
+            const fade = i < trailPts.length ? Math.max(0, 1 - pt.age / life) : 0;
+            const a = inHand ? pt.energy * (charged ? fade : fade * fade) * (charged ? 1 : 0.7) : 0;
             trailAlpha[i * 2] = a;
-            trailAlpha[i * 2 + 1] = a * 0.15;
+            trailAlpha[i * 2 + 1] = a * 0.12;
         }
         trailGeo.attributes.position.needsUpdate = true;
         trailGeo.attributes.alpha.needsUpdate = true;
@@ -671,16 +687,37 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     flipCoin.add(glint);
 
     /* ---------------- Mise en scène ---------------- */
+    // Caméra : les plans déplacent une cible (camGoal, lookGoal) ; la vraie
+    // caméra la suit avec un léger amorti, sans départ ni arrêt sec. La
+    // secousse d'impact s'ajoute par-dessus (shake).
     const look = V();
-    function shot(timeline, position, target, seconds, easing = ease.inOut) {
-        const p0 = camera.position.clone();
-        const l0 = look.clone();
+    const camGoal = V();
+    const lookGoal = V();
+    const camBase = V();
+    const shake = V();
+    function snapCamera(position, target) {
+        camGoal.copy(position);
+        camBase.copy(position);
+        lookGoal.copy(target);
+        look.copy(target);
+        camera.position.copy(position);
+        camera.lookAt(look);
+    }
+    function shot(timeline, position, target, seconds, easing = ease.sine) {
+        const p0 = camGoal.clone();
+        const l0 = lookGoal.clone();
         return timeline.tween(seconds, (k) => {
-            camera.position.lerpVectors(p0, position, k);
-            look.lerpVectors(l0, target, k);
-            camera.lookAt(look);
+            camGoal.lerpVectors(p0, position, k);
+            lookGoal.lerpVectors(l0, target, k);
         }, easing);
     }
+    updaters.push((dt) => {
+        const a = 1 - Math.exp(-Math.max(0, dt) / 0.35);
+        camBase.lerp(camGoal, a);
+        look.lerp(lookGoal, a);
+        camera.position.copy(camBase).add(shake);
+        camera.lookAt(look);
+    });
     function pose(timeline, name, seconds, easing = ease.inOut) {
         const from = ninja.currentValues();
         const to = ninja.poseValues(name);
@@ -717,9 +754,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     // onAct(nom) : appelé au début de chaque chapitre (kenjutsu, suiton, ryo, final).
     async function play({ timeline, sound, say, hud, counters, onAct = () => {} }) {
         const tl = timeline;
-        camera.position.set(0.5, 1.9, 7.5);
-        look.set(0, 1.5, 0);
-        camera.lookAt(look);
+        snapCamera(V(0.5, 1.9, 7.5), V(0, 1.5, 0));
         setDusk(0);
         sound.startDream();
 
@@ -733,11 +768,10 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         sound.land();
         burst();
         // Secousse de caméra à l'impact.
-        const shakeFrom = camera.position.clone();
         tl.tween(0.45, (k) => {
-            const a = (1 - k) * 0.08;
-            camera.position.set(shakeFrom.x + Math.sin(k * 60) * a, shakeFrom.y + Math.cos(k * 47) * a, shakeFrom.z);
-        }, ease.linear);
+            const a = (1 - k) * (1 - k) * 0.06;
+            shake.set(Math.sin(k * 40) * a, Math.cos(k * 31) * a, 0);
+        }, ease.linear).then(() => shake.set(0, 0, 0));
         pose(tl, 'land', 0.12, ease.out);
         await tl.tween(0.14, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * k; }, ease.out);
         await tl.wait(0.7);
@@ -749,7 +783,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
 
         // 2. Maître du kenjutsu : trois coups de sabre, trois poteaux tranchés.
         onAct('kenjutsu');
-        const side = shot(tl, V(-2.6, 1.55, 3.6), V(0.8, 1.1, 0.4), 1.2);
+        const side = shot(tl, V(-2.6, 1.55, 3.6), V(0.8, 1.1, 0.4), 2.2);
         tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * k; });
         await pose(tl, 'draw', 0.5);
         await side;
@@ -799,7 +833,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
 
         // 3. Maître du Suiton : mudras, puis un dragon d'eau.
         onAct('suiton');
-        const low = shot(tl, V(0.2, 0.9, 4.6), V(0, 1.45, 0), 1.2);
+        const low = shot(tl, V(0.2, 0.9, 4.6), V(0, 1.45, 0), 2);
         await pose(tl, 'seal', 0.5);
         tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = k; }, ease.out);
         await low;
@@ -832,7 +866,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
 
         // 4. Chef de la section économique : une pluie de ryō.
         onAct('ryo');
-        await shot(tl, V(1.9, 1.75, 3.5), V(0, 1.15, 0.2), 1.2);
+        await shot(tl, V(1.9, 1.75, 3.5), V(0, 1.15, 0.2), 2);
         say('Chef de la section économique de Konoha', 4);
         face(tl, 'angry', 0, 0.3);
         face(tl, 'joy', 0.7, 0.6);
@@ -888,8 +922,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     const focusPoint = V();
 
     // Pose initiale, pour les premières images.
-    camera.position.set(0.5, 1.9, 7.5);
-    camera.lookAt(0, 1.5, 0);
+    snapCamera(V(0.5, 1.9, 7.5), V(0, 1.5, 0));
 
     // Téléphone en portrait : l'image est étroite, un plan pensé pour l'écran
     // large coupe Hoko au bord. On tourne la caméra juste assez pour qu'il reste
