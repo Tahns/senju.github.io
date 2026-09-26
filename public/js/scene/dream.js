@@ -296,8 +296,15 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         const r = 1.05 - t * 0.35;
         dragonPoints.push(V(Math.cos(a) * r, 0.15 + t * 2.4, Math.sin(a) * r));
     }
-    dragonPoints.push(V(0.2, 2.9, 0.9), V(-0.8, 2.8, 2.8), V(-2.4, 2.3, 5.5), V(-4.5, 1.8, 9.5));
+    // Puis il jaillit vers le ciel, au-dessus du village (face à la caméra).
+    dragonPoints.push(V(0.35, 3.1, -0.9), V(0.9, 4.2, -2.6), V(1.6, 5.8, -5.2), V(2.6, 8, -9), V(3.8, 10.5, -14));
     const dragonCurve = new THREE.CatmullRomCurve3(dragonPoints);
+    // Fraction de la longueur où finit la spirale (la tête y fait une pause).
+    const spiralEnd = (() => {
+        const lengths = dragonCurve.getLengths(400);
+        const k = Math.round((64 / (dragonPoints.length - 1)) * 400);
+        return lengths[k] / lengths[400];
+    })();
     const segments = 420;
     const radial = 18;
     const dragonGeo = new THREE.TubeGeometry(dragonCurve, segments, 0.17, radial, false);
@@ -313,8 +320,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             void main(){
                 vUv = uv;
                 float body = smoothstep(uTail, uTail + 0.1, uv.x) * (1.0 - smoothstep(uHead - 0.015, uHead, uv.x));
-                float head = exp(-pow((uv.x - (uHead - 0.035)) / 0.02, 2.0)) * step(0.01, uHead);
-                float s = body * (0.55 + 0.45 * smoothstep(uTail, uTail + 0.3, uv.x)) + head * 0.7;
+                // Le corps s'affine vers la tête (maillage à part, posé au bout).
+                float neck = 1.0 - 0.35 * smoothstep(uHead - 0.06, uHead, uv.x);
+                float s = body * neck * (0.55 + 0.45 * smoothstep(uTail, uTail + 0.3, uv.x));
                 vec3 p = center + (position - center) * s;
                 vec4 mv = modelViewMatrix * vec4(p, 1.0);
                 vN = normalize(normalMatrix * normal);
@@ -337,7 +345,64 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     const dragon = new THREE.Mesh(dragonGeo, dragonMat);
     dragon.frustumCulled = false;
     scene.add(dragon);
-    updaters.push((dt, time) => { dragonMat.uniforms.uTime.value = time; });
+    // Tête du dragon : crâne, museau, mâchoire entrouverte, cornes rejetées en
+    // arrière, crinière et yeux lumineux, dans la même eau que le corps. Elle
+    // suit la pointe du ruban et regarde dans le sens du mouvement.
+    const skinMat = new THREE.ShaderMaterial({
+        uniforms: { uTime: dragonMat.uniforms.uTime, uFade: { value: 1 } },
+        vertexShader: 'varying vec3 vN; varying vec3 vV; varying vec3 vP; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = -mv.xyz; vP = position; gl_Position = projectionMatrix * mv; }',
+        fragmentShader: `uniform float uTime; uniform float uFade; varying vec3 vN; varying vec3 vV; varying vec3 vP;
+            void main(){
+                float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0);
+                vec3 c = mix(vec3(0.05, 0.32, 0.78), vec3(0.45, 0.85, 1.0), f * 0.8 + max(vN.y, 0.0) * 0.3);
+                float ripple = smoothstep(0.8, 1.0, sin(vP.z * 40.0 - uTime * 10.0 + sin(vP.x * 30.0) * 1.5));
+                c += vec3(1.0) * ripple * 0.5;
+                gl_FragColor = vec4(c * 1.25, (0.7 + f * 0.3) * uFade);
+            }`,
+        transparent: true
+    });
+    const eyeMat = new THREE.MeshBasicMaterial({ color: '#e8fbff', transparent: true });
+    const dragonHead = new THREE.Group();
+    const part = (geo, x, y, z, rx = 0, sx = 1, sy = 1, sz = 1, mat = skinMat) => {
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set(x, y, z);
+        m.rotation.x = rx;
+        m.scale.set(sx, sy, sz);
+        dragonHead.add(m);
+        return m;
+    };
+    const ball = new THREE.SphereGeometry(1, 20, 14);
+    part(ball, 0, 0, 0, 0, 0.2, 0.17, 0.22); // crâne
+    part(ball, 0, -0.02, 0.2, 0, 0.13, 0.09, 0.2); // museau
+    part(ball, 0, -0.1, 0.14, 0.35, 0.1, 0.04, 0.17); // mâchoire entrouverte
+    const horn = new THREE.ConeGeometry(0.05, 0.42, 10);
+    [-1, 1].forEach((side) => {
+        const h = part(horn, side * 0.1, 0.16, -0.14, -0.95);
+        h.rotation.z = side * -0.35;
+        part(ball, side * 0.115, 0.06, 0.1, 0, 0.038, 0.038, 0.038, eyeMat); // yeux
+        const whisker = part(new THREE.ConeGeometry(0.012, 0.32, 6), side * 0.1, -0.06, 0.34, 1.9);
+        whisker.rotation.z = side * 0.9;
+    });
+    const spike = new THREE.ConeGeometry(0.04, 0.16, 8);
+    for (let i = 0; i < 4; i++) part(spike, 0, 0.15 - i * 0.03, -0.12 - i * 0.09, -1.1 - i * 0.12); // crinière
+    dragonHead.visible = false;
+    scene.add(dragonHead);
+    const headAhead = V();
+    updaters.push((dt, time) => {
+        dragonMat.uniforms.uTime.value = time;
+        const h = dragonMat.uniforms.uHead.value;
+        dragonHead.visible = h > 0.01;
+        if (!dragonHead.visible) return;
+        const u = THREE.MathUtils.clamp(h - 0.012, 0, 1);
+        dragonCurve.getPointAt(u, dragonHead.position);
+        headAhead.copy(dragonHead.position).add(dragonCurve.getTangentAt(Math.min(u, 0.999)));
+        dragonHead.lookAt(headAhead);
+        // Apparaît avec le ruban, s'éteint quand le dragon file au loin.
+        const size = THREE.MathUtils.smoothstep(h, 0.01, 0.08) * (1 - THREE.MathUtils.smoothstep(h, 0.98, 1.08));
+        dragonHead.scale.setScalar(Math.max(0.001, size * 1.35));
+        skinMat.uniforms.uFade.value = size;
+        eyeMat.opacity = size;
+    });
 
     const waterCount = 420;
     const waterPos = new Float32Array(waterCount * 3);
@@ -352,7 +417,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     updaters.push((dt, time) => {
         waterSeeds.forEach((w, i) => {
             const k = w.h;
-            // Spirale qui monte autour de lui (un dragon d'eau), puis jaillit en avant.
+            // Spirale qui monte autour de lui (un dragon d'eau), puis jaillit vers le ciel.
             const angle = w.a + time * 4 + k * 9;
             const radius = 0.6 + w.r * 0.25 + (1 - waterState.rise) * 1.5;
             let x = Math.cos(angle) * radius;
@@ -361,9 +426,10 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             const b = waterState.blast;
             if (b > 0) {
                 const d = (b * 14 + w.s * 3) * (0.5 + k);
-                x = x * (1 - b) + (w.r - 0.5) * b * 1.5;
-                y = y * (1 - b) + (1.4 + (w.s - 0.5) * 0.6) * b;
-                z = z * (1 - b) + d;
+                // Les embruns suivent le dragon : vers le ciel, au-dessus du village.
+                x = x * (1 - b) + (w.r - 0.5) * b * 1.5 + d * 0.15;
+                y = y * (1 - b) + (2.5 + (w.s - 0.5) * 0.8) * b + d * 0.45;
+                z = z * (1 - b) - d * 0.7;
             }
             waterPos[i * 3] = x;
             waterPos[i * 3 + 1] = y;
@@ -530,14 +596,39 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     // de Hoko pendant les mudras, et des étincelles qui s'élèvent.
     const auraMat = new THREE.ShaderMaterial({
         uniforms: { uTime: { value: 0 }, uPower: { value: 0 } },
-        vertexShader: 'varying vec2 vUv; varying vec3 vN; varying vec3 vV; void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = -mv.xyz; gl_Position = projectionMatrix * mv; }',
-        fragmentShader: 'uniform float uTime; uniform float uPower; varying vec2 vUv; varying vec3 vN; varying vec3 vV; void main(){ float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 1.6); float flame = 0.5 + 0.5 * sin(vUv.x * 37.7 + uTime * 6.0 - vUv.y * 14.0) * sin(vUv.x * 18.8 - uTime * 4.0 + vUv.y * 6.0); float tongue = smoothstep(0.25, 0.85, flame + (1.0 - vUv.y) * 0.45); float fade = pow(1.0 - vUv.y, 1.3) * smoothstep(0.0, 0.06, vUv.y); float a = (0.35 + rim) * fade * tongue * uPower * 0.8; gl_FragColor = vec4(vec3(0.35, 0.75, 1.0) * 1.6, a); }',
+        // La surface ondule (silhouette vivante, pas un tube rigide).
+        vertexShader: `uniform float uTime; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+            void main(){
+                vUv = uv;
+                float a = uv.x * 6.2832;
+                float w = sin(a * 3.0 + uTime * 3.1 + uv.y * 5.0) * 0.5 + sin(a * 5.0 - uTime * 4.3 + uv.y * 9.0) * 0.5;
+                vec3 p = position + vec3(normal.x, 0.0, normal.z) * w * 0.07 * (0.3 + uv.y);
+                vec4 mv = modelViewMatrix * vec4(p, 1.0);
+                vN = normalize(normalMatrix * normal); vV = -mv.xyz;
+                gl_Position = projectionMatrix * mv;
+            }`,
+        // Langues de flamme : bruit qui monte, plus fines vers le haut ; surtout
+        // visibles sur les bords (effet de contre-jour), presque rien au centre.
+        fragmentShader: `uniform float uTime; uniform float uPower; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+            float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+            float noise(vec2 p){ vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+                return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
+            void main(){
+                float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0);
+                vec2 q = vec2(vUv.x * 14.0, vUv.y * 3.0 - uTime * 1.6);
+                float n = noise(q) * 0.6 + noise(q * 2.3 + 7.0) * 0.4;
+                float tongue = smoothstep(0.35 + vUv.y * 0.45, 0.75 + vUv.y * 0.2, n + (1.0 - vUv.y) * 0.35);
+                float fade = pow(1.0 - vUv.y, 1.2) * smoothstep(0.0, 0.08, vUv.y);
+                float a = (0.08 + rim * 1.2) * tongue * fade * uPower;
+                vec3 col = mix(vec3(0.25, 0.6, 1.0), vec3(0.75, 0.95, 1.0), tongue * rim);
+                gl_FragColor = vec4(col * 1.7, a);
+            }`,
         transparent: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide
     });
-    const aura = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.55, 2.3, 48, 1, true), auraMat);
+    const aura = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.55, 2.3, 48, 24, true), auraMat);
     aura.position.y = 1.1;
     aura.visible = false;
     scene.add(aura);
@@ -842,13 +933,15 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         sound.water(2.6);
         waterMat.opacity = 0.55;
         const D = dragonMat.uniforms;
-        await tl.tween(2.2, (k) => { waterState.rise = k; D.uHead.value = 0.7 * k; D.uTail.value = 0; }, ease.out);
+        await tl.tween(2.4, (k) => { waterState.rise = k; D.uHead.value = spiralEnd * k; D.uTail.value = 0; }, ease.out);
         await pose(tl, 'release', 0.25, ease.out);
         sound.splash();
-        await tl.tween(1.3, (k) => {
+        // La caméra lève les yeux pour suivre le dragon qui s'envole.
+        shot(tl, V(0.5, 1.1, 5.4), V(0.6, 3.4, -2), 2.2);
+        await tl.tween(1.8, (k) => {
             waterState.blast = k;
             waterMat.opacity = 0.55 * (1 - k * k);
-            D.uHead.value = 0.7 + 0.4 * k;
+            D.uHead.value = spiralEnd + (1.09 - spiralEnd) * k;
             D.uTail.value = k * 1.05;
         }, ease.in);
         D.uHead.value = 0;
@@ -950,6 +1043,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         // Pour les tests : forcer la foudre sur la lame, montrer l'arc-en-ciel.
         setRaiton(v) { raiton = v; },
         setDusk,
+        // Pour les tests : place la caméra d'un coup (sans amorti).
+        setCamera(pos, target) { snapCamera(V(...pos), V(...target)); },
+        setDragon(h) { dragonMat.uniforms.uHead.value = h; dragonMat.uniforms.uTail.value = 0; },
         setRainbow(v) { rainbow.visible = v > 0; rainbowMat.uniforms.uOpacity.value = v; },
         play,
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
