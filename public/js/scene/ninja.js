@@ -254,7 +254,7 @@ export function buildNinja(sculpt, avatarGltf = null) {
         leather: mat('#7a4d2a', 0.55),
         gold: new THREE.MeshStandardMaterial({ color: '#e0b34a', metalness: 1, roughness: 0.3 }),
         black: new THREE.MeshStandardMaterial({ color: '#0d0c0c', roughness: 0.25, metalness: 0.2 }),
-        steel: new THREE.MeshStandardMaterial({ color: '#dfe6ec', metalness: 1, roughness: 0.15 })
+        steel: new THREE.MeshStandardMaterial({ color: '#e8eef3', metalness: 0.75, roughness: 0.22, emissive: '#6d7680', emissiveIntensity: 0.35 })
     };
     const shadow = (m) => { m.castShadow = true; m.receiveShadow = true; return m; };
     const mesh = (geo, m, parent, x = 0, y = 0, z = 0) => {
@@ -360,7 +360,7 @@ export function buildNinja(sculpt, avatarGltf = null) {
     backSwirl.rotation.y = Math.PI;
     // Fourreau du sabre, en travers du dos.
     const back = joint(J.spine, 0, 0.3, -0.18);
-    back.rotation.z = 0.75;
+    back.rotation.z = -0.75;
     mesh(new THREE.CylinderGeometry(0.022, 0.018, 0.8, 16), M.black, back);
 
     /* ---------------- Tête (sculptée d'un bloc) et chevelure ---------------- */
@@ -426,7 +426,10 @@ export function buildNinja(sculpt, avatarGltf = null) {
     mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.01, 18), M.gold, katana, 0, 0.105, 0);
     mesh(new THREE.CylinderGeometry(0.017, 0.018, 0.22, 10), M.black, katana, 0, 0, 0);
     back.add(katana);
-    katana.position.set(0, 0.28, 0);
+    // Rengainé : lame dans le fourreau (pointe en bas), poignée qui dépasse
+    // au-dessus de l'épaule de la main qui dégaine.
+    katana.position.set(0, 0.515, 0);
+    katana.rotation.z = Math.PI;
     katana.userData.sheathed = { parent: back, position: katana.position.clone(), quaternion: katana.quaternion.clone() };
 
     // Poses : angles (en radians) des articulations.
