@@ -530,6 +530,20 @@ export class SceneAudio {
         this.noise({ duration: 0.6, attack: 0.01, type: 'lowpass', freq: 1200, to: 180, gain: 0.35 });
     }
 
+    // Grondement du dragon d'eau : souffle grave qui monte, grain de gorge.
+    roar(seconds = 1.6) {
+        if (!this.ctx) return;
+        this.noise({ duration: seconds, attack: 0.25, type: 'bandpass', freq: 180, to: 520, q: 2.5, gain: 0.32 });
+        this.noise({ duration: seconds * 0.8, attack: 0.3, type: 'bandpass', freq: 900, to: 1600, q: 3, gain: 0.07 });
+        this.tone({ freq: 70, to: 110, duration: seconds, gain: 0.08, type: 'sawtooth' });
+    }
+    // Claquement de tonnerre (coup chargé de foudre) : éclat sec puis roulement.
+    thunder() {
+        if (!this.ctx) return;
+        this.noise({ duration: 0.08, attack: 0.001, type: 'highpass', freq: 1800, gain: 0.5 });
+        this.noise({ at: 0.02, duration: 1.8, attack: 0.03, type: 'lowpass', freq: 380, to: 90, q: 0.8, gain: 0.45 });
+        for (let i = 0; i < 6; i++) this.noise({ at: 0.1 + Math.random() * 0.9, duration: 0.3, attack: 0.02, type: 'lowpass', freq: 220, gain: 0.12 });
+    }
     splash() {
         this.noise({ duration: 0.9, attack: 0.01, type: 'lowpass', freq: 3000, to: 500, gain: 0.45 });
     }

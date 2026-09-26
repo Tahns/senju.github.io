@@ -934,6 +934,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             await pose(tl, cuts[i][0], 0.16, ease.out);
             slash(tl, i, cuts[i][1], cuts[i][2]);
             sound.cut();
+            if (i === 2 && sound.thunder) sound.thunder();
             cutPost(tl, i);
             if (i === 2) {
                 // Dernier coup : ralenti, le temps d'admirer la coupe.
@@ -970,6 +971,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         say('Suiton : maître de l\'eau', 3.5);
         face(tl, 'angry', 0.5, 0.5);
         sound.water(2.6);
+        if (sound.roar) tl.wait(1.2).then(() => sound.roar(1.6));
         waterMat.opacity = 0.55;
         const D = dragonMat.uniforms;
         await tl.tween(2.4, (k) => { waterState.rise = k; D.uHead.value = spiralEnd * k; D.uTail.value = 0; }, ease.out);
