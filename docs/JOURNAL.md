@@ -123,3 +123,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (il débordait sous le bouton son) ; pendant le rêve, si un plan pensé pour
   l'écran large allait couper Hoko au bord, la caméra pivote juste assez pour
   le garder dans le cadre. Test : `VIEWPORT=390x780 node tools/test/flow.js …`.
+- **Ambiance sonore du rêve** : en plein jour, les grillons de la chambre se
+  taisent ; on entend des oiseaux (petites phrases sifflées, à gauche et à
+  droite) et un vent doux qui enfle et retombe. Au réveil, la nuit et les
+  grillons reviennent.
