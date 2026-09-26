@@ -165,3 +165,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   ne marquent plus d'arrêt au milieu.
 - **Vidéo refaite** avec la caméra douce, la traînée du coup final, le
   Suiton en entier et le coucher de soleil (27 s).
+- **Futon** : la couverture indigo à motif asanoha était presque noire à la
+  lueur de la lanterne (une dalle sombre) ; indigo plus clair, motif plus
+  net.
