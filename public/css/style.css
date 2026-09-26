@@ -2312,3 +2312,29 @@ html.book-open .radio {
     font-weight: 400;
     font-size: 17px;
 }
+
+/* Téléphone en portrait : le compteur de ryō tient entre le bord gauche et
+   le bouton son (il débordait à droite, sous le bouton). */
+@media (max-width: 520px) {
+    .dream-hud {
+        left: 12px;
+        right: 68px;
+        min-width: 0;
+        padding: 9px 12px;
+        translate: none;
+    }
+
+    .dream-hud p {
+        gap: 10px;
+    }
+
+    .dream-hud span {
+        font-size: 10px;
+        letter-spacing: .08em;
+    }
+
+    .dream-hud b {
+        font-size: 15px;
+        white-space: nowrap;
+    }
+}
