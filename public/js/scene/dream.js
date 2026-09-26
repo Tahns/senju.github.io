@@ -613,8 +613,15 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     const tipLocal = V(0, 0.89, 0);
     const baseLocal = V(0, 0.35, 0);
     const trailPts = [];
+    let trailParent = null;
     updaters.push(() => {
         const inHand = ninja.katana.parent !== ninja.katana.userData.sheathed.parent;
+        // Sabre dégainé ou rengainé : il « saute » d'un parent à l'autre, on repart à zéro
+        // (sinon la traînée dessinerait un trait du dos jusqu'à la main).
+        if (ninja.katana.parent !== trailParent) {
+            trailParent = ninja.katana.parent;
+            trailPts.length = 0;
+        }
         const tip = ninja.katana.localToWorld(tipLocal.clone());
         const base = ninja.katana.localToWorld(baseLocal.clone());
         trailPts.unshift([tip, base]);
@@ -835,7 +842,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         say('Un jour…', 3.5);
         face(tl, 'joy', 0, 0.8);
         face(tl, 'fun', 0.4, 0.8);
-        await shot(tl, V(-1.6, 1.2, 3.4), V(0, 2.2, -8), 3.5, ease.sine);
+        await shot(tl, V(-1.6, 1.2, 3.4), V(0.5, 2, -6), 3.5, ease.sine);
         await shot(tl, V(-2.5, 4.8, 9.5), V(0, 1.2, -2), 4, ease.sine);
         sound.stopDream(3);
     }

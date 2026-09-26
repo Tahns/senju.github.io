@@ -115,3 +115,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   Hokage) reste en fond, floutée, qui dérive lentement derrière « Bonne nuit ».
 - **Arc-en-ciel** : après le jaillissement du dragon d'eau, un arc-en-ciel
   doux apparaît au loin au-dessus du village, puis s'efface.
+- **Correctifs téléphone (portrait)** : plus de trait de lumière vertical
+  quand Hoko dégaine (la traînée de la lame repart à zéro quand le sabre
+  passe du dos à la main) ; dernier plan recadré, Hoko n'est plus coupé au
+  bord de l'écran.
