@@ -2191,6 +2191,31 @@ html.dreaming .scene-vignette {
     color: #fff;
 }
 
+/* Chapitres du rêve, sur la carte de fin */
+.scene-chapters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 340px;
+}
+
+.scene-chapters a {
+    padding: 4px 12px;
+    font-size: 13px;
+    color: rgba(230, 220, 255, .8);
+    text-decoration: none;
+    border: 1px solid rgba(123, 77, 255, .55);
+    border-radius: 999px;
+    background: rgba(18, 10, 42, .45);
+}
+
+.scene-chapters a:hover,
+.scene-chapters a:focus-visible {
+    color: #fff;
+    border-color: var(--zk-magenta);
+}
+
 .scene-caption {
     font-family: var(--zk-font);
     font-style: normal;

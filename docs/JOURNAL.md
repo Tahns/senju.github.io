@@ -146,3 +146,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   carte de fin garde cette lumière.
 - Enregistreur vidéo : même pas de temps partout (le scénario ne prend plus
   de retard pendant l'avance rapide), instants des sous-titres affichés.
+- **Chapitres du rêve** sur la carte de fin : Kenjutsu, Suiton, Ryō,
+  « Un jour… ». Le rêve défile en silence, écran noir, jusqu'au chapitre
+  choisi (quelques secondes), puis s'ouvre en iris
+  (`?at=dream&chapitre=suiton`).

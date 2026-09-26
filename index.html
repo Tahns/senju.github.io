@@ -29,7 +29,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Permanent+Marker&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap&text=%E5%8D%83%E6%89%8B%E5%BF%8D%E9%81%93%E6%B0%B4%E9%81%81%E7%81%AB%E6%84%8F%E5%BF%97">
-    <link rel="stylesheet" href="public/css/style.css?v=101fe7e9">
+    <link rel="stylesheet" href="public/css/style.css?v=bd84b9c1">
 </head>
 
 <body>
@@ -368,6 +368,12 @@
         <h2 class="scene-card__title" id="end-title">Bonne nuit</h2>
         <button class="scene-button" id="scene-replay" type="button">Recommencer</button>
         <a class="scene-card__link" href="?at=dream" id="scene-dream">Revoir le rêve</a>
+        <nav class="scene-chapters" aria-label="Chapitres du rêve">
+            <a href="?at=dream&amp;chapitre=kenjutsu">Kenjutsu</a>
+            <a href="?at=dream&amp;chapitre=suiton">Suiton</a>
+            <a href="?at=dream&amp;chapitre=ryo">Ryō</a>
+            <a href="?at=dream&amp;chapitre=final">Un jour…</a>
+        </nav>
         <a class="scene-card__link" href="#page-1" id="scene-read">Relire le carnet de Hoko</a>
     </div>
 
@@ -432,7 +438,7 @@
     <p class="sr-only" id="announcer" aria-live="polite"></p>
 
     <script src="public/js/book.js?v=3a917cbe"></script>
-    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=1172a746", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=987cf919", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=a3e1ef72", "./public/js/scene/head.js": "./public/js/scene/head.js?v=62b56609", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=3299acc4", "./public/js/scene/post.js": "./public/js/scene/post.js?v=658259d9", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c7d86718", "./public/js/scene/room.js": "./public/js/scene/room.js?v=80e37d01", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=b13bfe7b", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=59b73f40", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=ad2b2fbc", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=d4057c6b", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
+    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=1172a746", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=987cf919", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=0365acde", "./public/js/scene/head.js": "./public/js/scene/head.js?v=62b56609", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=3299acc4", "./public/js/scene/post.js": "./public/js/scene/post.js?v=658259d9", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c7d86718", "./public/js/scene/room.js": "./public/js/scene/room.js?v=80e37d01", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=b13bfe7b", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=59b73f40", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=ad2b2fbc", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=d4057c6b", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
     <!-- Si le navigateur gère les modules, la scène se charge ; sinon, ou en cas d'erreur, le carnet s'affiche seul. -->
     <script type="module">window.SceneLoading = true;</script>
     <script>
@@ -455,7 +461,7 @@
             }).catch(function () {});
         })();
     </script>
-    <script type="module" src="public/js/scene/main.js?v=325e6863" onerror="window.Carnet && window.Carnet.standalone()"></script>
+    <script type="module" src="public/js/scene/main.js?v=7c7fc463" onerror="window.Carnet && window.Carnet.standalone()"></script>
 </body>
 
 </html>

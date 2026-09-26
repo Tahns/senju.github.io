@@ -1,7 +1,7 @@
 # SWOT — Carnet de Hoko Senju
 
 Revue complète du projet au 25 septembre (soir), après le passage de Hoko
-adulte sur un vrai modèle anime. Les faiblesses sont classées par visibilité :
+adulte sur un vrai modèle anime ; mise à jour le 26 septembre (après-midi). Les faiblesses sont classées par visibilité :
 on corrige d'abord ce qu'un visiteur remarque en premier.
 
 ## Forces
@@ -12,9 +12,14 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
 - **Hoko adulte crédible** : vrai modèle anime de jeu (VRoid, CC0) en tenue de
   jōnin (gilet olive à poches, bandeau de Konoha, sabre), animé par toutes les
   poses du rêve, clignements, poing fermé sur le sabre.
-- **Rêve spectaculaire** : Konoha complet (maisons à étages, tour du Hokage,
-  mont des Hokage, villageois, oiseaux), herbe animée, croissants de sabre,
-  dragon d'eau, pluie de ryō dorés, profondeur de champ et halo.
+- **Rêve spectaculaire** : entrée en iris de lumière, Hoko qui tombe du ciel,
+  Konoha complet (maisons à étages, tour du Hokage, mont des Hokage,
+  villageois, oiseaux), herbe animée, coups de sabre amples avec traînée et
+  foudre (Kiminari), aura de chakra, dragon d'eau et arc-en-ciel, pluie de
+  ryō, coucher de soleil final ; ambiance sonore de jour (oiseaux, vent).
+- **Pensé aussi pour le téléphone** : cadrage qui garde Hoko dans l'image en
+  portrait, compteur et carnet adaptés, palier de qualité mobile.
+- **Vidéo à partager** : 25 s de temps forts, enregistrée image par image.
 - **Carnet soigné** : couverture en cuir, pages qui se courbent sous le doigt,
   sons de papier, sommaire, chronologie, fermeture du livre.
 - **Robustesse** : repli sur le carnet sans WebGL ou si le processeur graphique
