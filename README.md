@@ -38,6 +38,7 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
 - Après chaque modification des fichiers JS/CSS : `python3 tools/version.py` (numéros de version anti-cache dans index.html).
 - Qualité : automatique (palier « mobile » sur écran tactile), ou forcée avec `?quality=low`, `?quality=mobile` ou `?quality=high`.
 - Pour tester une étape : `?at=shelf`, `?at=second`, `?at=bed` ou `?at=dream`, et `?speed=3` pour accélérer.
+- Chapitres du rêve (liens de la carte de fin) : `?at=dream&chapitre=kenjutsu`, `suiton`, `ryo` ou `final`.
 
 ## Le second carnet
 
