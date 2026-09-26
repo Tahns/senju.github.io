@@ -483,6 +483,48 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     });
 
     // Pièce lancée d'une pichenette, qui retombe dans la main.
+    // Traînée de la lame : un ruban lumineux qui suit la pointe et le talon
+    // du sabre quand il bouge vite (seulement sabre en main).
+    const TRAIL = 14;
+    const trailPos = new Float32Array(TRAIL * 2 * 3);
+    const trailAlpha = new Float32Array(TRAIL * 2);
+    const trailGeo = new THREE.BufferGeometry();
+    trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
+    trailGeo.setAttribute('alpha', new THREE.BufferAttribute(trailAlpha, 1));
+    const trailIdx = [];
+    for (let i = 0; i < TRAIL - 1; i++) trailIdx.push(i * 2, i * 2 + 1, i * 2 + 2, i * 2 + 1, i * 2 + 3, i * 2 + 2);
+    trailGeo.setIndex(trailIdx);
+    const trail = new THREE.Mesh(trailGeo, new THREE.ShaderMaterial({
+        vertexShader: 'attribute float alpha; varying float vA; void main(){ vA = alpha; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: 'varying float vA; void main(){ gl_FragColor = vec4(vec3(0.85, 0.95, 1.0) * 1.4, vA); }',
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide
+    }));
+    trail.frustumCulled = false;
+    scene.add(trail);
+    const tipLocal = V(0, 0.89, 0);
+    const baseLocal = V(0, 0.35, 0);
+    const trailPts = [];
+    updaters.push(() => {
+        const inHand = ninja.katana.parent !== ninja.katana.userData.sheathed.parent;
+        const tip = ninja.katana.localToWorld(tipLocal.clone());
+        const base = ninja.katana.localToWorld(baseLocal.clone());
+        trailPts.unshift([tip, base]);
+        if (trailPts.length > TRAIL) trailPts.pop();
+        const speed = trailPts.length > 1 ? trailPts[0][0].distanceTo(trailPts[1][0]) : 0;
+        for (let i = 0; i < TRAIL; i++) {
+            const [t, b] = trailPts[Math.min(i, trailPts.length - 1)];
+            trailPos.set([t.x, t.y, t.z, b.x, b.y, b.z], i * 6);
+            const a = inHand ? Math.min(1, speed * 12) * (1 - i / (TRAIL - 1)) * 0.6 : 0;
+            trailAlpha[i * 2] = a;
+            trailAlpha[i * 2 + 1] = a * 0.15;
+        }
+        trailGeo.attributes.position.needsUpdate = true;
+        trailGeo.attributes.alpha.needsUpdate = true;
+    });
+
     const flipCoin = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.008, 22), [goldSide, goldFace, goldFace]);
     flipCoin.visible = false;
     scene.add(flipCoin);

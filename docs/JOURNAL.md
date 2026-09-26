@@ -96,3 +96,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   loin derrière l'épaule, tiré en arrière, ou bas) puis balaie tout l'arc
   en fente : diagonale descendante, balayage horizontal, coupe remontante ;
   croissants de lumière agrandis.
+- **Traînée de la lame** : un ruban lumineux suit la lame pendant les coups
+  de sabre (seulement quand elle bouge vite), le geste se lit en entier.
