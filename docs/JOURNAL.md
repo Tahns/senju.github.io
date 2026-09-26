@@ -134,7 +134,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Carnet** : sceau rouge du clan (千手) tamponné au bas de la fiche
   d'identité, encre pleine et irrégulière, légèrement de travers comme un
   vrai hanko.
-- **Vidéo du rêve** (`docs/media/reve.webm`, 23 s, 3,3 Mo) : les temps forts
+- **Vidéo du rêve** (`docs/media/reve.webm`, 27 s, 3,8 Mo) : les temps forts
   (chute, kenjutsu et Kiminari, Suiton, pluie de ryō, final) avec les
   sous-titres, à partager. Enregistrée image par image par
   `tools/test/record-dream.js`, donc fluide malgré le rendu logiciel.
@@ -163,3 +163,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   accélération sinusoïdale (vitesse de pointe presque divisée par deux) et
   les rotations enchaînées dans le même sens (vers l'étagère, vers le futon)
   ne marquent plus d'arrêt au milieu.
+- **Vidéo refaite** avec la caméra douce, la traînée du coup final, le
+  Suiton en entier et le coucher de soleil (27 s).
