@@ -527,6 +527,50 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         sparkGeo.attributes.position.needsUpdate = true;
     });
 
+    // Kiminari (foudre) : des arcs électriques crépitent le long de la lame.
+    const boltSegs = 10;
+    const boltMat = new THREE.MeshBasicMaterial({ color: '#d8ecff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+    const bolts = [0, 1, 2, 3].map(() => {
+        const m = new THREE.Mesh(new THREE.BufferGeometry(), boltMat);
+        m.frustumCulled = false;
+        scene.add(m);
+        return m;
+    });
+    // Halo bleuté autour de la lame chargée.
+    const haloMat = new THREE.SpriteMaterial({ map: dot(), color: '#7fc4ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+    const halo = new THREE.Sprite(haloMat);
+    halo.scale.setScalar(0.9);
+    scene.add(halo);
+    const boltLight = new THREE.PointLight('#9fd0ff', 0, 3, 1.5);
+    scene.add(boltLight);
+    let raiton = 0;
+    const bA = V();
+    const bB = V();
+    let boltFrame = 0;
+    updaters.push(() => {
+        const on = raiton > 0 && ninja.katana.parent !== ninja.katana.userData.sheathed.parent;
+        boltMat.opacity = on ? raiton * (0.7 + Math.random() * 0.3) : 0;
+        haloMat.opacity = on ? raiton * 0.55 : 0;
+        boltLight.intensity = on ? raiton * (1.5 + Math.random() * 2) : 0;
+        bolts.forEach((m) => { m.visible = on; });
+        if (!on || boltFrame++ % 2) return;
+        ninja.katana.localToWorld(bA.set(0, 0.5, 0));
+        halo.position.copy(bA);
+        boltLight.position.copy(bA);
+        bolts.forEach((m) => {
+            ninja.katana.localToWorld(bA.set(0, 0.12 + Math.random() * 0.25, 0));
+            ninja.katana.localToWorld(bB.set(0, 0.55 + Math.random() * 0.34, 0));
+            const pts = [];
+            for (let i = 0; i <= boltSegs; i++) {
+                const t = i / boltSegs;
+                const j = i === 0 || i === boltSegs ? 0 : 0.07;
+                pts.push(V(bA.x + (bB.x - bA.x) * t + (Math.random() - 0.5) * j, bA.y + (bB.y - bA.y) * t + (Math.random() - 0.5) * j, bA.z + (bB.z - bA.z) * t + (Math.random() - 0.5) * j));
+            }
+            m.geometry.dispose();
+            m.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.1), 20, 0.005, 4, false);
+        });
+    });
+
     // Traînée de la lame : un ruban lumineux qui suit la pointe et le talon
     // du sabre quand il bouge vite (seulement sabre en main).
     const TRAIL = 14;
@@ -659,7 +703,13 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         // Trois grands coups : on arme (sabre loin derrière), puis on balaie tout l'arc.
         const cuts = [['strikeA', [0.2, 0.9, 0.6], V(0.7, 1.15, 0.95), 'windA'], ['strikeB', [-0.3, 1.1, -0.4], V(1.1, 1.1, 0.35), 'windB'], ['strikeC', [1.2, 1.2, 0], V(1.25, 1.15, -0.2), 'windC']];
         for (let i = 0; i < 3; i++) {
-            await pose(tl, cuts[i][3], 0.24, ease.inOut);
+            if (i === 2) {
+                // Dernier coup : la lame se charge de foudre (Kiminari).
+                say('Kiminari : la lame chargée de foudre', 2.4);
+                sound.cut();
+                raiton = 1;
+            }
+            await pose(tl, cuts[i][3], i === 2 ? 0.5 : 0.24, ease.inOut);
             sound.whoosh();
             await pose(tl, cuts[i][0], 0.16, ease.out);
             slash(tl, i, cuts[i][1], cuts[i][2]);
@@ -682,7 +732,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
                 await tl.wait(0.35);
             }
         }
-        await tl.wait(0.5);
+        await tl.tween(0.4, (k) => { raiton = 1 - k; });
+        raiton = 0;
+        await tl.wait(0.1);
         await pose(tl, 'draw', 0.35);
         ninja.sheathe();
         tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * (1 - k); });
@@ -775,6 +827,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         scene,
         camera,
         ninja,
+        // Pour les tests : forcer la foudre sur la lame.
+        setRaiton(v) { raiton = v; },
         play,
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
         // Rendu avec profondeur de champ : la mise au point suit Hoko.

@@ -106,3 +106,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   les feuilles qui volent dans le rêve disparaissaient selon l'angle de vue
   (volume englobant calculé avant leur placement) ; elles sont toujours
   dessinées maintenant.
+- **Kiminari** (la 2ᵉ nature de chakra de la fiche) : au dernier coup de
+  sabre, la lame se charge de foudre — arcs électriques qui crépitent,
+  halo et lumière bleutés — avec le sous-titre « Kiminari : la lame
+  chargée de foudre ».
