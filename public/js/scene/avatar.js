@@ -11,12 +11,26 @@ const MODEL = new URL('../../models/hoko.vrm', import.meta.url).href;
 
 let pending = null;
 // Chargé en arrière-plan dès le début de la scène ; null si indisponible.
+// Repli : certains hébergeurs (aperçus) ne servent pas les .vrm ; on essaie
+// alors une copie en base64 (hoko.vrm.txt) si elle existe.
 export function loadAvatar() {
     if (!pending) {
+        const loader = new GLTFLoader();
+        const base = MODEL.slice(0, MODEL.lastIndexOf('/') + 1);
+        const fromText = () => fetch(MODEL + '.txt')
+            .then((r) => (r.ok ? r.text() : Promise.reject(new Error(r.status))))
+            .then((text) => {
+                const bin = atob(text.trim());
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                return new Promise((resolve, reject) => loader.parse(bytes.buffer, base, resolve, reject));
+            });
         pending = new Promise((resolve) => {
-            new GLTFLoader().load(MODEL, resolve, undefined, (error) => {
-                console.warn('Modèle de Hoko indisponible, repli sur la tête sculptée.', error);
-                resolve(null);
+            loader.load(MODEL, resolve, undefined, () => {
+                fromText().then(resolve).catch((error) => {
+                    console.warn('Modèle de Hoko indisponible, repli sur la tête sculptée.', error);
+                    resolve(null);
+                });
             });
         });
     }

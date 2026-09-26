@@ -444,20 +444,26 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     });
 
     // Nuage de poussière à la réception.
-    const dustCount = 160;
+    const dustCount = 260;
     const dustPos = new Float32Array(dustCount * 3);
     const dustGeo = new THREE.BufferGeometry();
     dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
-    const dustMat = new THREE.PointsMaterial({ color: '#cdb892', size: 0.22, map: dot(), transparent: true, opacity: 0, depthWrite: false });
+    const dustMat = new THREE.PointsMaterial({ color: '#b39d78', size: 0.55, map: dot(), transparent: true, opacity: 0, depthWrite: false });
     const dust = new THREE.Points(dustGeo, dustMat);
     dust.frustumCulled = false;
     scene.add(dust);
     const dustSeeds = Array.from({ length: dustCount }, () => ({ a: random() * Math.PI * 2, s: 0.5 + random(), h: random() }));
+    // Onde de choc qui court sur l'herbe.
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.85, 1, 64), new THREE.MeshBasicMaterial({ color: '#fff4dc', transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.12;
+    scene.add(ring);
     let dustAge = 9;
     function burst() { dustAge = 0; }
     updaters.push((dt) => {
         if (dustAge > 2) {
             dustMat.opacity = 0;
+            ring.material.opacity = 0;
             return;
         }
         dustAge += dt;
@@ -466,11 +472,13 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         dustSeeds.forEach((d, i) => {
             const r = 0.2 + e * 1.6 * d.s;
             dustPos[i * 3] = Math.cos(d.a) * r;
-            dustPos[i * 3 + 1] = 0.05 + e * 0.45 * d.h;
+            dustPos[i * 3 + 1] = 0.08 + e * 0.7 * d.h;
             dustPos[i * 3 + 2] = Math.sin(d.a) * r;
         });
         dustGeo.attributes.position.needsUpdate = true;
-        dustMat.opacity = 0.75 * (1 - k);
+        dustMat.opacity = 0.95 * (1 - k * k);
+        ring.scale.setScalar(0.3 + e * 3.2);
+        ring.material.opacity = 0.7 * (1 - k);
     });
 
     // Pièce lancée d'une pichenette, qui retombe dans la main.
@@ -538,6 +546,12 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         ninja.root.position.y = 0;
         sound.land();
         burst();
+        // Secousse de caméra à l'impact.
+        const shakeFrom = camera.position.clone();
+        tl.tween(0.45, (k) => {
+            const a = (1 - k) * 0.08;
+            camera.position.set(shakeFrom.x + Math.sin(k * 60) * a, shakeFrom.y + Math.cos(k * 47) * a, shakeFrom.z);
+        }, ease.linear);
         pose(tl, 'land', 0.12, ease.out);
         await tl.tween(0.14, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * k; }, ease.out);
         await tl.wait(0.7);
@@ -562,7 +576,22 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             slash(tl, i, cuts[i][1], cuts[i][2]);
             sound.cut();
             cutPost(tl, i);
-            await tl.wait(0.35);
+            if (i === 2) {
+                // Dernier coup : ralenti, le temps d'admirer la coupe.
+                // (si « Passer » change la vitesse entre-temps, on ne la touche plus)
+                const normal = tl.scale;
+                let mine = normal * 0.3;
+                tl.scale = mine;
+                await tl.wait(0.35);
+                await tl.tween(0.35, (k) => {
+                    if (tl.scale !== mine) return;
+                    mine = normal * (0.3 + 0.7 * k);
+                    tl.scale = mine;
+                }, ease.inOut);
+                if (tl.scale === mine) tl.scale = normal;
+            } else {
+                await tl.wait(0.35);
+            }
         }
         await tl.wait(0.5);
         await pose(tl, 'draw', 0.35);
