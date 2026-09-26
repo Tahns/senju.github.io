@@ -202,6 +202,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     // Poteaux d'entraînement (makiwara) : le haut tombe quand il est tranché.
     const wood = new THREE.MeshStandardMaterial({ color: '#8a6440', roughness: 0.8 });
     const straw = new THREE.MeshStandardMaterial({ color: '#d4b877', roughness: 1 });
+    const freshWood = new THREE.MeshStandardMaterial({ color: '#e2c393', roughness: 0.85 });
     const posts = [[0.95, 1.25], [1.55, 0.45], [1.85, -0.45]].map(([x, z]) => {
         const base = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.1, 1.05, 24), wood);
         base.position.set(x, 0.525, z);
@@ -218,7 +219,56 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         wrap.castShadow = true;
         topPart.add(wrap);
         scene.add(topPart);
-        return { topPart, fall: 0, dir: 1 };
+        // Face de coupe en bois frais, qui n'apparaît qu'une fois le poteau tranché.
+        const cut = new THREE.Mesh(new THREE.CircleGeometry(0.092, 24), freshWood);
+        cut.rotation.x = -Math.PI / 2;
+        cut.position.set(x, 1.052, z);
+        cut.visible = false;
+        scene.add(cut);
+        return { topPart, cut, fall: 0, dir: 1 };
+    });
+    // Copeaux qui jaillissent à la coupe et retombent sur l'herbe.
+    const CHIPS = 90;
+    const chipMat = new THREE.MeshStandardMaterial({ color: '#f2dcaa', roughness: 0.8, emissive: '#6b4e24', emissiveIntensity: 0.4 });
+    const chips = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 0.016, 0.045), chipMat, CHIPS);
+    chips.frustumCulled = false;
+    chips.count = 0;
+    scene.add(chips);
+    const chipState = [];
+    const chipM = new THREE.Matrix4();
+    const chipQ = new THREE.Quaternion();
+    const chipE = new THREE.Euler();
+    const chipS = new THREE.Vector3(1, 1, 1);
+    function spawnChips(post) {
+        const origin = post.topPart.position;
+        for (let i = 0; i < 28; i++) {
+            if (chipState.length >= CHIPS) chipState.shift();
+            chipState.push({
+                p: V(origin.x, origin.y + 0.02, origin.z),
+                v: V(0.8 + random() * 1.6, 0.8 + random() * 1.8, (random() - 0.5) * 1.8),
+                r: V(random() * 6, random() * 6, random() * 6),
+                w: V((random() - 0.5) * 30, (random() - 0.5) * 30, (random() - 0.5) * 30)
+            });
+        }
+    }
+    updaters.push((dt) => {
+        if (!chipState.length) return;
+        chipState.forEach((c, i) => {
+            if (c.p.y > 0.03) {
+                c.v.y -= 9.8 * dt;
+                c.p.addScaledVector(c.v, dt);
+                c.r.addScaledVector(c.w, dt);
+            } else {
+                // Au sol : il se couche à plat et ne bouge plus.
+                c.p.y = 0.03;
+                c.r.x = 0;
+                c.r.z = 0;
+            }
+            chipQ.setFromEuler(chipE.set(c.r.x, c.r.y, c.r.z));
+            chips.setMatrixAt(i, chipM.compose(c.p, chipQ, chipS));
+        });
+        chips.count = chipState.length;
+        chips.instanceMatrix.needsUpdate = true;
     });
 
     /* ---------------- Konoha, en contrebas ---------------- */
@@ -865,6 +915,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     function cutPost(timeline, index) {
         const post = posts[index];
         const p0 = post.topPart.position.clone();
+        post.cut.visible = true;
+        spawnChips(post);
         return timeline.tween(0.9, (k) => {
             post.topPart.position.set(p0.x + post.dir * 0.35 * k, p0.y - 0.95 * k * k + 0.12 * Math.sin(Math.PI * k), p0.z + 0.25 * k);
             post.topPart.rotation.z = -post.dir * 1.4 * k;

@@ -199,3 +199,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Bras croisés** refaits : les avant-bras se croisent vraiment contre la
   poitrine et les mains se referment sur les bras (avant, mains à plat,
   doigts tendus qui dépassaient — visible dans le gros plan du titre).
+- **Coupes de sabre** : à chaque poteau tranché, une gerbe de copeaux clairs
+  jaillit et retombe à plat dans l'herbe, et la souche montre une face de
+  coupe en bois frais.
