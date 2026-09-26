@@ -32,6 +32,7 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
   - `audio.js` : sons et musiques
   - `radio.js` : la musique YouTube (pour la changer, modifie `VIDEO` et le titre dans `index.html`)
 - Sans WebGL (vieux navigateurs), si le processeur graphique lâche, ou avec un lien direct `#page-5`, le carnet s'affiche directement.
+- Tests automatiques de la scène : `tools/test/` (voir son README).
 - Suivi des améliorations : `docs/SWOT.md` (forces, faiblesses, plan) et `docs/JOURNAL.md`.
 - Après chaque modification des fichiers JS/CSS : `python3 tools/version.py` (numéros de version anti-cache dans index.html).
 - Qualité : automatique (palier « mobile » sur écran tactile), ou forcée avec `?quality=low`, `?quality=mobile` ou `?quality=high`.

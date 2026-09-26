@@ -32,11 +32,11 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
 | F2 | ~~Reste de capuche~~ | — | Corrigé : capuche masquée, col montant olive du gilet |
 | F3 | ~~Visage toujours neutre~~ | — | Corrigé : détermination au sabre et au Suiton, joie sous les ryō, sourire final ; clignements réparés |
 | F4 | Bras de la chambre (première personne) encore procéduraux, d'un autre style que Hoko adulte | Moyenne | Réutiliser les mains/manches du modèle |
-| F5 | Portrait de la fiche vide (« Portrait à venir ») + erreur 404 dans la console | Moyenne | Image du joueur, ou portrait tiré du modèle |
+| F5 | Portrait de la fiche vide (« Portrait à venir ») + erreur 404 dans la console | Moyenne | Image du joueur (la fiche décrit Hoko à 12 ans : un portrait du modèle adulte ne conviendrait pas) |
 | F6 | L'aperçu Claude (artifact) n'affiche pas le modèle (format .vrm refusé) : tête de secours | Faible (le site est la référence) | Servir le modèle sous un format accepté |
 | F7 | Jamais testé sur un vrai téléphone ni une vraie carte graphique (seulement un rendu logiciel) | Moyenne (risque) | Test par le propriétaire ; réglages `?quality=` en secours |
 | F8 | « Et il rêva… », les actes et la carte de fin ne sont pas présentés aux lecteurs d'écran de façon structurée | Faible | Rôles ARIA, résumé textuel du rêve |
-| F9 | Tests automatiques hors du dépôt (scripts de travail) | Faible | Ajouter des outils de test documentés dans `tools/` |
+| F9 | ~~Tests automatiques hors du dépôt~~ | — | Corrigé : `tools/test/` (parcours complet, plans du rêve) |
 
 ## Opportunités
 

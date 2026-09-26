@@ -75,3 +75,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Entrée du rêve** : Hoko tombe du ciel, se réceptionne accroupi sur le
   rocher dans un nuage de poussière (coup sourd de taiko), puis se relève
   bras croisés pendant que le titre apparaît.
+- **Tests dans le dépôt** : `tools/test/flow.js` (parcours complet) et
+  `tools/test/dream-shots.js` (plans du rêve), documentés.
