@@ -131,3 +131,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   s'ouvre depuis le centre de l'écran, dans un cercle cerclé de lumière
   chaude qui s'élargit, sur un carillon qui monte (fondu simple si les
   animations sont réduites).
+- **Carnet** : sceau rouge du clan (千手) tamponné au bas de la fiche
+  d'identité, encre pleine et irrégulière, légèrement de travers comme un
+  vrai hanko.
