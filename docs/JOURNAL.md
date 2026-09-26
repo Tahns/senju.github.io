@@ -188,3 +188,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Foudre du Kiminari** enfin visible : arcs plus épais (cœur blanc et
   lueur bleue), zigzags plus amples, un arc qui jaillit de la pointe ; la
   lame se charge un instant avant le coup final.
+- **Konoha s'allume** au coucher du soleil : les fenêtres des maisons
+  rougeoient (shoji dorés, vitres ambrées, rais de lumière entre les
+  volets) et les lanternes rouges brillent, un peu après que le ciel a
+  viré à l'orange.
