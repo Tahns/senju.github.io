@@ -101,7 +101,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     scene.environmentIntensity = 0.8;
     pmrem.dispose();
 
-    scene.add(new THREE.HemisphereLight('#dbe8ff', '#6d5c42', 1.15));
+    const hemi = new THREE.HemisphereLight('#dbe8ff', '#6d5c42', 1.15);
+    scene.add(hemi);
     const sun = new THREE.DirectionalLight('#ffe3bd', 3.1);
     const sunTarget = low ? V(0, 0, 0) : mobile ? V(0, -2, -5) : V(0, -3, -10);
     sun.target.position.copy(sunTarget);
@@ -121,6 +122,28 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     const front = new THREE.DirectionalLight('#b8c8ff', 0.45);
     front.position.set(4, 5, 10);
     scene.add(front);
+
+    // Coucher de soleil pour le final : ciel indigo et orangé, lumière dorée.
+    const dayLook = {
+        top: sky.material.uniforms.top.value.clone(), mid: sky.material.uniforms.mid.value.clone(), low: sky.material.uniforms.low.value.clone(),
+        fog: scene.fog.color.clone(), sun: sun.color.clone(), hemi: hemi.color.clone(), rim: rim.color.clone()
+    };
+    const duskLook = {
+        top: new THREE.Color('#34407e'), mid: new THREE.Color('#e9a36f'), low: new THREE.Color('#ffc987'),
+        fog: new THREE.Color('#e9c29a'), sun: new THREE.Color('#ff9f58'), hemi: new THREE.Color('#ffc9a0'), rim: new THREE.Color('#ff8f45')
+    };
+    function setDusk(k) {
+        ['top', 'mid', 'low'].forEach((key) => sky.material.uniforms[key].value.lerpColors(dayLook[key], duskLook[key], k));
+        scene.fog.color.lerpColors(dayLook.fog, duskLook.fog, k);
+        sun.color.lerpColors(dayLook.sun, duskLook.sun, k);
+        sun.intensity = 3.1 - 0.6 * k;
+        hemi.color.lerpColors(dayLook.hemi, duskLook.hemi, k);
+        hemi.intensity = 1.15 - 0.4 * k;
+        rim.color.lerpColors(dayLook.rim, duskLook.rim, k);
+        rim.intensity = 1.7 + 1.6 * k;
+        front.intensity = 0.45 - 0.2 * k;
+        scene.environmentIntensity = 0.8 - 0.25 * k;
+    }
 
     /* ---------------- Le rocher d'entraînement ---------------- */
     const rockTex = (() => {
@@ -696,6 +719,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         camera.position.set(0.5, 1.9, 7.5);
         look.set(0, 1.5, 0);
         camera.lookAt(look);
+        setDusk(0);
         sound.startDream();
 
         // 0. Hoko tombe du ciel et se réceptionne sur le rocher, dans la poussière.
@@ -843,6 +867,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         tl.tween(2, (k) => { glitterMat.opacity = 0.9 * (1 - k); goldLight.intensity = 2.2 * (1 - k); });
         // Il se tourne vers le mont des Hokage et lève le poing : « Un jour… »
         hud.hidden = true;
+        tl.tween(4.5, setDusk, ease.inOut);
         tl.tween(1, (k) => { ninja.root.rotation.y = Math.PI * k; }, ease.inOut);
         if (ninja.avatar) ninja.avatar.grip('right', true);
         pose(tl, 'vow', 1);
@@ -886,6 +911,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         ninja,
         // Pour les tests : forcer la foudre sur la lame, montrer l'arc-en-ciel.
         setRaiton(v) { raiton = v; },
+        setDusk,
         setRainbow(v) { rainbow.visible = v > 0; rainbowMat.uniforms.uOpacity.value = v; },
         play,
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
