@@ -224,3 +224,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
     propre du modèle réduite pour que le relief ressorte ; étalonnage du rêve
     avec une légère courbe en S et plus de saturation après le tone mapping,
     halo modéré — fini le voile laiteux.
+- **Taches de peau au col** : c'était la peau du torse qui traversait le haut
+  du modèle. Au chargement, la peau cachée (torse, épaules, haut des bras)
+  recule d'1 cm vers ses os ; le col montant olive apparaît net autour du
+  cou, même bras levés.

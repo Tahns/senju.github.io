@@ -111,9 +111,56 @@ function thickenNeck(model, factor = 1.35) {
     });
 }
 
+// La peau du torse, cachée sous le haut, le traversait par endroits (taches
+// de peau au bord du col). Chaque sommet caché recule de quelques millimètres
+// vers son os principal (les normales du modèle ne sont pas toutes fiables),
+// seulement sous la base du cou : cou, mains et visage restent intacts.
+const COVERED = /^J_Bip_(C_(Spine|Chest|UpperChest)|[LR]_(Shoulder|UpperArm))$/;
+function tuckSkin(model, depth = 0.01) {
+    model.updateMatrixWorld(true);
+    const m = new THREE.Matrix4();
+    const v = new THREE.Vector3();
+    const dir = new THREE.Vector3();
+    model.traverse((o) => {
+        if (!o.isSkinnedMesh || !/Body_00_SKIN/.test(o.material.name || '')) return;
+        const bones = o.skeleton.bones;
+        const at = bones.map((b, i) => new THREE.Vector3().setFromMatrixPosition(m.copy(o.skeleton.boneInverses[i]).invert()).applyMatrix4(o.bindMatrixInverse));
+        const n = bones.findIndex((b) => b.name === 'J_Bip_C_Neck');
+        if (n < 0) return;
+        const covered = bones.map((b) => COVERED.test(b.name));
+        const pos = o.geometry.attributes.position;
+        const idx = o.geometry.attributes.skinIndex;
+        const wt = o.geometry.attributes.skinWeight;
+        for (let i = 0; i < pos.count; i++) {
+            let w = 0;
+            let best = -1;
+            let bestW = 0;
+            for (let k = 0; k < 4; k++) {
+                const b = idx.getComponent(i, k);
+                const bw = wt.getComponent(i, k);
+                if (!covered[b]) continue;
+                w += bw;
+                if (bw > bestW) { bestW = bw; best = b; }
+            }
+            if (w < 0.2) continue;
+            v.fromBufferAttribute(pos, i);
+            if (v.y > at[n].y - 0.005) continue;
+            // Vers l'os, à l'horizontale pour le tronc (l'os est sur l'axe du corps).
+            dir.subVectors(at[best], v);
+            if (!/Arm|Shoulder/.test(bones[best].name)) dir.y = 0;
+            const len = dir.length();
+            if (len < 0.02) continue;
+            v.addScaledVector(dir, (depth * Math.min(1, w)) / len);
+            pos.setXYZ(i, v.x, v.y, v.z);
+        }
+        pos.needsUpdate = true;
+    });
+}
+
 function restyle(model) {
     mergeHair(model);
     thickenNeck(model);
+    tuckSkin(model);
     // Le haut porte déjà le gilet de jōnin peint dans sa texture ; le bas passe au bleu nuit.
     const tints = { Bottoms: '#8f9ad8' };
     // Peau un peu plus chaude (le blanc VRoid paraissait délavé sous le soleil).
