@@ -258,6 +258,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     });
     const arcs = [0, 1, 2].map(() => {
         const m = new THREE.Mesh(new THREE.RingGeometry(0.8, 1.14, 64, 1, 0, 2.4), slashMaterial());
+        m.scale.setScalar(1.35); // grand arc, à la mesure du geste
         scene.add(m);
         return m;
     });
@@ -569,10 +570,12 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         ninja.drawKatana();
         say('Maître du kenjutsu', 3.5);
         face(tl, 'angry', 0.75, 0.4);
-        const cuts = [['slashA', [0.2, 0.9, 0.6], V(0.7, 1.15, 0.95)], ['slashB', [-0.3, 1.1, -0.4], V(1.1, 1.1, 0.35)], ['slashC', [1.2, 1.2, 0], V(1.25, 1.15, -0.2)]];
+        // Trois grands coups : on arme (sabre loin derrière), puis on balaie tout l'arc.
+        const cuts = [['strikeA', [0.2, 0.9, 0.6], V(0.7, 1.15, 0.95), 'windA'], ['strikeB', [-0.3, 1.1, -0.4], V(1.1, 1.1, 0.35), 'windB'], ['strikeC', [1.2, 1.2, 0], V(1.25, 1.15, -0.2), 'windC']];
         for (let i = 0; i < 3; i++) {
+            await pose(tl, cuts[i][3], 0.24, ease.inOut);
             sound.whoosh();
-            await pose(tl, cuts[i][0], 0.13, ease.out);
+            await pose(tl, cuts[i][0], 0.16, ease.out);
             slash(tl, i, cuts[i][1], cuts[i][2]);
             sound.cut();
             cutPost(tl, i);
