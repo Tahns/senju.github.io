@@ -231,3 +231,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Image de partage** refaite avec le nouveau Hoko (cou, couleurs, bras
   croisés) devant la tour et le mont des Hokage ; adresse versionnée pour que
   Discord et les réseaux ne gardent pas l'ancienne en cache ; `twitter:image`.
+- **Vidéo refaite** avec le cou épaissi, les nouvelles couleurs, les vrais
+  bras croisés et les copeaux.

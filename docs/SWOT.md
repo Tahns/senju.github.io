@@ -1,7 +1,7 @@
 # SWOT — Carnet de Hoko Senju
 
 Revue complète du projet au 25 septembre (soir), après le passage de Hoko
-adulte sur un vrai modèle anime ; mise à jour le 26 septembre (après-midi). Les faiblesses sont classées par visibilité :
+adulte sur un vrai modèle anime ; mise à jour le 26 septembre (soir). Les faiblesses sont classées par visibilité :
 on corrige d'abord ce qu'un visiteur remarque en premier.
 
 ## Forces
@@ -10,8 +10,9 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
   (chambre, boîte à musique, carnet qu'on feuillette, rêve à la troisième
   personne) au lieu d'une page statique.
 - **Hoko adulte crédible** : vrai modèle anime de jeu (VRoid, CC0) en tenue de
-  jōnin (gilet olive à poches, bandeau de Konoha, sabre), animé par toutes les
-  poses du rêve, clignements, poing fermé sur le sabre.
+  jōnin (gilet olive à poches, col montant, bandeau de Konoha, sabre), cou
+  épaissi, peau chaude, animé par toutes les poses du rêve (vrais bras
+  croisés), clignements, expressions, poing fermé sur le sabre.
 - **Rêve spectaculaire** : entrée en iris de lumière, Hoko qui tombe du ciel,
   plan héroïque sur son visage, Konoha complet (maisons à étages, tour du
   Hokage, mont des Hokage, villageois, oiseaux), herbe animée, coups de sabre
@@ -63,7 +64,8 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
 ## Menaces
 
 - **Appareils faibles** : modèle animé + post-traitement + milliers de feuilles
-  sur mobile d'entrée de gamme (paliers et `degrade()` en place, à vérifier en vrai).
+  sur mobile d'entrée de gamme (paliers et `degrade()` en place, chevelure
+  fusionnée : ~440 appels de dessin par image au lieu de ~550 ; à vérifier en vrai).
 - **Réseau lent** : 4,3 Mo de modèle ; s'il n'est pas arrivé au moment du rêve,
   le rêve attend (la chambre dure ~2 min, donc rarement bloquant).
 - **Services tiers** : lecteur YouTube, Google Fonts (replis en place).
