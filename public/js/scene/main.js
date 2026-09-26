@@ -127,7 +127,7 @@ async function start() {
     }
 
     const timeline = new Timeline();
-    window.__scene = { timeline, cam, room };
+    window.__scene = { timeline, cam, room, renderer };
 
     /* ---------------- Son ---------------- */
     const sound = new SceneAudio();

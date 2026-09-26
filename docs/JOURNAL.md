@@ -212,3 +212,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Lanterne (andon)** de la chambre : papier éclairé depuis le centre (bords
   plus sombres), croisillons de bois en ombre, chapeau et socle — avant,
   un rectangle blanc uniforme dans un cadre.
+- **Performance** : la chevelure du modèle arrivait en 114 mèches séparées
+  (114 appels de dessin, autant pour les ombres) ; elles sont fusionnées au
+  chargement en un seul maillage. Hoko passe de 169 à 56 appels de dessin,
+  le rêve de ~550 à ~440 par image (plus les ombres) — rendu identique.

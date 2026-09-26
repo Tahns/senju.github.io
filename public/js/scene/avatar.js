@@ -6,6 +6,7 @@
  */
 import * as THREE from 'three';
 import { GLTFLoader } from '../../vendor/loaders/GLTFLoader.js';
+import { mergeGeometries } from '../../vendor/utils/BufferGeometryUtils.js';
 
 const MODEL = new URL('../../models/hoko.vrm', import.meta.url).href;
 
@@ -39,7 +40,35 @@ export function loadAvatar() {
 
 // Matériaux « unlit » de VRoid → matériaux éclairés, avec une lueur propre
 // (rendu anime lisse) ; vêtements recolorés en tenue de ninja.
+// La chevelure VRoid arrive découpée en une centaine de maillages (une mèche
+// chacun), soit autant d'appels de dessin, doublés par les ombres. Les mèches qui
+// partagent squelette, matériau et parent sont fusionnées en un seul maillage.
+function mergeHair(model) {
+    const groups = new Map();
+    model.traverse((o) => {
+        if (!o.isSkinnedMesh || Array.isArray(o.material) || !/HAIR/.test(o.material.name || '')) return;
+        const key = [o.parent.uuid, o.material.uuid, o.skeleton.bones.map((b) => b.uuid).join(','), o.bindMatrix.elements.join(',')].join('|');
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(o);
+    });
+    groups.forEach((meshes) => {
+        if (meshes.length < 2) return;
+        const merged = mergeGeometries(meshes.map((m) => m.geometry), false);
+        if (!merged) return; // attributs différents : on garde les mèches séparées
+        const first = meshes[0];
+        const hair = new THREE.SkinnedMesh(merged, first.material);
+        hair.name = 'HairMerged';
+        hair.position.copy(first.position);
+        hair.quaternion.copy(first.quaternion);
+        hair.scale.copy(first.scale);
+        first.parent.add(hair);
+        hair.bind(first.skeleton, first.bindMatrix);
+        meshes.forEach((m) => { m.parent.remove(m); m.geometry.dispose(); });
+    });
+}
+
 function restyle(model) {
+    mergeHair(model);
     // Le haut porte déjà le gilet de jōnin peint dans sa texture ; le bas passe au bleu nuit.
     const tints = { Bottoms: '#8f9ad8' };
     model.traverse((o) => {
