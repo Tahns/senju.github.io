@@ -485,6 +485,24 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     });
 
     // Pièce lancée d'une pichenette, qui retombe dans la main.
+    // Arc-en-ciel dans les embruns, après le jaillissement du dragon d'eau.
+    const rainbowMat = new THREE.ShaderMaterial({
+        uniforms: { uOpacity: { value: 0 } },
+        vertexShader: 'varying vec2 vP; void main(){ vP = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: 'uniform float uOpacity; varying vec2 vP; vec3 hue(float h){ return clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0); } void main(){ float r = (length(vP) - 5.2) / 0.9; float band = smoothstep(0.0, 0.15, r) * (1.0 - smoothstep(0.85, 1.0, r)); float ends = smoothstep(0.0, 0.6, vP.y); gl_FragColor = vec4(mix(hue(0.78 - r * 0.78), vec3(1.0), 0.25), band * ends * uOpacity * 0.3); }',
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        fog: false
+    });
+    const rainbow = new THREE.Mesh(new THREE.RingGeometry(5.2, 6.1, 96, 1, 0, Math.PI), rainbowMat);
+    // Derrière Hoko, au-dessus du village (dans l'axe des plans suivants).
+    rainbow.position.set(-6, -6, -60);
+    rainbow.scale.setScalar(6);
+    rainbow.visible = false;
+    scene.add(rainbow);
+
     // Aura de chakra (Suiton) : une flamme bleue translucide qui monte autour
     // de Hoko pendant les mudras, et des étincelles qui s'élèvent.
     const auraMat = new THREE.ShaderMaterial({
@@ -765,6 +783,12 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         waterState.rise = 0;
         waterState.blast = 0;
         tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = 1 - k; }, ease.in);
+        // L'arc-en-ciel apparaît dans les embruns, puis s'efface.
+        rainbow.visible = true;
+        tl.tween(1, (k) => { rainbowMat.uniforms.uOpacity.value = k; }, ease.out)
+            .then(() => tl.wait(1.6))
+            .then(() => tl.tween(1.4, (k) => { rainbowMat.uniforms.uOpacity.value = 1 - k; }))
+            .then(() => { rainbow.visible = false; });
         await pose(tl, 'stand', 0.4);
 
         // 4. Chef de la section économique : une pluie de ryō.
@@ -827,8 +851,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         scene,
         camera,
         ninja,
-        // Pour les tests : forcer la foudre sur la lame.
+        // Pour les tests : forcer la foudre sur la lame, montrer l'arc-en-ciel.
         setRaiton(v) { raiton = v; },
+        setRainbow(v) { rainbow.visible = v > 0; rainbowMat.uniforms.uOpacity.value = v; },
         play,
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
         // Rendu avec profondeur de champ : la mise au point suit Hoko.

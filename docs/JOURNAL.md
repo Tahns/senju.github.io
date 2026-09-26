@@ -113,3 +113,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Son de la foudre** : crépitement électrique quand la lame se charge.
 - **Carte de fin** : la dernière image du rêve (Hoko face au mont des
   Hokage) reste en fond, floutée, qui dérive lentement derrière « Bonne nuit ».
+- **Arc-en-ciel** : après le jaillissement du dragon d'eau, un arc-en-ciel
+  doux apparaît au loin au-dessus du village, puis s'efface.
