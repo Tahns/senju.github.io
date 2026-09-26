@@ -483,6 +483,48 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     });
 
     // Pièce lancée d'une pichenette, qui retombe dans la main.
+    // Aura de chakra (Suiton) : une flamme bleue translucide qui monte autour
+    // de Hoko pendant les mudras, et des étincelles qui s'élèvent.
+    const auraMat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uPower: { value: 0 } },
+        vertexShader: 'varying vec2 vUv; varying vec3 vN; varying vec3 vV; void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = -mv.xyz; gl_Position = projectionMatrix * mv; }',
+        fragmentShader: 'uniform float uTime; uniform float uPower; varying vec2 vUv; varying vec3 vN; varying vec3 vV; void main(){ float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 1.6); float flame = 0.5 + 0.5 * sin(vUv.x * 37.7 + uTime * 6.0 - vUv.y * 14.0) * sin(vUv.x * 18.8 - uTime * 4.0 + vUv.y * 6.0); float tongue = smoothstep(0.25, 0.85, flame + (1.0 - vUv.y) * 0.45); float fade = pow(1.0 - vUv.y, 1.3) * smoothstep(0.0, 0.06, vUv.y); float a = (0.35 + rim) * fade * tongue * uPower * 0.8; gl_FragColor = vec4(vec3(0.35, 0.75, 1.0) * 1.6, a); }',
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide
+    });
+    const aura = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.55, 2.3, 48, 1, true), auraMat);
+    aura.position.y = 1.1;
+    aura.visible = false;
+    scene.add(aura);
+    const sparkCount = 90;
+    const sparkPos = new Float32Array(sparkCount * 3);
+    const sparkGeo = new THREE.BufferGeometry();
+    sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+    const sparkMat = new THREE.PointsMaterial({ color: '#8fd8ff', size: 0.11, map: dot(), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+    const sparks = new THREE.Points(sparkGeo, sparkMat);
+    sparks.frustumCulled = false;
+    scene.add(sparks);
+    const sparkSeeds = Array.from({ length: sparkCount }, () => ({ a: random() * Math.PI * 2, r: 0.3 + random() * 0.35, h: random(), s: 0.5 + random() }));
+    updaters.push((dt, time) => {
+        auraMat.uniforms.uTime.value = time;
+        const p = auraMat.uniforms.uPower.value;
+        aura.visible = p > 0.01;
+        sparkMat.opacity = p * 0.9;
+        if (p <= 0.01) return;
+        aura.position.x = ninja.root.position.x;
+        aura.position.z = ninja.root.position.z;
+        sparkSeeds.forEach((sd, i) => {
+            const y = ((time * 0.6 * sd.s + sd.h) % 1) * 2.4;
+            const a = sd.a + time * 0.8;
+            sparkPos[i * 3] = aura.position.x + Math.cos(a) * sd.r;
+            sparkPos[i * 3 + 1] = y;
+            sparkPos[i * 3 + 2] = aura.position.z + Math.sin(a) * sd.r;
+        });
+        sparkGeo.attributes.position.needsUpdate = true;
+    });
+
     // Traînée de la lame : un ruban lumineux qui suit la pointe et le talon
     // du sabre quand il bouge vite (seulement sabre en main).
     const TRAIL = 14;
@@ -648,6 +690,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         // 3. Maître du Suiton : mudras, puis un dragon d'eau.
         const low = shot(tl, V(0.2, 0.9, 4.6), V(0, 1.45, 0), 1.2);
         await pose(tl, 'seal', 0.5);
+        tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = k; }, ease.out);
         await low;
         say('Suiton : maître de l\'eau', 3.5);
         face(tl, 'angry', 0.5, 0.5);
@@ -667,6 +710,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         D.uTail.value = 0;
         waterState.rise = 0;
         waterState.blast = 0;
+        tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = 1 - k; }, ease.in);
         await pose(tl, 'stand', 0.4);
 
         // 4. Chef de la section économique : une pluie de ryō.

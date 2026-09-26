@@ -98,3 +98,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   croissants de lumière agrandis.
 - **Traînée de la lame** : un ruban lumineux suit la lame pendant les coups
   de sabre (seulement quand elle bouge vite), le geste se lit en entier.
+- **Aura de chakra** : pendant les mudras du Suiton, une flamme bleue
+  translucide monte autour de Hoko, avec des étincelles qui s'élèvent.
