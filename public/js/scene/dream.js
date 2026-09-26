@@ -224,7 +224,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     const leafSeeds = Array.from({ length: leafCount }, () => ({ x: (random() - 0.5) * 16, y: random() * 7, z: (random() - 0.5) * 16, s: random() * 10 }));
     const leafGeo = new THREE.BufferGeometry();
     leafGeo.setAttribute('position', new THREE.BufferAttribute(leafPos, 3));
-    scene.add(new THREE.Points(leafGeo, new THREE.PointsMaterial({ color: '#8fb34a', size: 0.09, map: dot(), transparent: true, depthWrite: false })));
+    const leaves = new THREE.Points(leafGeo, new THREE.PointsMaterial({ color: '#8fb34a', size: 0.09, map: dot(), transparent: true, depthWrite: false }));
+    leaves.frustumCulled = false; // positions calculées à chaque image
+    scene.add(leaves);
     updaters.push((dt, time) => {
         leafSeeds.forEach((l, i) => {
             leafPos[i * 3] = ((l.x + time * 1.6 + 8) % 16) - 8;
