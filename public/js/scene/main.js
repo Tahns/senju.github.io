@@ -196,7 +196,8 @@ async function start() {
         return { yaw: Math.atan2(-d.x, -d.z), pitch: Math.atan2(d.y, Math.hypot(d.x, d.z)) };
     }
 
-    function look(seconds, { yaw = cam.yaw, pitch = cam.pitch, roll = cam.roll } = {}, easing = ease.inOut) {
+    // Accélération sinusoïdale : un mouvement de tête naturel, sans à-coup.
+    function look(seconds, { yaw = cam.yaw, pitch = cam.pitch, roll = cam.roll } = {}, easing = ease.sine) {
         const from = { yaw: cam.yaw, pitch: cam.pitch, roll: cam.roll };
         const dy = wrap(yaw - from.yaw);
         return timeline.tween(seconds, (k) => {
@@ -426,8 +427,7 @@ async function start() {
     async function goToShelf() {
         const walking = walk([V(-1.2, EYE, 1.1), V(-1.45, EYE, 0.4), V(-1.62, EYE, -0.22)], 3.2);
         await look(1.2, { yaw: 0.25, pitch: -0.06 });
-        await look(1.1, { yaw: 0.9, pitch: -0.05 });
-        await look(0.9, { yaw: Math.PI / 2, pitch: -0.1 });
+        await look(2, { yaw: Math.PI / 2, pitch: -0.1 });
         await walking;
         // Le regard parcourt les rayons.
         await look(0.9, { yaw: Math.PI / 2 + 0.28, pitch: 0.05 });
@@ -510,8 +510,7 @@ async function start() {
         prepareDream();
         await look(0.9, { yaw: Math.PI / 2 - 0.6, pitch: -0.05 });
         const walking = walk([V(-0.9, EYE, -0.35), V(0.1, EYE, -0.95), V(bx - 0.95, EYE, bz + 0.15)], 4.2);
-        await look(1.6, { yaw: -0.5, pitch: -0.1 });
-        await look(1.6, { yaw: -Math.PI / 2 + 0.25, pitch: -0.4 });
+        await look(3.2, { yaw: -Math.PI / 2 + 0.25, pitch: -0.4 });
         await walking;
         // Il se retourne et s'assoit au bord du futon, face à la chambre.
         await look(1.1, { yaw: Math.PI / 2 - 0.35, pitch: -0.05 });
