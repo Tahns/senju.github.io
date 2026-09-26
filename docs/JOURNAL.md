@@ -192,3 +192,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   rougeoient (shoji dorés, vitres ambrées, rais de lumière entre les
   volets) et les lanternes rouges brillent, un peu après que le ciel a
   viré à l'orange.
+- **Sons** : grondement grave quand le dragon d'eau surgit ; claquement de
+  tonnerre et roulement quand la lame chargée de foudre frappe.
+- **Vidéo refaite** (28 s) : plan héroïque, dragon à tête, foudre visible,
+  village qui s'allume au coucher du soleil.
