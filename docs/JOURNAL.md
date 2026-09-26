@@ -127,3 +127,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   taisent ; on entend des oiseaux (petites phrases sifflées, à gauche et à
   droite) et un vent doux qui enfle et retombe. Au réveil, la nuit et les
   grillons reviennent.
+- **Entrée dans le rêve** : au lieu d'un simple fondu du noir, le rêve
+  s'ouvre depuis le centre de l'écran, dans un cercle cerclé de lumière
+  chaude qui s'élargit, sur un carillon qui monte (fondu simple si les
+  animations sont réduites).

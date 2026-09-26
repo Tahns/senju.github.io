@@ -577,6 +577,29 @@ async function start() {
         return dreamReady;
     }
 
+    // Entrée du rêve : il s'ouvre depuis le centre de l'écran, cerclé d'une
+    // lumière chaude, au son d'un carillon (fondu simple si l'animation est réduite).
+    function openIris() {
+        sound.shimmer();
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            fade.style.opacity = 0;
+            return;
+        }
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            fade.style.transition = 'none';
+            fade.style.opacity = 0;
+            void fade.offsetWidth;
+            fade.classList.remove('is-iris');
+            fade.style.transition = '';
+        };
+        fade.addEventListener('animationend', finish, { once: true });
+        setTimeout(finish, 3200);
+        fade.classList.add('is-iris');
+    }
+
     async function dreamSequence() {
         await prepareDream();
         say('Et il rêva…', 2.6);
@@ -585,7 +608,7 @@ async function start() {
         html.classList.remove('eyes-closing', 'eyes-heavy');
         html.classList.add('dreaming');
         renderer.shadowMap.needsUpdate = true;
-        fade.style.opacity = 0;
+        openIris();
         await dream.play({ timeline, sound, say, hud, counters });
         // Dernière image du rêve, gardée en fond de la carte de fin.
         try {
