@@ -237,8 +237,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     /* ---------------- Hoko adulte ---------------- */
     const ninja = buildNinja(head, avatar);
     scene.add(ninja.root);
+    const spineY = ninja.J.spine.position.y;
     updaters.push((dt, time) => {
-        ninja.J.spine.position.y = 0.12 + Math.sin(time * 1.8) * 0.006;
+        ninja.J.spine.position.y = spineY + Math.sin(time * 1.8) * 0.006;
         ninja.live(time);
         ninja.plantFeet();
         ninja.sync();
@@ -442,6 +443,36 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         glitterMat.size = 0.05 + Math.sin(time * 9) * 0.015;
     });
 
+    // Nuage de poussière à la réception.
+    const dustCount = 160;
+    const dustPos = new Float32Array(dustCount * 3);
+    const dustGeo = new THREE.BufferGeometry();
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+    const dustMat = new THREE.PointsMaterial({ color: '#cdb892', size: 0.22, map: dot(), transparent: true, opacity: 0, depthWrite: false });
+    const dust = new THREE.Points(dustGeo, dustMat);
+    dust.frustumCulled = false;
+    scene.add(dust);
+    const dustSeeds = Array.from({ length: dustCount }, () => ({ a: random() * Math.PI * 2, s: 0.5 + random(), h: random() }));
+    let dustAge = 9;
+    function burst() { dustAge = 0; }
+    updaters.push((dt) => {
+        if (dustAge > 2) {
+            dustMat.opacity = 0;
+            return;
+        }
+        dustAge += dt;
+        const k = Math.min(1, dustAge / 1.6);
+        const e = 1 - Math.pow(1 - k, 3);
+        dustSeeds.forEach((d, i) => {
+            const r = 0.2 + e * 1.6 * d.s;
+            dustPos[i * 3] = Math.cos(d.a) * r;
+            dustPos[i * 3 + 1] = 0.05 + e * 0.45 * d.h;
+            dustPos[i * 3 + 2] = Math.sin(d.a) * r;
+        });
+        dustGeo.attributes.position.needsUpdate = true;
+        dustMat.opacity = 0.75 * (1 - k);
+    });
+
     // Pièce lancée d'une pichenette, qui retombe dans la main.
     const flipCoin = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.008, 22), [goldSide, goldFace, goldFace]);
     flipCoin.visible = false;
@@ -498,8 +529,22 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         camera.lookAt(look);
         sound.startDream();
 
-        // 1. Hoko, adulte, domine le village au coucher du soleil.
+        // 0. Hoko tombe du ciel et se réceptionne sur le rocher, dans la poussière.
+        const hipsY = ninja.J.hips.position.y;
+        ninja.setValues(ninja.poseValues('fall'));
+        ninja.root.position.y = 8;
+        sound.whoosh();
+        await tl.tween(0.7, (k) => { ninja.root.position.y = 8 * (1 - k * k); }, ease.linear);
+        ninja.root.position.y = 0;
+        sound.land();
+        burst();
+        pose(tl, 'land', 0.12, ease.out);
+        await tl.tween(0.14, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * k; }, ease.out);
+        await tl.wait(0.7);
+        // 1. Hoko, adulte, se relève et domine le village.
         say('Hoko Senju — jōnin de Konoha', 4.5);
+        tl.tween(0.9, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * (1 - k); }, ease.inOut);
+        pose(tl, 'crossed', 0.9);
         await shot(tl, V(3.6, 1.7, 3.6), V(0, 1.55, 0), 5.5, ease.sine);
 
         // 2. Maître du kenjutsu : trois coups de sabre, trois poteaux tranchés.

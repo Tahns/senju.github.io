@@ -439,6 +439,13 @@ export class SceneAudio {
         for (let i = 0; i < 18; i++) this.tone({ at: Math.random() * seconds, freq: 500 + Math.random() * 900, to: 1500 + Math.random() * 800, duration: 0.06, gain: 0.03 });
     }
 
+    // Réception au sol : coup sourd et souffle de poussière.
+    land() {
+        if (!this.ctx || !this.dreamBus) return;
+        this.taiko(this.ctx.currentTime + 0.01, 1.3, 40);
+        this.noise({ duration: 0.6, attack: 0.01, type: 'lowpass', freq: 1200, to: 180, gain: 0.35 });
+    }
+
     splash() {
         this.noise({ duration: 0.9, attack: 0.01, type: 'lowpass', freq: 3000, to: 500, gain: 0.45 });
     }
