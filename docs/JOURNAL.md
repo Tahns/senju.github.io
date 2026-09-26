@@ -159,3 +159,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   large et bleu électrique.
 - **Correctif** : un horodatage d'image en retard pouvait faire reculer la
   scène d'un instant (pas de temps négatif) ; c'est bloqué.
+- **Chambre, regards plus doux** : les mouvements de tête suivent une
+  accélération sinusoïdale (vitesse de pointe presque divisée par deux) et
+  les rotations enchaînées dans le même sens (vers l'étagère, vers le futon)
+  ne marquent plus d'arrêt au milieu.
