@@ -587,6 +587,14 @@ async function start() {
         renderer.shadowMap.needsUpdate = true;
         fade.style.opacity = 0;
         await dream.play({ timeline, sound, say, hud, counters });
+        // Dernière image du rêve, gardée en fond de la carte de fin.
+        try {
+            dream.render();
+            endCard.style.setProperty('--still', `url(${canvas.toDataURL('image/jpeg', 0.75)})`);
+            endCard.classList.add('has-still');
+        } catch (error) {
+            // Pas d'image : la carte garde son fond habituel.
+        }
         // Le rêve s'efface dans une lumière blanche.
         fade.style.background = '#fff8ec';
         fade.style.opacity = 1;

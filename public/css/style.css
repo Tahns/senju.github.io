@@ -1721,6 +1721,26 @@ html.eyes-heavy .eyelid--bottom {
     transition: opacity .9s ease;
 }
 
+/* Carte de fin : la dernière image du rêve en fond, floutée et assombrie. */
+.scene-card--end {
+    overflow: hidden;
+}
+
+.scene-card--end.has-still::before {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    z-index: -1;
+    background: var(--still) center / cover no-repeat;
+    filter: blur(5px) brightness(.42) saturate(1.1);
+    animation: still-drift 30s ease-in-out infinite alternate;
+}
+
+@keyframes still-drift {
+    from { transform: scale(1.04); }
+    to { transform: scale(1.12) translateY(-1.5%); }
+}
+
 .scene-card.is-leaving {
     opacity: 0;
     pointer-events: none;
@@ -1893,6 +1913,10 @@ html.book-open .scene-caption {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .scene-card--end.has-still::before {
+        animation: none;
+    }
+
     .eyelid,
     .scene-fade,
     .scene-card {
