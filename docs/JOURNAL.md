@@ -202,3 +202,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Coupes de sabre** : à chaque poteau tranché, une gerbe de copeaux clairs
   jaillit et retombe à plat dans l'herbe, et la souche montre une face de
   coupe en bois frais.
+- **Titres sur téléphone** : « Hoko Senju » et « Bonne nuit » avaient une
+  copie fantôme décalée (relief violet fixé en pixels, trop grand pour un
+  petit titre) ; contour et relief sont maintenant proportionnels à la
+  taille du texte.
