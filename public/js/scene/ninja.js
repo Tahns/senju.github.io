@@ -435,7 +435,7 @@ export function buildNinja(sculpt, avatarGltf = null) {
     // Poses : angles (en radians) des articulations.
     const POSES = {
         stand: { spine: [0, 0, 0], head: [0, 0, 0], shoulderL: [0.05, 0, -0.18], shoulderR: [0.05, 0, 0.18], elbowL: [-0.2, 0, 0], elbowR: [-0.2, 0, 0], hipL: [0, 0, 0.04], hipR: [0, 0, -0.04], kneeL: [0.05, 0, 0], kneeR: [0.05, 0, 0] },
-        crossed: { spine: [0, 0, 0], head: [0.05, 0, 0], shoulderL: [-0.42, 0.95, -0.12], shoulderR: [-0.3, -0.95, 0.12], elbowL: [-1.3, 0, 0], elbowR: [-1.42, 0, 0], hipL: [0, 0, 0.1], hipR: [0, 0, -0.1] },
+        crossed: { spine: [0, 0, 0], head: [0.05, 0, 0], shoulderL: [-0.35, 1.15, -0.1], shoulderR: [-0.25, -1.15, 0.1], elbowL: [-1.55, 0, 0], elbowR: [-1.65, 0, 0], hipL: [0, 0, 0.1], hipR: [0, 0, -0.1] },
         draw: { spine: [0.05, 0.4, 0], head: [0, -0.3, 0], shoulderR: [-2.6, 0, 0.35], elbowR: [-0.9, 0, 0], shoulderL: [-0.3, 0, -0.3], elbowL: [-0.6, 0, 0], hipL: [-0.3, 0, 0.12], kneeL: [0.5, 0, 0], hipR: [0.25, 0, -0.1], kneeR: [0.2, 0, 0] },
         // Grands coups : armé (wind) puis frappe ample (strike), jambes en fente.
         windA: { spine: [0, 0.6, 0], head: [0, -0.4, 0], shoulderR: [-2.9, 0, 0.45], elbowR: [-1.0, 0, 0], shoulderL: [-0.5, 0, -0.9], elbowL: [-0.5, 0, 0], hipL: [-0.35, 0, 0.15], kneeL: [0.45, 0, 0], hipR: [0.3, 0, -0.12], kneeR: [0.2, 0, 0] },
@@ -576,7 +576,7 @@ export function buildNinja(sculpt, avatarGltf = null) {
         sync() { if (avatar) avatar.sync(); },
         // Expression du visage (angry, joy, fun) entre 0 et 1.
         express(name, value) { if (avatar && avatar.expressions[name]) avatar.expressions[name](value); },
-        poseValues, currentValues, setValues, plantFeet,
+        poses: POSES, poseValues, currentValues, setValues, plantFeet,
         // Sabre en main / rengainé.
         drawKatana() {
             if (avatar) avatar.grip('right', true);

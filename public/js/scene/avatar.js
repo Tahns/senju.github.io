@@ -226,7 +226,8 @@ export function bindAvatar(gltf, J, parent) {
             });
         },
         // Main droite (sabre) ou gauche : 0 = détendue, 1 = poing fermé.
-        grip(hand, closed) { curl(hand === 'right' ? 'L' : 'R', closed ? 1.25 : 0.35); },
+        // closed : true (poing), false (main détendue) ou un degré de fermeture.
+        grip(hand, closed) { curl(hand === 'right' ? 'L' : 'R', closed === true ? 1.25 : closed === false ? 0.35 : closed); },
         head: pairs.find((p) => p.joint === J.head).bone,
         sync() {
             parent.updateMatrixWorld(true);

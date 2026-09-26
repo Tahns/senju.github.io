@@ -899,6 +899,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         say('Hoko Senju — jōnin de Konoha', 4.5);
         tl.tween(0.9, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * (1 - k); }, ease.inOut);
         pose(tl, 'crossed', 0.9);
+        // Bras croisés : les mains se referment sur les bras (doigts rentrés).
+        if (ninja.avatar) { ninja.avatar.grip('right', 0.95); ninja.avatar.grip('left', 0.95); }
         // Plan héroïque : la caméra s'approche en trois-quarts, puis pousse
         // lentement jusqu'au visage (bandeau, regard assuré, léger sourire).
         await shot(tl, V(1.5, 1.5, 2.6), V(0, 1.45, 0), 3, ease.sine);
@@ -915,6 +917,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await tl.wait(0.9);
         await pose(tl, 'draw', 0.5);
         await side;
+        if (ninja.avatar) ninja.avatar.grip('left', false);
         ninja.drawKatana();
         say('Maître du kenjutsu', 3.5);
         face(tl, 'angry', 0.75, 0.4);
