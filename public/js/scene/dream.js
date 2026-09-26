@@ -706,7 +706,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             if (i === 2) {
                 // Dernier coup : la lame se charge de foudre (Kiminari).
                 say('Kiminari : la lame chargée de foudre', 2.4);
-                sound.cut();
+                if (sound.crackle) sound.crackle(1.4);
                 raiton = 1;
             }
             await pose(tl, cuts[i][3], i === 2 ? 0.5 : 0.24, ease.inOut);

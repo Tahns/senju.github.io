@@ -439,6 +439,16 @@ export class SceneAudio {
         for (let i = 0; i < 18; i++) this.tone({ at: Math.random() * seconds, freq: 500 + Math.random() * 900, to: 1500 + Math.random() * 800, duration: 0.06, gain: 0.03 });
     }
 
+    // Crépitement électrique (Kiminari) : rafales de claquements très aigus.
+    crackle(seconds = 1.2) {
+        if (!this.ctx) return;
+        for (let i = 0; i < seconds * 26; i++) {
+            const at = Math.random() * seconds;
+            this.noise({ at, duration: 0.012 + Math.random() * 0.03, attack: 0.001, type: 'highpass', freq: 2500 + Math.random() * 4000, gain: 0.08 + Math.random() * 0.12, pan: (Math.random() - 0.5) * 0.6 });
+        }
+        this.noise({ duration: seconds, attack: 0.05, type: 'bandpass', freq: 120, q: 4, gain: 0.12 });
+    }
+
     // Réception au sol : coup sourd et souffle de poussière.
     land() {
         if (!this.ctx || !this.dreamBus) return;
