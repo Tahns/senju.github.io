@@ -206,3 +206,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   copie fantôme décalée (relief violet fixé en pixels, trop grand pour un
   petit titre) ; contour et relief sont maintenant proportionnels à la
   taille du texte.
+- **Carnet, fin de la chronologie** : vignette à l'encre rouge sous
+  « Refermer le carnet » — le mont des Hokage et ses quatre visages, la tour
+  du Hokage, les toits et les arbres de Konoha — là où la page restait vide.
