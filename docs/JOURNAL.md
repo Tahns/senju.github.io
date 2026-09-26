@@ -228,3 +228,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   du modèle. Au chargement, la peau cachée (torse, épaules, haut des bras)
   recule d'1 cm vers ses os ; le col montant olive apparaît net autour du
   cou, même bras levés.
+- **Image de partage** refaite avec le nouveau Hoko (cou, couleurs, bras
+  croisés) devant la tour et le mont des Hokage ; adresse versionnée pour que
+  Discord et les réseaux ne gardent pas l'ancienne en cache ; `twitter:image`.
