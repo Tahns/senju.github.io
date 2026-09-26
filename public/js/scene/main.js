@@ -703,10 +703,10 @@ async function start() {
         }
         if (frames % shadowEvery === 0) renderer.shadowMap.needsUpdate = true;
     }
-    function renderScene(dt) {
+    function renderScene(dt, draw = true) {
         if (dreaming) {
             dream.update(dt, time);
-            dream.render();
+            if (draw) dream.render();
             return;
         }
         room.update(dt, time);
@@ -715,7 +715,10 @@ async function start() {
         renderer.render(scene, camera);
     }
 
-    function frame(now) {
+    // Pour les tests et l'enregistrement vidéo : avancer d'un pas fixe.
+    window.__scene.step = (dt, draw = true) => frame(last + dt * 1000, true, draw);
+
+    function frame(now, manual = false, draw = true) {
         if (lost) return;
         const dt = Math.min(0.25, (now - last) / 1000);
         last = now;
@@ -742,8 +745,8 @@ async function start() {
                 }, 1000);
             }
         }
-        if (!frozen && !document.hidden) renderScene(dt);
-        requestAnimationFrame(frame);
+        if (!frozen && !document.hidden) renderScene(dt, draw);
+        if (!manual) requestAnimationFrame(frame);
     }
 
     applyCamera();
