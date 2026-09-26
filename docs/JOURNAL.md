@@ -77,3 +77,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   bras croisés pendant que le titre apparaît.
 - **Tests dans le dépôt** : `tools/test/flow.js` (parcours complet) et
   `tools/test/dream-shots.js` (plans du rêve), documentés.
+- **Réception plus forte** : nuage de poussière plus dense, onde de choc
+  sur l'herbe, secousse de caméra.
+- **Ralenti** sur le troisième coup de sabre (le temps ralentit puis repart).
+- **Aperçu Claude avec le vrai modèle** : si le `.vrm` n'est pas servi, le
+  modèle est chargé depuis une copie en base64 (`hoko.vrm.txt`, publiée
+  seulement avec l'aperçu).
