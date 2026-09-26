@@ -441,6 +441,8 @@ export function buildNinja(sculpt, avatarGltf = null) {
         release: { spine: [0.1, -0.3, 0], head: [0, 0.2, 0], shoulderR: [-1.55, 0, 0.05], elbowR: [-0.05, 0, 0], shoulderL: [-1.4, 0, -0.25], elbowL: [-0.15, 0, 0], hipL: [-0.4, 0, 0.15], kneeL: [0.5, 0, 0], hipR: [0.3, 0, -0.15], kneeR: [0.2, 0, 0] },
         catch: { spine: [-0.1, 0, 0], head: [-0.35, 0, 0], shoulderL: [-2.6, 0, -0.35], shoulderR: [-2.6, 0, 0.35], elbowL: [-0.35, 0, 0], elbowR: [-0.35, 0, 0], hipL: [0, 0, 0.12], hipR: [0, 0, -0.12], kneeL: [0.1, 0, 0], kneeR: [0.1, 0, 0] },
         pocket: { spine: [0.05, -0.15, 0], head: [0.3, -0.25, 0], shoulderR: [0.2, 0, 0.35], elbowR: [-0.9, 0.3, 0], shoulderL: [-0.4, 0, -0.2], elbowL: [-1.2, 0, 0], hipL: [0, 0, 0.08], hipR: [0, 0, -0.08] },
+        fall: { spine: [0.25, 0, 0], head: [-0.2, 0, 0], shoulderL: [-0.6, 0, -1.1], shoulderR: [-0.6, 0, 1.1], elbowL: [-0.5, 0, 0], elbowR: [-0.5, 0, 0], hipL: [-1.1, 0, 0.1], kneeL: [1.7, 0, 0], hipR: [-0.5, 0, -0.1], kneeR: [1.3, 0, 0] },
+        land: { spine: [0.45, 0, 0], head: [-0.4, 0, 0], hipL: [-1.4, 0, 0.15], kneeL: [1.95, 0, 0], hipR: [-0.15, 0, -0.12], kneeR: [1.4, 0, 0], shoulderR: [-0.55, 0, 0.3], elbowR: [-0.25, 0, 0], shoulderL: [0.55, 0, -0.55], elbowL: [-0.4, 0, 0] },
         flip: { spine: [0, 0.1, 0], head: [-0.25, 0.15, 0], shoulderR: [-1.0, 0, 0.3], elbowR: [-1.6, 0, 0], shoulderL: [0.05, 0, -0.18], elbowL: [-0.2, 0, 0], hipL: [0, 0, 0.08], hipR: [0, 0, -0.08] }
     };
     const NAMES = ['spine', 'head', 'shoulderL', 'shoulderR', 'elbowL', 'elbowR', 'hipL', 'hipR', 'kneeL', 'kneeR'];

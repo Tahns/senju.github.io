@@ -69,3 +69,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   au sabre et au Suiton, rire sous la pluie de ryō, sourire final) ;
   clignements réparés (les noms des formes du visage n'étaient pas lus : on
   passe par la table d'expressions du modèle).
+
+## Samedi 26 septembre
+
+- **Entrée du rêve** : Hoko tombe du ciel, se réceptionne accroupi sur le
+  rocher dans un nuage de poussière (coup sourd de taiko), puis se relève
+  bras croisés pendant que le titre apparaît.
