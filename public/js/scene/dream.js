@@ -143,6 +143,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         rim.intensity = 1.7 + 1.6 * k;
         front.intensity = 0.45 - 0.2 * k;
         scene.environmentIntensity = 0.8 - 0.25 * k;
+        // Les lumières du village s'allument avec un peu de retard sur le ciel.
+        if (village.setDusk) village.setDusk(THREE.MathUtils.smoothstep(k, 0.35, 1));
     }
 
     /* ---------------- Le rocher d'entraînement ---------------- */

@@ -236,6 +236,44 @@ function bayTexture(plaster, style, random) {
     });
 }
 
+// Lumière des fenêtres au crépuscule (carte d'émission calée sur bayTexture) :
+// shoji qui rougeoie, vitre ambrée, rais de lumière entre les lattes des volets.
+function bayGlow(style) {
+    return tex(256, 256, (ctx) => {
+        const x0 = 70;
+        const x1 = 186;
+        const y0 = 74;
+        const y1 = 176;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, 256, 256);
+        if (style === 'shoji') {
+            const g = ctx.createRadialGradient((x0 + x1) / 2, (y0 + y1) / 2, 10, (x0 + x1) / 2, (y0 + y1) / 2, 80);
+            g.addColorStop(0, '#ffd79a');
+            g.addColorStop(1, '#e8903e');
+            ctx.fillStyle = g;
+            ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+            ctx.fillStyle = '#2a1608';
+            for (let x = x0 + 19; x < x1; x += 19) ctx.fillRect(x - 1.5, y0, 3, y1 - y0);
+            for (let y = y0 + 25; y < y1; y += 25) ctx.fillRect(x0, y - 1.5, x1 - x0, 3);
+            ctx.fillRect((x0 + x1) / 2 - 3, y0, 6, y1 - y0);
+        } else if (style === 'glass') {
+            const g = ctx.createLinearGradient(0, y0, 0, y1);
+            g.addColorStop(0, '#ffc070');
+            g.addColorStop(1, '#d9772c');
+            ctx.fillStyle = g;
+            ctx.fillRect(x0 + 30, y0, x1 - x0 - 30, y1 - y0);
+            ctx.fillStyle = '#6b4a2a';
+            ctx.fillRect(x0, y0, 30, y1 - y0);
+            ctx.fillStyle = '#000';
+            ctx.fillRect((x0 + x1) / 2 - 3, y0, 6, y1 - y0);
+            ctx.fillRect(x0, (y0 + y1) / 2 - 3, x1 - x0, 6);
+        } else {
+            ctx.fillStyle = '#c9772e';
+            for (let y = y0; y < y1; y += 9) ctx.fillRect(x0 + 2, y + 7, x1 - x0 - 4, 2);
+        }
+    });
+}
+
 // Façade du rez-de-chaussée : boutique à portes coulissantes et noren, ou porte d'entrée.
 function groundTexture(kind, cloth, random) {
     return tex(512, 256, (ctx, w, h) => {
@@ -551,7 +589,7 @@ export function buildVillage({ low = false } = {}) {
     const styles = ['shoji', 'glass', 'shutter'];
     const bays = [];
     plasters.forEach((p, i) => {
-        const m = [styles[i % 3], styles[(i + 1) % 3]].map((s) => new THREE.MeshStandardMaterial({ map: bayTexture(p, s, random), roughness: 0.9 }));
+        const m = [styles[i % 3], styles[(i + 1) % 3]].map((s) => new THREE.MeshStandardMaterial({ map: bayTexture(p, s, random), roughness: 0.9, emissive: '#ffffff', emissiveMap: bayGlow(s), emissiveIntensity: 0 }));
         bays.push(m);
     });
     const plainWalls = plasters.map((p) => new THREE.MeshStandardMaterial({ color: p, roughness: 0.95 }));
@@ -1000,6 +1038,11 @@ export function buildVillage({ low = false } = {}) {
             time.value = t;
             walk(dt, t);
             fly(dt, t);
+        },
+        // Crépuscule (0 → 1) : les fenêtres s'allument, les lanternes rougeoient.
+        setDusk(k) {
+            bays.forEach((pair) => pair.forEach((m) => { m.emissiveIntensity = 1.3 * k; }));
+            lantern.emissiveIntensity = 0.35 + 1.8 * k;
         },
         leaves
     };
