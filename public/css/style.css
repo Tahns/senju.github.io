@@ -2581,6 +2581,42 @@ html.book-open .radio {
     transform: skewX(-4deg);
 }
 
+/* Grand kanji en filigrane derrière le mot (人, 姿, 心, 志, 史, 忍道, 暦). */
+.storm-menu__picker {
+    isolation: isolate;
+}
+
+.storm-menu__kanji {
+    position: absolute;
+    left: 58%;
+    top: 50%;
+    z-index: -1;
+    font-family: var(--font-kanji);
+    font-size: clamp(150px, 19vw, 300px);
+    line-height: 1;
+    color: rgba(150, 255, 200, .13);
+    -webkit-text-stroke: 1px rgba(170, 255, 210, .3);
+    text-shadow: 0 0 40px rgba(60, 255, 150, .18);
+    translate: -50% -50%;
+    rotate: -6deg;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+}
+
+.storm-menu__kanji.is-long {
+    font-size: clamp(100px, 12vw, 190px);
+    writing-mode: vertical-rl;
+}
+
+.storm-menu__kanji.is-new {
+    animation: storm-kanji .6s ease-out;
+}
+
+@keyframes storm-kanji {
+    from { opacity: 0; scale: 1.25; filter: blur(8px); }
+}
+
 /* Coup de pinceau vert derrière le mot de la catégorie. */
 .storm-menu__word {
     position: relative;
@@ -2850,6 +2886,15 @@ html.menu-open .scene-skip {
 
     .storm-menu__word {
         font-size: clamp(38px, 12vw, 72px);
+    }
+
+    .storm-menu__kanji {
+        left: 70%;
+        font-size: clamp(110px, 34vw, 190px);
+    }
+
+    .storm-menu__kanji.is-long {
+        font-size: clamp(80px, 24vw, 130px);
     }
 
     .storm-menu.is-entering .storm-menu__picker {

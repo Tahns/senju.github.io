@@ -712,16 +712,17 @@ async function start() {
     // bandeau de parchemin ; Hoko en 3D dans son aura, une pose par catégorie.
     const menuEl = document.getElementById('storm-menu');
     const menuWord = document.getElementById('storm-word');
+    const menuKanji = document.getElementById('storm-kanji');
     const menuDesc = document.getElementById('storm-desc');
     const menuBack = document.getElementById('storm-back');
     const MENU = [
-        { word: 'Personnage', desc: 'Identité : nom, âge, taille, natures de chakra et famille', page: 3, pose: 'crossed' },
-        { word: 'Apparence', desc: 'Le portrait du shinobi', page: 2, pose: 'stand', mood: 'fun' },
-        { word: 'Personnalité', desc: "Personnalité et caractère d'une personne", page: 4, pose: 'crossed', mood: 'fun' },
-        { word: 'Ambitions', desc: 'Ses objectifs, et ce qu\'il veut bâtir pour Konoha', page: 5, pose: 'vow', mood: 'angry' },
-        { word: 'Histoire', desc: 'Son passé, du village de Takumi au domaine Senju', page: 7, pose: 'seal', mood: 'angry' },
-        { word: 'Nindo', desc: 'La voie du ninja, celle qu\'il ne reniera jamais', page: 11, pose: 'release', mood: 'angry' },
-        { word: 'Chronologie', desc: 'Les grandes dates de sa vie', page: 12, pose: 'stand' }
+        { word: 'Personnage', kanji: '人', desc: 'Identité : nom, âge, taille, natures de chakra et famille', page: 3, pose: 'crossed' },
+        { word: 'Apparence', kanji: '姿', desc: 'Le portrait du shinobi', page: 2, pose: 'stand', mood: 'fun' },
+        { word: 'Personnalité', kanji: '心', desc: "Personnalité et caractère d'une personne", page: 4, pose: 'crossed', mood: 'fun' },
+        { word: 'Ambitions', kanji: '志', desc: 'Ses objectifs, et ce qu\'il veut bâtir pour Konoha', page: 5, pose: 'vow', mood: 'angry' },
+        { word: 'Histoire', kanji: '史', desc: 'Son passé, du village de Takumi au domaine Senju', page: 7, pose: 'seal', mood: 'angry' },
+        { word: 'Nindo', kanji: '忍道', desc: 'La voie du ninja, celle qu\'il ne reniera jamais', page: 11, pose: 'release', mood: 'angry' },
+        { word: 'Chronologie', kanji: '暦', desc: 'Les grandes dates de sa vie', page: 12, pose: 'stand' }
     ];
     let menuIndex = 0;
     let menuOpen = false;
@@ -729,6 +730,8 @@ async function start() {
     function showCategory(dir = 0) {
         const c = MENU[menuIndex];
         menuWord.textContent = c.word;
+        menuKanji.textContent = c.kanji;
+        menuKanji.classList.toggle('is-long', c.kanji.length > 1);
         menuDesc.replaceChildren(Object.assign(document.createElement('span'), { textContent: c.desc }));
         menuDesc.classList.remove('is-new');
         void menuDesc.offsetWidth;
@@ -736,6 +739,9 @@ async function start() {
         menuWord.classList.remove('is-up', 'is-down');
         void menuWord.offsetWidth;
         if (dir) menuWord.classList.add(dir > 0 ? 'is-up' : 'is-down');
+        menuKanji.classList.remove('is-new');
+        void menuKanji.offsetWidth;
+        if (dir) menuKanji.classList.add('is-new');
         dream.menuPose(c.pose, c.mood);
     }
     function stepMenu(dir) {
