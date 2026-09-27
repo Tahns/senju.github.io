@@ -48,7 +48,7 @@ document.addEventListener('click', (e) => {
     if (!link || !(link.getAttribute('href') || '').startsWith('#')) return;
     e.preventDefault();
     if (link.getAttribute('href') === '#menu' && openMenuHook) {
-        openMenuHook('end');
+        openMenuHook(link.closest('#scene-intro') ? 'intro' : 'end');
         return;
     }
     endCard.hidden = true;
@@ -742,7 +742,7 @@ async function start() {
         hud.hidden = true;
         renderer.shadowMap.needsUpdate = true;
         sound.startDream();
-        menuBack.hidden = from !== 'end';
+        menuBack.hidden = false;
         menuEl.hidden = false;
         menuOpen = true;
         showCategory();
@@ -769,12 +769,27 @@ async function start() {
         }, 450);
     }
     function backMenu() {
-        if (!menuOpen || menuFrom !== 'end') return;
+        if (!menuOpen) return;
+        // Venu de l'accueil : on y retourne (la scène repart de zéro).
+        if (menuFrom !== 'end') {
+            location.href = location.pathname;
+            return;
+        }
         closeMenu();
         endCard.hidden = false;
         replayBtn.focus();
     }
-    openMenuHook = openMenu;
+    // Depuis l'accueil : on entre dans la scène (son, etc.) puis on va droit au menu.
+    let wantMenu = false;
+    openMenuHook = (from) => {
+        if (from !== 'intro') {
+            openMenu(from);
+            return;
+        }
+        if (startBtn.disabled) return;
+        wantMenu = true;
+        startBtn.click();
+    };
     document.getElementById('storm-prev').addEventListener('click', () => stepMenu(-1));
     document.getElementById('storm-next').addEventListener('click', () => stepMenu(1));
     document.getElementById('storm-confirm').addEventListener('click', confirmMenu);
@@ -807,7 +822,7 @@ async function start() {
         allowSkip();
         // ?at=shelf|second|bed : démarre plus loin (pour les tests).
         const at = params.get('at');
-        if (at === 'menu') {
+        if (at === 'menu' || wantMenu) {
             await openMenu('intro');
             return;
         }
