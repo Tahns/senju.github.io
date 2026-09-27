@@ -323,3 +323,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Menu, son de sélection** : changer de catégorie fait claquer des
   hyōshigi (claves de bois du théâtre japonais) avec un petit coup de taiko,
   comme les menus des jeux.
+- **Menu, description qui s'écrit** : à chaque catégorie, le texte du
+  bandeau de parchemin apparaît de gauche à droite, comme tracé au pinceau.

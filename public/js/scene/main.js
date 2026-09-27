@@ -717,7 +717,10 @@ async function start() {
     function showCategory(dir = 0) {
         const c = MENU[menuIndex];
         menuWord.textContent = c.word;
-        menuDesc.textContent = c.desc;
+        menuDesc.replaceChildren(Object.assign(document.createElement('span'), { textContent: c.desc }));
+        menuDesc.classList.remove('is-new');
+        void menuDesc.offsetWidth;
+        if (dir) menuDesc.classList.add('is-new');
         menuWord.classList.remove('is-up', 'is-down');
         void menuWord.offsetWidth;
         if (dir) menuWord.classList.add(dir > 0 ? 'is-up' : 'is-down');
