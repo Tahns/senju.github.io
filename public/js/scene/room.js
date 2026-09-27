@@ -529,11 +529,29 @@ export function buildRoom(scene) {
     inside.rotation.x = -Math.PI / 2;
     inside.position.y = 0.0805;
     musicBox.add(inside);
-    const drum = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.1, 18), brass));
+    // Mécanisme : cylindre à picots qui tourne, peigne d'acier dont les dents
+    // effleurent les picots, sur un socle de laiton.
+    box(musicBox, 0.11, 0.006, 0.15, brass, 0, 0.083, 0);
+    const drum = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.11, 24), brass));
     drum.rotation.x = Math.PI / 2;
-    drum.position.set(-0.02, 0.092, 0);
+    drum.position.set(-0.022, 0.104, 0);
     musicBox.add(drum);
-    box(musicBox, 0.03, 0.004, 0.1, brass, 0.012, 0.088, 0);
+    const pinRandom = T.rng(77);
+    const pins = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.0012, 0.0012, 0.004, 5), brass, 60);
+    const pinM = new THREE.Matrix4();
+    const pinQ = new THREE.Quaternion();
+    const pinAxis = new THREE.Vector3(0, 0, 1);
+    for (let i = 0; i < 60; i++) {
+        const a = pinRandom() * Math.PI * 2;
+        const y = -0.05 + Math.floor(pinRandom() * 12) * (0.1 / 11);
+        pinQ.setFromAxisAngle(pinAxis, a - Math.PI / 2);
+        pinM.compose(new THREE.Vector3(Math.cos(a) * 0.0195, y, Math.sin(a) * 0.0195), pinQ, new THREE.Vector3(1, 1, 1));
+        pins.setMatrixAt(i, pinM);
+    }
+    drum.add(pins);
+    const steel = new THREE.MeshStandardMaterial({ color: '#d9dde2', metalness: 0.85, roughness: 0.25 });
+    box(musicBox, 0.012, 0.012, 0.11, brass, 0.03, 0.093, 0);
+    for (let i = 0; i < 12; i++) box(musicBox, 0.03, 0.0015, 0.006, steel, 0.009, 0.098, -0.05 + i * (0.1 / 11));
     const lid = new THREE.Group();
     lid.position.set(-0.075, 0.08, 0);
     musicBox.add(lid);
