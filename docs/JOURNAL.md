@@ -246,3 +246,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Boîte à musique** : quand elle s'ouvre, on voit son mécanisme — cylindre
   de laiton hérissé de picots qui tourne pendant la mélodie, peigne d'acier
   à douze dents, socle de laiton (avant, un velours rouge presque vide).
+- **Plan final** : la bourse gonflée par la pluie de ryō (×1,9, une vraie
+  jarre dans le dos) reprend une taille discrète pendant que Hoko se tourne
+  vers le mont des Hokage ; la silhouette du plan héroïque est nette.
