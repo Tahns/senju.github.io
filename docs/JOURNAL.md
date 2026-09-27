@@ -276,3 +276,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   d'aperçu du lien refaite sans eux.
 - **Vidéo refaite** : sans les visages de la falaise, avec les kanji des
   chapitres au-dessus des sous-titres, la bourse discrète et les villageois.
+- **Carte de fin** : chaque bouton de chapitre porte son kanji (剣術, 水遁,
+  両, 火影), comme dans le rêve ; README et SWOT à jour.
