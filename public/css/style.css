@@ -1280,6 +1280,17 @@ html:not(.js) .js-only {
     border: 1px solid rgba(214, 179, 94, .45);
 }
 
+.cover__again {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5em;
+}
+
+.cover__again a[hidden] {
+    display: none;
+}
+
 .cover__again a:hover {
     color: #2a0906;
     background: var(--gold);

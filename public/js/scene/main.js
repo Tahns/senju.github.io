@@ -41,6 +41,16 @@ function standalone() {
 // Ouvre le menu « Sélection de la catégorie » (défini quand la scène tourne).
 let openMenuHook = null;
 
+// 4ᵉ de couverture : « Sélection de la catégorie » (seulement si la 3D est possible).
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a.menu-link');
+    if (!link) return;
+    e.preventDefault();
+    if (window.Carnet && window.Carnet.isOpen) window.Carnet.shelve();
+    // La scène redémarre directement sur le menu.
+    location.href = location.pathname + '?at=menu&autostart';
+});
+
 // « Aller directement au carnet » / « Relire le carnet » : sans la scène.
 document.addEventListener('click', (e) => {
     const link = e.target.closest('.scene-card__link');
@@ -65,6 +75,8 @@ function webglAvailable() {
         return false;
     }
 }
+
+if (webglAvailable()) document.querySelectorAll('a.menu-link').forEach((a) => { a.hidden = false; });
 
 if (html.classList.contains('has-scene') && !webglAvailable()) {
     standalone();
