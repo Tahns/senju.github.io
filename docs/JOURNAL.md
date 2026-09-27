@@ -249,3 +249,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Plan final** : la bourse gonflée par la pluie de ryō (×1,9, une vraie
   jarre dans le dos) reprend une taille discrète pendant que Hoko se tourne
   vers le mont des Hokage ; la silhouette du plan héroïque est nette.
+- **Kanji des chapitres** : au-dessus des sous-titres du rêve, l'idéogramme
+  du chapitre tracé au pinceau (剣術 kenjutsu, 雷 foudre, 水遁 Suiton,
+  両 ryō, 火影 « Un jour… »). Sur téléphone, le sous-titre ne touche plus
+  le bouton « Passer ».
