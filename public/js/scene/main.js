@@ -538,6 +538,8 @@ async function start() {
         await look(1.8, { yaw: windowView.yaw, pitch: windowView.pitch, roll: 0 }, ease.out);
         sound.windDown(9);
         radio.fadeOut(8);
+        // Une étoile filante traverse la fenêtre : il fait un vœu, et s'endort.
+        timeline.wait(1.2).then(() => { room.shootingStar(); sound.shimmer(); });
         await timeline.tween(3.4, (k) => room.setLantern(1 - 0.75 * k), ease.inOut);
         html.classList.add('eyes-heavy');
         await timeline.wait(1.8);

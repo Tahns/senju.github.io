@@ -172,6 +172,39 @@ export function buildRoom(scene) {
         starGeo.attributes.color.needsUpdate = true;
     });
 
+    // Étoile filante (déclenchée par la scène quand Hoko regarde le ciel) : une
+    // traînée lumineuse qui file en diagonale et s'éteint.
+    const meteorMat = new THREE.ShaderMaterial({
+        uniforms: { uHead: { value: -1 } },
+        vertexShader: 'varying float vT; void main(){ vT = uv.x; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: `uniform float uHead; varying float vT;
+            void main(){
+                float d = uHead - vT;
+                float a = d < 0.0 ? 0.0 : exp(-d * 9.0) * smoothstep(0.0, 0.02, d + 0.02);
+                a *= 1.0 - smoothstep(0.85, 1.0, uHead);
+                gl_FragColor = vec4(vec3(0.85, 0.92, 1.0) * 1.8, a);
+            }`,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        fog: false
+    });
+    const meteor = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.02, 32, 1), meteorMat);
+    meteor.position.set(-0.8, 1.75, -D / 2 - 0.68);
+    meteor.rotation.z = Math.PI + 0.8; // part du haut à droite, file vers le bas à gauche
+    meteor.visible = false;
+    room.add(meteor);
+    let meteorT = -1;
+    updaters.push((dt) => {
+        if (meteorT < 0) return;
+        meteorT += dt / 1.1;
+        meteorMat.uniforms.uHead.value = meteorT;
+        if (meteorT > 1.2) {
+            meteorT = -1;
+            meteor.visible = false;
+        }
+    });
+
     // Lucioles qui dérivent dans le jardin, derrière la fenêtre ouverte.
     const flyCount = 18;
     const flyPos = new Float32Array(flyCount * 3);
@@ -624,6 +657,8 @@ export function buildRoom(scene) {
         bed: { x: bedX, z: bedZ },
         shelf: { front, boards },
         setLantern(level) { lanternLevel = level; },
+        meteor,
+        shootingStar() { meteorT = 0; meteor.visible = true; },
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); }
     };
 }

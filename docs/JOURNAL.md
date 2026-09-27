@@ -240,3 +240,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (écriture verticale écrasée : un trait rouge et « 手 » seul) ; il affiche
   maintenant « 千手 » (et « 忍道 » sur le carnet indigo) en entier.
   « Ouvrir le carnet » ne disparaît plus entre deux pulsations.
+- **Étoile filante** : allongé sur le futon, pendant que Hoko regarde le ciel
+  par la fenêtre, une étoile filante traverse l'ouverture (sur un carillon)
+  juste avant qu'il ne s'endorme — et que le rêve commence.
