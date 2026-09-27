@@ -726,7 +726,7 @@ async function start() {
     function stepMenu(dir) {
         if (!menuOpen) return;
         menuIndex = (menuIndex + dir + MENU.length) % MENU.length;
-        sound.whoosh();
+        sound.select();
         showCategory(dir);
     }
     async function openMenu(from) {
