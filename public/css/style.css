@@ -2237,6 +2237,12 @@ html.dreaming .scene-vignette {
     background: rgba(18, 10, 42, .45);
 }
 
+.scene-chapters span {
+    margin-right: .45em;
+    font-family: var(--font-kanji);
+    color: #fff;
+}
+
 .scene-chapters a:hover,
 .scene-chapters a:focus-visible {
     color: #fff;
