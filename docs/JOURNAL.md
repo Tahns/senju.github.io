@@ -325,3 +325,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   comme les menus des jeux.
 - **Menu, description qui s'écrit** : à chaque catégorie, le texte du
   bandeau de parchemin apparaît de gauche à droite, comme tracé au pinceau.
+- **4ᵉ de couverture** : bouton « Sélection de la catégorie », qui relance
+  la page directement sur le menu façon Naruto Storm (affiché seulement si
+  le navigateur sait faire de la 3D).
