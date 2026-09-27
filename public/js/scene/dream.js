@@ -1189,7 +1189,13 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         auraMat.uniforms.uPower.value = Math.min(0.42, auraMat.uniforms.uPower.value + dt * 0.4);
         // Caméra basse, qui dérive à peine ; Hoko à droite (texte à gauche), centré en portrait.
         const portrait = camera.aspect < 1;
-camGoal.set((portrait ? 0.3 : 0.6) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.sin(menu.t * 0.4) * 0.03, portrait ? 3.1 : 2.4);
+        if (menu.push) {
+            // « Confirmer » : la caméra fonce vers le visage de Hoko.
+            camGoal.set(0.25, 1.6, 0.75);
+            lookGoal.set(0, 1.62, 0);
+            return;
+        }
+        camGoal.set((portrait ? 0.3 : 0.6) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.sin(menu.t * 0.4) * 0.03, portrait ? 3.1 : 2.4);
         lookGoal.set(portrait ? 0 : -1.05, portrait ? 1.3 : 1.42, 0);
     });
     function setMenu(on) {
@@ -1202,6 +1208,7 @@ camGoal.set((portrait ? 0.3 : 0.6) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.s
             return;
         }
         menu.t = 0;
+        menu.push = false;
         ninja.root.position.set(0, 0, 0);
         ninja.root.rotation.y = 0;
         if (ninja.katana.parent !== ninja.katana.userData.sheathed.parent) ninja.sheathe();
@@ -1236,6 +1243,7 @@ camGoal.set((portrait ? 0.3 : 0.6) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.s
         scene,
         setMenu,
         menuPose,
+        menuConfirm() { menu.push = true; },
         camera,
         ninja,
         // Pour les tests : forcer la foudre sur la lame, montrer l'arc-en-ciel.

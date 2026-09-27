@@ -297,3 +297,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Menu : chakra aux mains** — comme dans la vidéo de référence, des arcs
   bleus crépitent autour des mains de Hoko quand elles sont libres (mudra,
   paume tendue, poing levé), avec leur lueur.
+- **Menu, finitions** : coup de pinceau vert derrière le mot de la
+  catégorie ; « Confirmer » fait foncer la caméra vers le visage de Hoko,
+  l'interface glisse et s'efface, puis un flash blanc mène au carnet.

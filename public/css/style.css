@@ -2509,6 +2509,35 @@ html.book-open .radio {
     transform: skewX(-4deg);
 }
 
+/* Coup de pinceau vert derrière le mot de la catégorie. */
+.storm-menu__word {
+    position: relative;
+    isolation: isolate;
+}
+
+.storm-menu__word::before {
+    content: "";
+    position: absolute;
+    left: -6%;
+    right: -10%;
+    top: 30%;
+    height: .5em;
+    z-index: -1;
+    background: linear-gradient(90deg, transparent, rgba(30, 140, 90, .55) 10%, rgba(60, 200, 130, .45) 60%, transparent);
+    clip-path: polygon(0 45%, 6% 20%, 30% 12%, 60% 0, 88% 18%, 100% 40%, 94% 70%, 64% 88%, 30% 100%, 8% 82%);
+    transform: skewX(-18deg);
+    filter: blur(1px);
+}
+
+.storm-menu.is-confirming .storm-menu__kicker,
+.storm-menu.is-confirming .storm-menu__picker,
+.storm-menu.is-confirming .storm-menu__banner,
+.storm-menu.is-confirming .storm-menu__actions {
+    opacity: 0;
+    transform: translateX(-2vw);
+    transition: opacity .3s ease, transform .3s ease;
+}
+
 .storm-menu__word.is-up { animation: storm-word-up .32s ease-out; }
 .storm-menu__word.is-down { animation: storm-word-down .32s ease-out; }
 
