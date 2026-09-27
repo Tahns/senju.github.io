@@ -258,3 +258,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   « の » du rouleau « 火の意志 » s'affichaient dans une police de secours. La
   liste couvre maintenant les 35 caractères japonais du site. Kanji ajoutés
   aussi à « Et il rêva… » (夢) et au titre du rêve (千手).
+- **Moins d'animations** : si le système du visiteur le demande
+  (`prefers-reduced-motion`), plus de secousse de caméra à l'atterrissage
+  (l'ouverture en iris était déjà remplacée par un fondu). Vérifié aussi :
+  sans WebGL, le carnet s'ouvre directement.
