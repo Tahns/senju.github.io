@@ -253,3 +253,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   du chapitre tracé au pinceau (剣術 kenjutsu, 雷 foudre, 水遁 Suiton,
   両 ryō, 火影 « Un jour… »). Sur téléphone, le sous-titre ne touche plus
   le bouton « Passer ».
+- **Police pinceau complète** : la police japonaise n'était téléchargée que
+  pour 9 caractères ; les kanji des chapitres (剣術, 雷, 両, 火影, 夢) et le
+  « の » du rouleau « 火の意志 » s'affichaient dans une police de secours. La
+  liste couvre maintenant les 35 caractères japonais du site. Kanji ajoutés
+  aussi à « Et il rêva… » (夢) et au titre du rêve (千手).

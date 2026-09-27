@@ -949,7 +949,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await tl.tween(0.14, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * k; }, ease.out);
         await tl.wait(0.7);
         // 1. Hoko, adulte, se relève et domine le village.
-        say('Hoko Senju — jōnin de Konoha', 4.5);
+        say('Hoko Senju — jōnin de Konoha', 4.5, '千手');
         tl.tween(0.9, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * (1 - k); }, ease.inOut);
         pose(tl, 'crossed', 0.9);
         // Bras croisés : les mains se referment sur les bras (doigts rentrés).
