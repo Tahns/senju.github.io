@@ -328,3 +328,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **4ᵉ de couverture** : bouton « Sélection de la catégorie », qui relance
   la page directement sur le menu façon Naruto Storm (affiché seulement si
   le navigateur sait faire de la 3D).
+- **Menu, plaque du personnage** : en haut à droite, comme l'écran de
+  sélection des jeux Storm, « Hoko Senju », son nom en japonais (千手 ホコ)
+  et ses deux natures de chakra en pastilles (水 Suiton, ✦ Kiminari). Elle
+  glisse depuis la droite à l'ouverture ; sur téléphone elle se range sous
+  le grand mot.

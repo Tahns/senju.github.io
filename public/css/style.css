@@ -2718,6 +2718,93 @@ html.menu-open .scene-skip {
     display: none !important;
 }
 
+/* Plaque du personnage en haut à droite, comme l'écran de sélection des jeux Storm. */
+.storm-menu__plate {
+    position: absolute;
+    top: 13vh;
+    right: 0;
+    padding: .7em 4vw .8em 2.6em;
+    text-align: right;
+    background: linear-gradient(270deg, rgba(4, 18, 16, .78), rgba(4, 18, 16, .55) 70%, transparent);
+    clip-path: polygon(1.6em 0, 100% 0, 100% 100%, 0 100%);
+    border-top: 2px solid rgba(120, 255, 180, .55);
+}
+
+.storm-menu.is-entering .storm-menu__plate { animation: storm-plate .55s ease-out 1.3s both; }
+
+@keyframes storm-plate {
+    from { opacity: 0; translate: 12vw 0; }
+}
+
+.storm-menu__name {
+    margin: 0;
+    font-family: 'Permanent Marker', var(--zk-font), cursive;
+    font-size: clamp(22px, 2.6vw, 34px);
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(80, 255, 170, .45), 2px 2px 0 rgba(0, 0, 0, .6);
+}
+
+.storm-menu__jp {
+    margin: .1em 0 .45em;
+    font-family: var(--font-kanji);
+    font-size: clamp(13px, 1.3vw, 17px);
+    letter-spacing: .3em;
+    color: #b6ffd2;
+}
+
+.storm-menu__natures {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.storm-menu__natures li {
+    display: inline-flex;
+    align-items: center;
+    gap: .35em;
+    padding: .1em .7em .1em .15em;
+    font-family: var(--zk-font);
+    font-size: clamp(12px, 1.1vw, 15px);
+    color: #fff;
+    background: rgba(0, 0, 0, .35);
+    border: 1px solid var(--nature);
+    border-radius: 999px;
+    box-shadow: 0 0 8px var(--nature-glow);
+}
+
+.storm-menu__natures b {
+    display: grid;
+    place-items: center;
+    width: 1.6em;
+    height: 1.6em;
+    font-family: var(--font-kanji);
+    font-weight: 400;
+    color: #06121a;
+    background: var(--nature);
+    border-radius: 50%;
+}
+
+.storm-menu__natures .is-water {
+    --nature: #6cc8ff;
+    --nature-glow: rgba(80, 180, 255, .5);
+}
+
+.storm-menu__natures .is-kiminari {
+    --nature: #e9f4ff;
+    --nature-glow: rgba(150, 200, 255, .6);
+}
+
+.storm-menu.is-confirming .storm-menu__plate {
+    opacity: 0;
+    transform: translateX(2vw);
+    transition: opacity .3s ease, transform .3s ease;
+}
+
 /* Indice tactile : seulement sur écran tactile. */
 .storm-menu__hint {
     display: none;
@@ -2783,6 +2870,20 @@ html.menu-open .scene-skip {
 
     .storm-menu__action kbd {
         display: none;
+    }
+
+    .storm-menu__plate {
+        top: calc(10vh + 9.6em);
+        padding: .45em 16px .5em 2em;
+        font-size: 13px;
+    }
+
+    .storm-menu__name {
+        font-size: 20px;
+    }
+
+    .storm-menu__jp {
+        margin-bottom: .3em;
     }
 }
 
