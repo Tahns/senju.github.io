@@ -338,3 +338,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   姿 (Apparence), 心 (Personnalité), 志 (Ambitions), 史 (Histoire),
   忍道 écrit à la verticale (Nindo), 暦 (Chronologie). Il apparaît dans un
   flou à chaque changement.
+- **Menu, orage** : toutes les 8 à 14 secondes, un éclair zèbre le ciel
+  derrière la falaise, le ciel et Hoko s'éclairent deux fois de
+  suite, puis le tonnerre roule au loin (plus sourd que celui du coup de
+  sabre chargé). Désactivé avec « réduire les animations ».

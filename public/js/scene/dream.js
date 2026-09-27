@@ -1183,10 +1183,75 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     crow.frustumCulled = false; // ailes animées : volume englobant non fiable
     scene.add(crow);
 
+    // Éclairs lointains dans le ciel d'orage du menu : un trait de foudre
+    // derrière la falaise, le ciel qui s'illumine deux fois, puis le tonnerre.
+    const skyBoltMat = new THREE.MeshBasicMaterial({ color: '#eef6ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+    const skyGlowMat = new THREE.MeshBasicMaterial({ color: '#5f9dff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+    const skyBolt = new THREE.Group();
+    skyBolt.visible = false;
+    scene.add(skyBolt);
+    const flashTop = new THREE.Color('#5d86a8');
+    const flashMid = new THREE.Color('#a6cde0');
+    const strike = { next: 3.5, t: -1, thunder: false };
+    // Point du ciel à `dist` mètres, vu à l'écran en (x, y) de -1 à 1.
+    const skyPoint = (x, y, dist) => V(x, y, 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(dist).add(camera.position);
+    function buildSkyBolt() {
+        skyBolt.children.forEach((m) => m.geometry.dispose());
+        skyBolt.clear();
+        const portrait = camera.aspect < 1;
+        const x = portrait ? -0.7 + Math.random() * 1.4 : -0.15 + Math.random() * 1;
+        const path = (x0, y0, x1, y1, steps, jag) => {
+            const pts = [];
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const j = i === 0 ? 0 : jag;
+                pts.push(skyPoint(x0 + (x1 - x0) * t + (Math.random() - 0.5) * j, y0 + (y1 - y0) * t, 160));
+            }
+            return new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0);
+        };
+        const main = path(x, 1.15, x + (Math.random() - 0.5) * 0.3, 0.15, 14, 0.07);
+        const fork = main.getPoint(0.35).clone().project(camera);
+        const branch = path(fork.x, fork.y, fork.x + (Math.random() < 0.5 ? -1 : 1) * (0.1 + Math.random() * 0.12), fork.y - 0.3, 6, 0.05);
+        [[main, 0.3, 1.3], [branch, 0.18, 0.8]].forEach(([curve, core, glow]) => {
+            skyBolt.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 48, core, 4, false), skyBoltMat));
+            skyBolt.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 48, glow, 5, false), skyGlowMat));
+        });
+        skyBolt.children.forEach((m) => { m.frustumCulled = false; });
+    }
+    function updateStrike(dt, sound) {
+        if (strike.t < 0) {
+            strike.next -= dt;
+            if (strike.next > 0 || menu.push) return;
+            strike.t = 0;
+            strike.thunder = false;
+            buildSkyBolt();
+        }
+        strike.t += dt;
+        const t = strike.t;
+        // Deux éclats rapprochés, puis la lueur retombe.
+        const f = t < 0.07 ? 1 : t < 0.13 ? 0.25 : t < 0.22 ? 0.85 : Math.exp(-(t - 0.22) / 0.12) * 0.85;
+        skyBolt.visible = t < 0.5;
+        skyBoltMat.opacity = f;
+        skyGlowMat.opacity = f * 0.45;
+        const u = sky.material.uniforms;
+        u.top.value.lerpColors(stormLook.top, flashTop, f * 0.55);
+        u.mid.value.lerpColors(stormLook.mid, flashMid, f * 0.4);
+        hemi.intensity = stormLook.power.hemi + f * 1.1;
+        if (!strike.thunder && t > 0.7) {
+            strike.thunder = true;
+            if (sound && sound.thunder) sound.thunder(0.55);
+        }
+        if (t > 1.2) {
+            strike.t = -1;
+            strike.next = 8 + Math.random() * 6;
+            setLook(stormLook, 1);
+        }
+    }
+
     /* ---------------- Menu « Sélection de la catégorie » ---------------- */
     // Écran façon jeux Naruto Storm : Hoko en contre-plongée dans son aura de
     // chakra, ciel d'orage ; chaque catégorie de la fiche lui donne une pose.
-    const menu = { on: false, t: 0, target: null };
+    const menu = { on: false, t: 0, target: null, sound: null, calm: false };
     updaters.push((dt) => {
         if (!menu.on) {
             crow.visible = false;
@@ -1205,6 +1270,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         cp.setY(1, 0.15 + flap * 0.5);
         cp.setY(4, 0.15 + flap * 0.5);
         cp.needsUpdate = true;
+        if (!menu.calm) updateStrike(dt, menu.sound);
         if (menu.target) {
             const a = 1 - Math.exp(-dt / 0.22);
             ninja.setValues(ninja.currentValues().map((f, i) => f.map((v, j) => v + (menu.target[i][j] - v) * a)));
@@ -1223,8 +1289,13 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         camGoal.set((portrait ? 0.3 : 0.6) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.sin(menu.t * 0.4) * 0.03, portrait ? 3.1 : 2.4);
         lookGoal.set(portrait ? 0 : -1.05, portrait ? 1.3 : 1.42, 0);
     });
-    function setMenu(on) {
+    function setMenu(on, sound = null) {
         menu.on = on;
+        menu.sound = sound;
+        menu.calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        strike.t = -1;
+        strike.next = 3.5;
+        skyBolt.visible = false;
         if (!on) {
             handChakra = 0;
             posts.forEach((p) => { p.base.visible = p.topPart.visible = true; });
@@ -1270,6 +1341,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         setMenu,
         menuPose,
         menuConfirm() { menu.push = true; },
+        // Pour les tests : déclenche le prochain éclair du menu tout de suite.
+        strikeNow() { strike.next = 0; },
         // Pour les tests : position du corbeau à l'écran (-1..1).
         crowOnScreen() { crow.updateMatrixWorld(); return crow.visible ? crow.getWorldPosition(V()).project(camera).toArray() : null; },
         camera,

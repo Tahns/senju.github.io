@@ -538,11 +538,12 @@ export class SceneAudio {
         this.tone({ freq: 70, to: 110, duration: seconds, gain: 0.08, type: 'sawtooth' });
     }
     // Claquement de tonnerre (coup chargé de foudre) : éclat sec puis roulement.
-    thunder() {
+    // `level` < 1 : orage lointain (moins d'éclat sec, roulement plus long).
+    thunder(level = 1) {
         if (!this.ctx) return;
-        this.noise({ duration: 0.08, attack: 0.001, type: 'highpass', freq: 1800, gain: 0.5 });
-        this.noise({ at: 0.02, duration: 1.8, attack: 0.03, type: 'lowpass', freq: 380, to: 90, q: 0.8, gain: 0.45 });
-        for (let i = 0; i < 6; i++) this.noise({ at: 0.1 + Math.random() * 0.9, duration: 0.3, attack: 0.02, type: 'lowpass', freq: 220, gain: 0.12 });
+        this.noise({ duration: 0.08, attack: 0.001, type: 'highpass', freq: 1800, gain: 0.5 * level * level });
+        this.noise({ at: 0.02, duration: 1.8 / level, attack: 0.03, type: 'lowpass', freq: 380, to: 90, q: 0.8, gain: 0.45 * level });
+        for (let i = 0; i < 6; i++) this.noise({ at: 0.1 + Math.random() * 0.9 / level, duration: 0.3, attack: 0.02, type: 'lowpass', freq: 220, gain: 0.12 * level });
     }
     // Sélection dans un menu : claquement de bois (hyōshigi) et petit coup de taiko.
     select() {
