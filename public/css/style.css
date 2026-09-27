@@ -2260,6 +2260,37 @@ html.dreaming .scene-vignette {
     color: #fff;
 }
 
+/* Accès au menu « Sélection de la catégorie » : bouton secondaire vert chakra. */
+.scene-card__link--menu {
+    display: inline-flex;
+    align-items: center;
+    gap: .5em;
+    padding: 7px 22px;
+    font-family: var(--zk-font);
+    font-size: 16px;
+    letter-spacing: .05em;
+    text-decoration: none;
+    color: #d8ffe9;
+    background: rgba(8, 40, 30, .4);
+    border: 1.5px solid rgba(150, 255, 200, .6);
+    border-radius: 4px;
+    transform: skewX(-12deg);
+    box-shadow: inset 0 0 14px rgba(80, 255, 170, .16), 0 0 12px rgba(80, 255, 170, .14);
+    transition: color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.scene-card__link--menu span {
+    color: #9dffc9;
+    text-shadow: 0 0 8px rgba(80, 255, 170, .8);
+}
+
+.scene-card__link--menu:hover,
+.scene-card__link--menu:focus-visible {
+    color: #fff;
+    border-color: #b6ffd2;
+    box-shadow: inset 0 0 18px rgba(80, 255, 170, .28), 0 0 18px rgba(80, 255, 170, .3);
+}
+
 /* Chapitres du rêve, sur la carte de fin */
 .scene-chapters {
     display: flex;
