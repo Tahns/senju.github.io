@@ -315,3 +315,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   plonge sur Hoko ; puis « Sélection de la catégorie » glisse, le grand mot
   arrive en rebondissant et le bandeau de parchemin se déroule depuis le
   centre (rien de tout ça si les animations sont réduites).
+- **Police pinceau servie par le site** : Permanent Marker (licence Apache
+  2.0, `public/fonts/`) est maintenant hébergée avec le site. Les titres
+  (« Hoko Senju », « Bonne nuit », boutons) et le grand mot du menu sont
+  toujours au pinceau, même si Google Fonts est bloqué ou lent — comme les
+  menus de la vidéo de référence.

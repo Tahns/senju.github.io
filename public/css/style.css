@@ -1,3 +1,13 @@
+/* Police pinceau des écrans (menu, titres) servie par le site : elle ne dépend
+   plus de Google Fonts (Permanent Marker, Font Diner, licence Apache 2.0). */
+@font-face {
+    font-family: 'Permanent Marker';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/permanent-marker.ttf') format('truetype');
+}
+
 /* ==========================================================================
    Carnet de Hoko Senju
    ========================================================================== */
