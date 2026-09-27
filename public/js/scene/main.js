@@ -612,7 +612,7 @@ async function start() {
 
     async function dreamSequence() {
         await prepareDream();
-        say('Et il rêva…', 2.6);
+        say('Et il rêva…', 2.6, '夢');
         await timeline.wait(2.4);
         dreaming = true;
         html.classList.remove('eyes-closing', 'eyes-heavy');
