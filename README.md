@@ -15,12 +15,17 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
 5. Il prend un deuxième carnet (vierge), le feuillette, le range.
 6. Il s'allonge sur son futon, regarde les étoiles par la fenêtre ouverte, la boîte à musique ralentit, ses yeux se ferment…
 7. **Le rêve** (à la troisième personne) : Hoko adulte, jōnin de Konoha, sur un rocher d'entraînement au-dessus du village. Maître du sabre (croissants de lumière, poteaux tranchés), maître du Suiton (un dragon d'eau s'enroule autour de lui puis jaillit), et chef de la section économique : une pluie de ryō dorés remplit le trésor du village… et ses poches.
-8. Carte de fin : recommencer, **revoir le rêve** ou relire le carnet.
+8. Carte de fin : recommencer, **revoir le rêve** (ou un chapitre : kenjutsu, Suiton, ryō, « Un jour… ») ou **relire la fiche** par le menu.
+
+### Le menu « Sélection de la catégorie »
+
+Inspiré des menus des jeux Naruto Storm (et d'une candidature vidéo de ce style) : Hoko adulte en 3D, en contre-plongée dans son aura de chakra, sous un ciel d'orage ; à gauche le grand mot au pinceau lumineux (Personnage, Apparence, Personnalité, Ambitions, Histoire, Nindo, Chronologie) entre deux flèches-flammes ; en bas le bandeau de parchemin. Chaque catégorie donne une pose à Hoko ; **Confirmer** ouvre le carnet à la bonne page. Flèches, clavier (↑ ↓ Entrée Échap), molette ou glissé au doigt. Accessible depuis l'accueil (« Sélection de la catégorie »), la carte de fin, ou `?at=menu`.
 
 - Bouton son en haut à droite : volumes Musique / Ambiance / Effets, mémorisés.
 - Style des écrans inspiré des serveurs Naruto RP (lettrage pinceau, violet et magenta), rêve au rendu lisse façon Zenkai RP : ombrage doux, herbe qui ondule, profondeur de champ et halo lumineux. Konoha est construit en entier : rues en terre, maisons à étages en bois et enduit, balcons, auvents, enseignes, réservoirs d'eau ronds, poteaux électriques, arbres touffus, tour du Hokage, falaise boisée, villageois et oiseaux.
 - Bruitages et musique générés (pas, porte, livres, boîte à musique, grillons, taiko et flûte dans le rêve), activés par défaut, avec un bouton pour couper le son.
-- Bouton **Passer** pour accélérer jusqu'au prochain livre, lien « Aller directement au carnet » sur l'écran d'accueil.
+- Bouton **Passer** pour accélérer jusqu'au prochain livre, liens « Sélection de la catégorie » et « Aller directement au carnet » sur l'écran d'accueil.
+- Police pinceau (Permanent Marker, licence Apache 2.0) servie par le site : `public/fonts/`.
 - Tout est dessiné en code (aucune image, sauf l'aperçu de partage `public/img/og.jpg`) : `public/js/scene/`.
   - `room.js` : la chambre (tatamis, porte, bibliothèque, futon, lanterne, fenêtre…)
   - `arms.js` : les bras et les mains
