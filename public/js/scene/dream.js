@@ -941,8 +941,10 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         sound.land();
         burst();
         // Secousse de caméra à l'impact.
+        // Pas de secousse si le visiteur a demandé moins d'animations.
+        const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         tl.tween(0.45, (k) => {
-            const a = (1 - k) * (1 - k) * 0.06;
+            const a = calm ? 0 : (1 - k) * (1 - k) * 0.06;
             shake.set(Math.sin(k * 40) * a, Math.cos(k * 31) * a, 0);
         }, ease.linear).then(() => shake.set(0, 0, 0));
         pose(tl, 'land', 0.12, ease.out);
