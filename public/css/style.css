@@ -2430,3 +2430,21 @@ html.book-open .radio {
         white-space: nowrap;
     }
 }
+
+/* Idéogramme du chapitre au-dessus du sous-titre du rêve, tracé au pinceau. */
+.scene-caption__kanji {
+    display: block;
+    margin-bottom: .1em;
+    font-family: var(--font-kanji);
+    font-size: 1.9em;
+    line-height: 1;
+    color: #fff;
+    opacity: .92;
+}
+
+/* Téléphone : le sous-titre passe au-dessus du bouton « Passer ». */
+@media (max-width: 520px) {
+    .scene-caption {
+        bottom: 76px;
+    }
+}

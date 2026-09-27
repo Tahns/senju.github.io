@@ -972,14 +972,14 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await side;
         if (ninja.avatar) ninja.avatar.grip('left', false);
         ninja.drawKatana();
-        say('Maître du kenjutsu', 3.5);
+        say('Maître du kenjutsu', 3.5, '剣術');
         face(tl, 'angry', 0.75, 0.4);
         // Trois grands coups : on arme (sabre loin derrière), puis on balaie tout l'arc.
         const cuts = [['strikeA', [0.2, 0.9, 0.6], V(0.7, 1.15, 0.95), 'windA'], ['strikeB', [-0.3, 1.1, -0.4], V(1.1, 1.1, 0.35), 'windB'], ['strikeC', [1.2, 1.2, 0], V(1.25, 1.15, -0.2), 'windC']];
         for (let i = 0; i < 3; i++) {
             if (i === 2) {
                 // Dernier coup : la lame se charge de foudre (Kiminari).
-                say('Kiminari : la lame chargée de foudre', 2.4);
+                say('Kiminari : la lame chargée de foudre', 2.4, '雷');
                 if (sound.crackle) sound.crackle(1.4);
                 raiton = 1;
             }
@@ -1024,7 +1024,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await pose(tl, 'seal', 0.5);
         tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = k; }, ease.out);
         await low;
-        say('Suiton : maître de l\'eau', 3.5);
+        say('Suiton : maître de l\'eau', 3.5, '水遁');
         face(tl, 'angry', 0.5, 0.5);
         sound.water(2.6);
         if (sound.roar) tl.wait(1.2).then(() => sound.roar(1.6));
@@ -1057,7 +1057,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         // 4. Chef de la section économique : une pluie de ryō.
         onAct('ryo');
         await shot(tl, V(1.9, 1.75, 3.5), V(0, 1.15, 0.2), 2);
-        say('Chef de la section économique de Konoha', 4);
+        say('Chef de la section économique de Konoha', 4, '両');
         face(tl, 'angry', 0, 0.3);
         face(tl, 'joy', 0.7, 0.6);
         hud.hidden = false;
@@ -1103,7 +1103,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         tl.tween(1, (k) => { ninja.root.rotation.y = Math.PI * k; }, ease.inOut);
         if (ninja.avatar) ninja.avatar.grip('right', true);
         pose(tl, 'vow', 1);
-        say('Un jour…', 3.5);
+        say('Un jour…', 3.5, '火影');
         face(tl, 'joy', 0, 0.8);
         face(tl, 'fun', 0.4, 0.8);
         await shot(tl, V(-1.6, 1.2, 3.4), V(0.5, 2, -6), 3.5, ease.sine);

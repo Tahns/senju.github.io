@@ -273,8 +273,17 @@ async function start() {
         }, easing);
     }
 
-    function say(text, seconds = 3) {
+    // kanji : idéogramme du chapitre, tracé au pinceau au-dessus du sous-titre.
+    function say(text, seconds = 3, kanji = '') {
         caption.textContent = text;
+        if (kanji) {
+            const k = document.createElement('span');
+            k.className = 'scene-caption__kanji';
+            k.lang = 'ja';
+            k.setAttribute('aria-hidden', 'true');
+            k.textContent = kanji;
+            caption.prepend(k);
+        }
         caption.classList.add('is-visible');
         timeline.wait(seconds).then(() => caption.classList.remove('is-visible'));
     }
