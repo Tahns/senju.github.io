@@ -760,17 +760,43 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     const boltLight = new THREE.PointLight('#9fd0ff', 0, 3, 1.5);
     scene.add(boltLight);
     let raiton = 0;
+    let handChakra = 0;
     const bA = V();
     const bB = V();
     let boltFrame = 0;
     updaters.push(() => {
-        const on = raiton > 0 && ninja.katana.parent !== ninja.katana.userData.sheathed.parent;
-        boltMat.opacity = on ? raiton * (0.7 + Math.random() * 0.3) : 0;
-        glowMat.opacity = on ? raiton * (0.3 + Math.random() * 0.2) : 0;
-        haloMat.opacity = on ? raiton * 0.55 : 0;
-        boltLight.intensity = on ? raiton * (1.5 + Math.random() * 2) : 0;
+        // Menu : le chakra crépite autour des mains (comme dans les menus Storm).
+        const hands = handChakra > 0 && !(raiton > 0);
+        const on = hands || (raiton > 0 && ninja.katana.parent !== ninja.katana.userData.sheathed.parent);
+        const level = hands ? handChakra : raiton;
+        boltMat.opacity = on ? level * (0.7 + Math.random() * 0.3) : 0;
+        glowMat.opacity = on ? level * (0.3 + Math.random() * 0.2) : 0;
+        haloMat.opacity = on ? level * (hands ? 0.35 : 0.55) : 0;
+        boltLight.intensity = on ? level * (1.5 + Math.random() * 2) : 0;
         bolts.forEach((m) => { m.visible = on; m.userData.glow.visible = on; });
         if (!on || boltFrame++ % 2) return;
+        if (hands) {
+            ninja.J.handR.getWorldPosition(bA);
+            halo.position.copy(bA);
+            boltLight.position.copy(bA);
+            bolts.forEach((m, n) => {
+                (n % 2 ? ninja.J.handL : ninja.J.handR).getWorldPosition(bA);
+                bA.add(V((Math.random() - 0.5) * 0.08, (Math.random() - 0.5) * 0.08, (Math.random() - 0.5) * 0.08));
+                bB.copy(bA).add(V(Math.random() - 0.5, Math.random() - 0.3, Math.random() - 0.5).normalize().multiplyScalar(0.12 + Math.random() * 0.14));
+                const pts = [];
+                for (let i = 0; i <= boltSegs; i++) {
+                    const t = i / boltSegs;
+                    const j = i === 0 || i === boltSegs ? 0 : 0.05;
+                    pts.push(V(bA.x + (bB.x - bA.x) * t + (Math.random() - 0.5) * j, bA.y + (bB.y - bA.y) * t + (Math.random() - 0.5) * j, bA.z + (bB.z - bA.z) * t + (Math.random() - 0.5) * j));
+                }
+                const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.1);
+                m.geometry.dispose();
+                m.geometry = new THREE.TubeGeometry(curve, 16, 0.006, 4, false);
+                m.userData.glow.geometry.dispose();
+                m.userData.glow.geometry = new THREE.TubeGeometry(curve, 16, 0.025, 5, false);
+            });
+            return;
+        }
         ninja.katana.localToWorld(bA.set(0, 0.5, 0));
         halo.position.copy(bA);
         boltLight.position.copy(bA);
@@ -1169,6 +1195,7 @@ camGoal.set((portrait ? 0.3 : 0.6) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.s
     function setMenu(on) {
         menu.on = on;
         if (!on) {
+            handChakra = 0;
             posts.forEach((p) => { p.base.visible = p.topPart.visible = true; });
             auraMat.uniforms.uPower.value = 0;
             setLook(stormLook, 0);
@@ -1194,6 +1221,8 @@ camGoal.set((portrait ? 0.3 : 0.6) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.s
     }
     function menuPose(name, mood = '') {
         menu.target = ninja.poseValues(name);
+        // Les mains libres (mudra, paume tendue, poing) crépitent de chakra.
+        handChakra = ['seal', 'release', 'vow', 'stand'].includes(name) ? 0.8 : 0;
         ['angry', 'joy', 'fun'].forEach((m) => ninja.express(m, m === mood ? 0.55 : 0));
         if (ninja.avatar) {
             const fist = name === 'vow';

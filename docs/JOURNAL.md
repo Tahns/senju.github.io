@@ -294,3 +294,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Menu dès l'accueil** : lien « Sélection de la catégorie » sur la carte
   d'entrée, qui ouvre directement le menu façon Naruto Storm ; « Retour »
   ramène à l'accueil (ou à la carte de fin si on venait du rêve).
+- **Menu : chakra aux mains** — comme dans la vidéo de référence, des arcs
+  bleus crépitent autour des mains de Hoko quand elles sont libres (mudra,
+  paume tendue, poing levé), avec leur lueur.
