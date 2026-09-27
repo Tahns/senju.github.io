@@ -350,3 +350,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   fin, « ✦ Sélection de la catégorie » / « ✦ Relire la fiche de Hoko »
   deviennent un bouton secondaire incliné, vert chakra, au lieu d'un
   simple lien souligné.
+- **Menu, roue des catégories** : la catégorie précédente et la suivante
+  s'affichent en petit, pâles, au-dessus et en dessous des flèches — on
+  voit où on va, comme la roue des menus Storm (clic dessus pour y aller ;
+  masquées en portrait, faute de place).

@@ -713,6 +713,8 @@ async function start() {
     const menuEl = document.getElementById('storm-menu');
     const menuWord = document.getElementById('storm-word');
     const menuKanji = document.getElementById('storm-kanji');
+    const nearPrev = document.getElementById('storm-near-prev');
+    const nearNext = document.getElementById('storm-near-next');
     const menuDesc = document.getElementById('storm-desc');
     const menuBack = document.getElementById('storm-back');
     const MENU = [
@@ -732,6 +734,9 @@ async function start() {
         menuWord.textContent = c.word;
         menuKanji.textContent = c.kanji;
         menuKanji.classList.toggle('is-long', c.kanji.length > 1);
+        // Les catégories voisines, en petit au-dessus et en dessous (roue façon Storm).
+        nearPrev.textContent = MENU[(menuIndex + MENU.length - 1) % MENU.length].word;
+        nearNext.textContent = MENU[(menuIndex + 1) % MENU.length].word;
         menuDesc.replaceChildren(Object.assign(document.createElement('span'), { textContent: c.desc }));
         menuDesc.classList.remove('is-new');
         void menuDesc.offsetWidth;
@@ -824,6 +829,8 @@ async function start() {
     };
     document.getElementById('storm-prev').addEventListener('click', () => stepMenu(-1));
     document.getElementById('storm-next').addEventListener('click', () => stepMenu(1));
+    nearPrev.addEventListener('click', () => stepMenu(-1));
+    nearNext.addEventListener('click', () => stepMenu(1));
     document.getElementById('storm-confirm').addEventListener('click', confirmMenu);
     menuBack.addEventListener('click', backMenu);
     document.addEventListener('keydown', (e) => {
