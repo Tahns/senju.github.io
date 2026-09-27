@@ -48,7 +48,20 @@ document.addEventListener('click', (e) => {
     standalone();
 });
 
-if (html.classList.contains('has-scene')) {
+// WebGL indisponible (vieux navigateur, désactivé) : le carnet directement,
+// sans passer par une erreur de three.js dans la console.
+function webglAvailable() {
+    try {
+        const test = document.createElement('canvas');
+        return Boolean(test.getContext('webgl2') || test.getContext('webgl'));
+    } catch (error) {
+        return false;
+    }
+}
+
+if (html.classList.contains('has-scene') && !webglAvailable()) {
+    standalone();
+} else if (html.classList.contains('has-scene')) {
     start().catch((error) => {
         console.error(error);
         standalone();
