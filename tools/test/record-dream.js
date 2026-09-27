@@ -29,8 +29,16 @@ const wins = WIN.split(',').map(s => s.split('-').map(Number));
         const s = c.height / 540;
         x.font = `italic ${Math.round(30 * s)}px Georgia, serif`; x.textAlign = 'center';
         x.lineJoin = 'round'; x.lineWidth = 6 * s; x.strokeStyle = 'rgba(40, 16, 90, .9)';
-        x.strokeText(cap.textContent, c.width / 2, c.height - 48 * s);
-        x.fillStyle = '#fff'; x.fillText(cap.textContent, c.width / 2, c.height - 48 * s);
+        // Kanji du chapitre (s'il y en a un) au-dessus du texte.
+        const k = cap.querySelector('.scene-caption__kanji');
+        const text = cap.textContent.slice(k ? k.textContent.length : 0);
+        x.strokeText(text, c.width / 2, c.height - 48 * s);
+        x.fillStyle = '#fff'; x.fillText(text, c.width / 2, c.height - 48 * s);
+        if (k) {
+          x.font = `${Math.round(52 * s)}px "Yuji Syuku", serif`;
+          x.strokeText(k.textContent, c.width / 2, c.height - 92 * s);
+          x.fillText(k.textContent, c.width / 2, c.height - 92 * s);
+        }
       }
       x.globalAlpha = 1;
       return c.toDataURL('image/jpeg', 0.92);
