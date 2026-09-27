@@ -333,3 +333,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   et ses deux natures de chakra en pastilles (水 Suiton, ✦ Kiminari). Elle
   glisse depuis la droite à l'ouverture ; sur téléphone elle se range sous
   le grand mot.
+- **Menu, kanji en filigrane** : derrière le grand mot, un kanji géant et
+  translucide au pinceau résume chaque catégorie — 人 (Personnage),
+  姿 (Apparence), 心 (Personnalité), 志 (Ambitions), 史 (Histoire),
+  忍道 écrit à la verticale (Nindo), 暦 (Chronologie). Il apparaît dans un
+  flou à chaque changement.
