@@ -300,3 +300,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Menu, finitions** : coup de pinceau vert derrière le mot de la
   catégorie ; « Confirmer » fait foncer la caméra vers le visage de Hoko,
   l'interface glisse et s'efface, puis un flash blanc mène au carnet.
+- **Carnet, chapitres de l'histoire** : médaillon doré à la goutte de chakra
+  rouge devant « Chapitre I… IV », repris du cadre de la candidature vidéo.
