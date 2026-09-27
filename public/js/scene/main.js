@@ -743,7 +743,11 @@ async function start() {
         renderer.shadowMap.needsUpdate = true;
         sound.startDream();
         menuBack.hidden = false;
+        menuEl.classList.add('is-entering');
         menuEl.hidden = false;
+        // Retirée quand l'animation du bandeau (la plus longue) se termine.
+        const banner = menuEl.querySelector('.storm-menu__banner');
+        banner.addEventListener('animationend', () => menuEl.classList.remove('is-entering'), { once: true });
         menuOpen = true;
         showCategory();
         fade.style.opacity = 0;

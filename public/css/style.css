@@ -2492,6 +2492,25 @@ html.book-open .radio {
     from { opacity: 0; }
 }
 
+/* Entrée en scène : le titre, le mot et le bandeau arrivent l'un après l'autre. */
+.storm-menu.is-entering .storm-menu__kicker { animation: storm-slide .5s ease-out .9s both; }
+.storm-menu.is-entering .storm-menu__picker { animation: storm-slide-word .6s cubic-bezier(.2, .9, .3, 1.2) 1.15s both; }
+.storm-menu.is-entering .storm-menu__banner { animation: storm-unroll .6s ease-out 1.5s both; }
+.storm-menu.is-entering .storm-menu__actions,
+.storm-menu.is-entering .storm-menu__hint { animation: storm-in .5s ease-out 1.9s both; }
+
+@keyframes storm-slide {
+    from { opacity: 0; transform: translateX(-6vw) rotate(-8deg); }
+}
+
+@keyframes storm-slide-word {
+    from { opacity: 0; translate: -30vw -55%; }
+}
+
+@keyframes storm-unroll {
+    from { clip-path: polygon(50% 8%, 50% 8%, 50% 93%, 50% 93%); }
+}
+
 .storm-menu__kicker {
     position: absolute;
     left: 4vw;
@@ -2714,6 +2733,10 @@ html.menu-open .scene-skip {
         font-size: clamp(38px, 12vw, 72px);
     }
 
+    .storm-menu.is-entering .storm-menu__picker {
+        animation-name: storm-slide;
+    }
+
     .storm-menu__banner {
         bottom: 12vh;
         font-size: 14px;
@@ -2733,6 +2756,7 @@ html.menu-open .scene-skip {
 
 @media (prefers-reduced-motion: reduce) {
     .storm-menu,
+    .storm-menu *,
     .storm-menu__word,
     .storm-menu__arrow {
         animation: none !important;
