@@ -11,6 +11,9 @@ import { mergeGeometries } from '../../vendor/utils/BufferGeometryUtils.js';
 const MODEL = new URL('../../models/hoko.vrm', import.meta.url).href;
 
 let pending = null;
+// Avancement du téléchargement du modèle (0 → 1), pour l'afficher si on l'attend.
+let progress = 0;
+export const avatarProgress = () => progress;
 // Chargé en arrière-plan dès le début de la scène ; null si indisponible.
 // Repli : certains hébergeurs (aperçus) ne servent pas les .vrm ; on essaie
 // alors une copie en base64 (hoko.vrm.txt) si elle existe.
@@ -27,8 +30,9 @@ export function loadAvatar() {
                 return new Promise((resolve, reject) => loader.parse(bytes.buffer, base, resolve, reject));
             });
         pending = new Promise((resolve) => {
-            loader.load(MODEL, resolve, undefined, () => {
-                fromText().then(resolve).catch((error) => {
+            const done = (gltf) => { progress = 1; resolve(gltf); };
+            loader.load(MODEL, done, (e) => { if (e.total) progress = e.loaded / e.total; }, () => {
+                fromText().then(done).catch((error) => {
                     console.warn('Modèle de Hoko indisponible, repli sur la tête sculptée.', error);
                     resolve(null);
                 });

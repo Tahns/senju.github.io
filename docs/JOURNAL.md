@@ -278,3 +278,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   chapitres au-dessus des sous-titres, la bourse discrète et les villageois.
 - **Carte de fin** : chaque bouton de chapitre porte son kanji (剣術, 水遁,
   両, 火影), comme dans le rêve ; README et SWOT à jour.
+- **Réseau lent** : si le modèle de Hoko (4,3 Mo) n'est pas encore arrivé au
+  moment du rêve, « Le rêve se prépare… NN % » s'affiche avec l'avancement du
+  téléchargement, au lieu d'un écran noir silencieux ; le rêve démarre dès
+  qu'il est prêt.
