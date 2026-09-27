@@ -544,6 +544,14 @@ export class SceneAudio {
         this.noise({ at: 0.02, duration: 1.8, attack: 0.03, type: 'lowpass', freq: 380, to: 90, q: 0.8, gain: 0.45 });
         for (let i = 0; i < 6; i++) this.noise({ at: 0.1 + Math.random() * 0.9, duration: 0.3, attack: 0.02, type: 'lowpass', freq: 220, gain: 0.12 });
     }
+    // Sélection dans un menu : claquement de bois (hyōshigi) et petit coup de taiko.
+    select() {
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        this.noise({ duration: 0.05, attack: 0.001, type: 'bandpass', freq: 2400, q: 6, gain: 0.35 });
+        this.tone({ freq: 1320, to: 1100, duration: 0.07, gain: 0.05, type: 'triangle' });
+        this.taiko(t + 0.01, 0.35, 70);
+    }
     splash() {
         this.noise({ duration: 0.9, attack: 0.01, type: 'lowpass', freq: 3000, to: 500, gain: 0.45 });
     }

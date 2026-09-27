@@ -320,3 +320,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (« Hoko Senju », « Bonne nuit », boutons) et le grand mot du menu sont
   toujours au pinceau, même si Google Fonts est bloqué ou lent — comme les
   menus de la vidéo de référence.
+- **Menu, son de sélection** : changer de catégorie fait claquer des
+  hyōshigi (claves de bois du théâtre japonais) avec un petit coup de taiko,
+  comme les menus des jeux.
