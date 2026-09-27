@@ -9,7 +9,7 @@ Le carnet de Hoko Senju, présenté comme un livre relié qu'on feuillette.
 Avant le carnet, une petite scène en 3D, vue à la première personne :
 
 1. Hoko arrive dans le couloir et fait glisser la porte (shoji) de sa chambre.
-2. Il va au coffre près de l'entrée et remonte une boîte à musique en laque : la musique « Hyûga » de Prince OFD démarre (lecteur YouTube officiel, dans un coin). Si YouTube ne se charge pas, la boîte joue « Sakura Sakura ».
+2. Il va au coffre près de l'entrée et remonte une boîte à musique en laque : la musique « SD NIGHT » de VEN1 démarre (lecteur YouTube officiel, dans un coin). Si YouTube ne se charge pas, la boîte joue « Sakura Sakura ».
 3. Il se dirige vers la bibliothèque : l'index gauche fait basculer son carnet, la main gauche le prend par le dos (les bras ne se croisent jamais) et il l'ouvre.
 4. Le visiteur lit le carnet, puis clique sur **Ranger** : Hoko remet le livre en place et le redresse du bout du doigt.
 5. Il prend un deuxième carnet (vierge), le feuillette, le range.

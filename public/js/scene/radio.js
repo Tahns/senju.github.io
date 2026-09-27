@@ -1,9 +1,9 @@
 /*
- * Musique de la chambre : « Hyûga » de Prince OFD, jouée par le lecteur officiel
+ * Musique de la chambre : « SD NIGHT » de VEN1, jouée par le lecteur officiel
  * YouTube (petit lecteur visible dans un coin, comme YouTube l'exige).
  * Si YouTube ne se charge pas, la scène garde la mélodie de la boîte à musique.
  */
-const VIDEO = 'ijuHa89b678';
+const VIDEO = '6vNq-TcCRjo';
 
 export class Radio {
     constructor() {
