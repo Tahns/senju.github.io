@@ -2517,6 +2517,17 @@ html.book-open .radio {
     from { opacity: 0; translate: -30vw -55%; }
 }
 
+/* Nouvelle description : le texte s'écrit de gauche à droite sur le parchemin. */
+.storm-menu__banner.is-new span {
+    display: inline-block;
+    animation: storm-write .5s ease-out;
+}
+
+@keyframes storm-write {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+}
+
 @keyframes storm-unroll {
     from { clip-path: polygon(50% 8%, 50% 8%, 50% 93%, 50% 93%); }
 }
