@@ -282,3 +282,12 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   moment du rêve, « Le rêve se prépare… NN % » s'affiche avec l'avancement du
   téléchargement, au lieu d'un écran noir silencieux ; le rêve démarre dès
   qu'il est prêt.
+- **Menu « Sélection de la catégorie »**, inspiré d'une candidature vidéo
+  façon jeux Naruto Storm (donnée par le propriétaire) : Hoko en 3D en
+  contre-plongée dans son aura de chakra, sous un ciel d'orage vert sombre ;
+  à gauche le grand mot au pinceau lumineux (Personnage, Apparence,
+  Personnalité, Ambitions, Histoire, Nindo, Chronologie) entre deux flèches-
+  flammes ; en bas le bandeau de parchemin avec la description ; « Confirmer »
+  ouvre le carnet à la bonne page. Chaque catégorie donne une pose et une
+  expression à Hoko. Flèches, clavier, molette ou glissé au doigt. Ouvert
+  depuis la carte de fin (« Relire la fiche de Hoko ») ou `?at=menu`.
