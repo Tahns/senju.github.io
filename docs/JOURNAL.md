@@ -282,3 +282,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   moment du rêve, « Le rêve se prépare… NN % » s'affiche avec l'avancement du
   téléchargement, au lieu d'un écran noir silencieux ; le rêve démarre dès
   qu'il est prêt.
+- **Musique** : la radio de la chambre joue maintenant « Hyûga » de Prince OFD
+  (lecteur YouTube officiel), à la demande ; la boîte à musique reste le
+  secours si YouTube ne se charge pas.
