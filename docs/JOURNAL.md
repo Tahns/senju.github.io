@@ -346,3 +346,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   de feuilles se lève autour de Hoko et l'emporte — il disparaît comme
   avec la technique de déplacement instantané, pendant que la caméra fonce
   vers lui et que l'écran blanchit avant d'ouvrir le carnet.
+- **Accès au menu mis en avant** : sur l'écran d'accueil et la carte de
+  fin, « ✦ Sélection de la catégorie » / « ✦ Relire la fiche de Hoko »
+  deviennent un bouton secondaire incliné, vert chakra, au lieu d'un
+  simple lien souligné.
