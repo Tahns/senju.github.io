@@ -1180,6 +1180,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     crowGeo.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0.3, -1, 0.15, -0.1, 0, 0, -0.25, 0, 0, 0.3, 1, 0.15, -0.1, 0, 0, -0.25], 3));
     const crow = new THREE.Mesh(crowGeo, new THREE.MeshBasicMaterial({ color: '#0d1413', side: THREE.DoubleSide, fog: false }));
     crow.visible = false;
+    crow.frustumCulled = false; // ailes animées : volume englobant non fiable
     scene.add(crow);
 
     /* ---------------- Menu « Sélection de la catégorie » ---------------- */
@@ -1195,8 +1196,10 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         // Le corbeau passe toutes les 9 s, de droite à gauche, loin derrière Hoko.
         const ct = (menu.t % 9) / 9;
         crow.visible = ct < 0.6;
-        crow.position.set(14 - ct * 50, 7 + Math.sin(ct * 9) * 0.6, -18);
-        crow.rotation.set(0.2, -Math.PI / 2, 0.1);
+        // Trajectoire dans le haut du cadre (la caméra est basse et regarde un peu vers le haut).
+        crow.position.set(2.4 - ct * 7, 3.3 + Math.sin(ct * 9) * 0.12, -1.6);
+        crow.scale.setScalar(0.3);
+        crow.rotation.set(0.25, -Math.PI / 2, 0.1);
         const flap = Math.sin(menu.t * 9);
         const cp = crowGeo.attributes.position;
         cp.setY(1, 0.15 + flap * 0.5);
@@ -1264,6 +1267,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         setMenu,
         menuPose,
         menuConfirm() { menu.push = true; },
+        // Pour les tests : position du corbeau à l'écran (-1..1).
+        crowOnScreen() { crow.updateMatrixWorld(); return crow.visible ? crow.getWorldPosition(V()).project(camera).toArray() : null; },
         camera,
         ninja,
         // Pour les tests : forcer la foudre sur la lame, montrer l'arc-en-ciel.

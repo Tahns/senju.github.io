@@ -308,3 +308,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Vidéo refaite façon candidature** (39 s) : elle s'ouvre sur le menu
   « Sélection de la catégorie » (les sept catégories défilent, Hoko change
   de pose), puis enchaîne sur les temps forts du rêve.
+- **Menu, corbeau réparé** : il était invisible (culling du volume englobant,
+  puis caché derrière la tête de Hoko) ; il passe maintenant bien au-dessus
+  de lui, ailes battantes. Indice tactile plus lisible sur l'herbe.
