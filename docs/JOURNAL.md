@@ -291,3 +291,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   ouvre le carnet à la bonne page. Chaque catégorie donne une pose et une
   expression à Hoko. Flèches, clavier, molette ou glissé au doigt. Ouvert
   depuis la carte de fin (« Relire la fiche de Hoko ») ou `?at=menu`.
+- **Menu dès l'accueil** : lien « Sélection de la catégorie » sur la carte
+  d'entrée, qui ouvre directement le menu façon Naruto Storm ; « Retour »
+  ramène à l'accueil (ou à la carte de fin si on venait du rêve).
