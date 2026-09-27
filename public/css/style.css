@@ -2684,14 +2684,14 @@ html.menu-open .scene-skip {
         letter-spacing: .12em;
         text-align: center;
         text-transform: uppercase;
-        color: rgba(220, 255, 235, .75);
-        text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
+        color: #e6fff0;
+        text-shadow: 0 1px 3px #000, 0 0 8px rgba(0, 0, 0, .9);
         animation: storm-hint 2.4s ease-in-out infinite;
     }
 }
 
 @keyframes storm-hint {
-    50% { opacity: .35; }
+    50% { opacity: .6; }
 }
 
 /* Téléphone en portrait : texte en haut, Hoko au centre, bandeau en bas. */
