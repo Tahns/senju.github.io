@@ -274,3 +274,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Visages de la falaise retirés** (retour : « horrible ») : la falaise
   derrière Konoha est maintenant nue, avec sa forêt au sommet ; image
   d'aperçu du lien refaite sans eux.
+- **Vidéo refaite** : sans les visages de la falaise, avec les kanji des
+  chapitres au-dessus des sous-titres, la bourse discrète et les villageois.
