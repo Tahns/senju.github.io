@@ -18,7 +18,7 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
 8. Carte de fin : recommencer, **revoir le rêve** ou relire le carnet.
 
 - Bouton son en haut à droite : volumes Musique / Ambiance / Effets, mémorisés.
-- Style des écrans inspiré des serveurs Naruto RP (lettrage pinceau, violet et magenta), rêve au rendu lisse façon Zenkai RP : ombrage doux, herbe qui ondule, profondeur de champ et halo lumineux. Konoha est construit en entier : rues en terre, maisons à étages en bois et enduit, balcons, auvents, enseignes, réservoirs d'eau ronds, poteaux électriques, arbres touffus, tour du Hokage et mont des Hokage.
+- Style des écrans inspiré des serveurs Naruto RP (lettrage pinceau, violet et magenta), rêve au rendu lisse façon Zenkai RP : ombrage doux, herbe qui ondule, profondeur de champ et halo lumineux. Konoha est construit en entier : rues en terre, maisons à étages en bois et enduit, balcons, auvents, enseignes, réservoirs d'eau ronds, poteaux électriques, arbres touffus, tour du Hokage, falaise boisée, villageois et oiseaux.
 - Bruitages et musique générés (pas, porte, livres, boîte à musique, grillons, taiko et flûte dans le rêve), activés par défaut, avec un bouton pour couper le son.
 - Bouton **Passer** pour accélérer jusqu'au prochain livre, lien « Aller directement au carnet » sur l'écran d'accueil.
 - Tout est dessiné en code (aucune image, sauf l'aperçu de partage `public/img/og.jpg`) : `public/js/scene/`.

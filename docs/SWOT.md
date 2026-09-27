@@ -1,7 +1,7 @@
 # SWOT — Carnet de Hoko Senju
 
 Revue complète du projet au 25 septembre (soir), après le passage de Hoko
-adulte sur un vrai modèle anime ; mise à jour le 26 septembre (soir). Les faiblesses sont classées par visibilité :
+adulte sur un vrai modèle anime ; mise à jour le 27 septembre. Les faiblesses sont classées par visibilité :
 on corrige d'abord ce qu'un visiteur remarque en premier.
 
 ## Forces
@@ -15,13 +15,16 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
   croisés), clignements, expressions, poing fermé sur le sabre.
 - **Rêve spectaculaire** : entrée en iris de lumière, Hoko qui tombe du ciel,
   plan héroïque sur son visage, Konoha complet (maisons à étages, tour du
-  Hokage, mont des Hokage, villageois, oiseaux), herbe animée, coups de sabre
+  Hokage, falaise boisée, villageois, oiseaux), herbe animée, coups de sabre
   amples avec traînée et foudre (Kiminari), aura de chakra en flammes, dragon
   d'eau avec une tête qui s'envole, arc-en-ciel, pluie de ryō, coucher de
   soleil final ; caméra amortie, sans à-coups ; ambiance sonore de jour
   (oiseaux, vent) ; chapitres pour revoir un passage.
 - **Pensé aussi pour le téléphone** : cadrage qui garde Hoko dans l'image en
   portrait, compteur et carnet adaptés, palier de qualité mobile.
+- **Détails soignés** : kanji au pinceau pour chaque chapitre du rêve, étoile
+  filante avant de s'endormir, mécanisme de la boîte à musique, sceaux des
+  carnets, vignette à l'encre, copeaux sous le sabre.
 - **Vidéo à partager** : 28 s de temps forts, enregistrée image par image.
 - **Carnet soigné** : couverture en cuir, pages qui se courbent sous le doigt,
   sons de papier, sommaire, chronologie, fermeture du livre.
