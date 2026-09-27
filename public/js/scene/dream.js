@@ -130,22 +130,33 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     };
     const duskLook = {
         top: new THREE.Color('#34407e'), mid: new THREE.Color('#e9a36f'), low: new THREE.Color('#ffc987'),
-        fog: new THREE.Color('#e9c29a'), sun: new THREE.Color('#ff9f58'), hemi: new THREE.Color('#ffc9a0'), rim: new THREE.Color('#ff8f45')
+        fog: new THREE.Color('#e9c29a'), sun: new THREE.Color('#ff9f58'), hemi: new THREE.Color('#ffc9a0'), rim: new THREE.Color('#ff8f45'),
+        power: { sun: 2.5, hemi: 0.75, rim: 3.3, front: 0.25, env: 0.55 }, windows: true
     };
-    function setDusk(k) {
-        ['top', 'mid', 'low'].forEach((key) => sky.material.uniforms[key].value.lerpColors(dayLook[key], duskLook[key], k));
-        scene.fog.color.lerpColors(dayLook.fog, duskLook.fog, k);
-        sun.color.lerpColors(dayLook.sun, duskLook.sun, k);
-        sun.intensity = 3.1 - 0.6 * k;
-        hemi.color.lerpColors(dayLook.hemi, duskLook.hemi, k);
-        hemi.intensity = 1.15 - 0.4 * k;
-        rim.color.lerpColors(dayLook.rim, duskLook.rim, k);
-        rim.intensity = 1.7 + 1.6 * k;
-        front.intensity = 0.45 - 0.2 * k;
-        scene.environmentIntensity = 0.8 - 0.25 * k;
+    // Menu « sélection de la catégorie » : nuit d'orage vert sombre, comme les
+    // écrans de sélection des jeux Naruto Storm.
+    const stormLook = {
+        top: new THREE.Color('#081a1c'), mid: new THREE.Color('#1d4a44'), low: new THREE.Color('#3b6a5a'),
+        fog: new THREE.Color('#1f4038'), sun: new THREE.Color('#9fd8ff'), hemi: new THREE.Color('#5d8f86'), rim: new THREE.Color('#6fb8ff'),
+        power: { sun: 1.2, hemi: 0.7, rim: 3, front: 0.3, env: 0.35 }, windows: true
+    };
+    const dayPower = { sun: 3.1, hemi: 1.15, rim: 1.7, front: 0.45, env: 0.8 };
+    function setLook(look, k) {
+        ['top', 'mid', 'low'].forEach((key) => sky.material.uniforms[key].value.lerpColors(dayLook[key], look[key], k));
+        scene.fog.color.lerpColors(dayLook.fog, look.fog, k);
+        sun.color.lerpColors(dayLook.sun, look.sun, k);
+        hemi.color.lerpColors(dayLook.hemi, look.hemi, k);
+        rim.color.lerpColors(dayLook.rim, look.rim, k);
+        const P = (key) => dayPower[key] + (look.power[key] - dayPower[key]) * k;
+        sun.intensity = P('sun');
+        hemi.intensity = P('hemi');
+        rim.intensity = P('rim');
+        front.intensity = P('front');
+        scene.environmentIntensity = P('env');
         // Les lumières du village s'allument avec un peu de retard sur le ciel.
-        if (village.setDusk) village.setDusk(THREE.MathUtils.smoothstep(k, 0.35, 1));
+        if (village.setDusk) village.setDusk(look.windows ? THREE.MathUtils.smoothstep(k, 0.35, 1) : 0);
     }
+    const setDusk = (k) => setLook(duskLook, k);
 
     /* ---------------- Le rocher d'entraînement ---------------- */
     const rockTex = (() => {
@@ -225,7 +236,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         cut.position.set(x, 1.052, z);
         cut.visible = false;
         scene.add(cut);
-        return { topPart, cut, fall: 0, dir: 1 };
+        return { base, topPart, cut, fall: 0, dir: 1 };
     });
     // Copeaux qui jaillissent à la coupe et retombent sur l'herbe.
     const CHIPS = 90;
@@ -1138,8 +1149,64 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         camera.rotateOnWorldAxis(up, -turn);
     }
 
+    /* ---------------- Menu « Sélection de la catégorie » ---------------- */
+    // Écran façon jeux Naruto Storm : Hoko en contre-plongée dans son aura de
+    // chakra, ciel d'orage ; chaque catégorie de la fiche lui donne une pose.
+    const menu = { on: false, t: 0, target: null };
+    updaters.push((dt) => {
+        if (!menu.on) return;
+        menu.t += dt;
+        if (menu.target) {
+            const a = 1 - Math.exp(-dt / 0.22);
+            ninja.setValues(ninja.currentValues().map((f, i) => f.map((v, j) => v + (menu.target[i][j] - v) * a)));
+        }
+        auraMat.uniforms.uPower.value = Math.min(0.42, auraMat.uniforms.uPower.value + dt * 0.4);
+        // Caméra basse, qui dérive à peine ; Hoko à droite (texte à gauche), centré en portrait.
+        const portrait = camera.aspect < 1;
+camGoal.set((portrait ? 0.3 : 0.6) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.sin(menu.t * 0.4) * 0.03, portrait ? 3.1 : 2.4);
+        lookGoal.set(portrait ? 0 : -1.05, portrait ? 1.3 : 1.42, 0);
+    });
+    function setMenu(on) {
+        menu.on = on;
+        if (!on) {
+            posts.forEach((p) => { p.base.visible = p.topPart.visible = true; });
+            auraMat.uniforms.uPower.value = 0;
+            setLook(stormLook, 0);
+            return;
+        }
+        menu.t = 0;
+        ninja.root.position.set(0, 0, 0);
+        ninja.root.rotation.y = 0;
+        if (ninja.katana.parent !== ninja.katana.userData.sheathed.parent) ninja.sheathe();
+        ninja.pouch.scale.setScalar(1);
+        raiton = 0;
+        rainbow.visible = false;
+        flipCoin.visible = false;
+        spawnRate = 0;
+        dragonMat.uniforms.uHead.value = 0;
+        dragonMat.uniforms.uTail.value = 0;
+        waterMat.opacity = 0;
+        setLook(stormLook, 1);
+        auraMat.uniforms.uPower.value = 0;
+        snapCamera(V(0.6, 0.6, 2.4), V(-1.05, 1.42, 0));
+        // Pas de poteaux d'entraînement au premier plan du menu.
+        posts.forEach((p) => { p.base.visible = p.topPart.visible = p.cut.visible = false; });
+    }
+    function menuPose(name, mood = '') {
+        menu.target = ninja.poseValues(name);
+        ['angry', 'joy', 'fun'].forEach((m) => ninja.express(m, m === mood ? 0.55 : 0));
+        if (ninja.avatar) {
+            const fist = name === 'vow';
+            const crossed = name === 'crossed';
+            ninja.avatar.grip('right', crossed ? 0.95 : fist);
+            ninja.avatar.grip('left', crossed ? 0.95 : false);
+        }
+    }
+
     return {
         scene,
+        setMenu,
+        menuPose,
         camera,
         ninja,
         // Pour les tests : forcer la foudre sur la lame, montrer l'arc-en-ciel.

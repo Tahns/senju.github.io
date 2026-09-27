@@ -38,12 +38,19 @@ function standalone() {
     if (window.Carnet) window.Carnet.standalone();
 }
 
+// Ouvre le menu « Sélection de la catégorie » (défini quand la scène tourne).
+let openMenuHook = null;
+
 // « Aller directement au carnet » / « Relire le carnet » : sans la scène.
 document.addEventListener('click', (e) => {
     const link = e.target.closest('.scene-card__link');
     // Seuls les liens internes (#…) ouvrent le carnet ; « Revoir le rêve » recharge la page.
     if (!link || !(link.getAttribute('href') || '').startsWith('#')) return;
     e.preventDefault();
+    if (link.getAttribute('href') === '#menu' && openMenuHook) {
+        openMenuHook('end');
+        return;
+    }
     endCard.hidden = true;
     standalone();
 });
@@ -688,11 +695,122 @@ async function start() {
         await timeline.wait(1.4);
     }
 
+    /* ---------------- Menu « Sélection de la catégorie » ---------------- */
+    // Inspiré des menus des jeux Naruto Storm : grand mot au pinceau, flèches,
+    // bandeau de parchemin ; Hoko en 3D dans son aura, une pose par catégorie.
+    const menuEl = document.getElementById('storm-menu');
+    const menuWord = document.getElementById('storm-word');
+    const menuDesc = document.getElementById('storm-desc');
+    const menuBack = document.getElementById('storm-back');
+    const MENU = [
+        { word: 'Personnage', desc: 'Identité : nom, âge, taille, natures de chakra et famille', page: 3, pose: 'crossed' },
+        { word: 'Apparence', desc: 'Le portrait du shinobi', page: 2, pose: 'stand', mood: 'fun' },
+        { word: 'Personnalité', desc: "Personnalité et caractère d'une personne", page: 4, pose: 'crossed', mood: 'fun' },
+        { word: 'Ambitions', desc: 'Ses objectifs, et ce qu\'il veut bâtir pour Konoha', page: 5, pose: 'vow', mood: 'angry' },
+        { word: 'Histoire', desc: 'Son passé, du village de Takumi au domaine Senju', page: 7, pose: 'seal', mood: 'angry' },
+        { word: 'Nindo', desc: 'La voie du ninja, celle qu\'il ne reniera jamais', page: 11, pose: 'release', mood: 'angry' },
+        { word: 'Chronologie', desc: 'Les grandes dates de sa vie', page: 12, pose: 'stand' }
+    ];
+    let menuIndex = 0;
+    let menuOpen = false;
+    let menuFrom = null;
+    function showCategory(dir = 0) {
+        const c = MENU[menuIndex];
+        menuWord.textContent = c.word;
+        menuDesc.textContent = c.desc;
+        menuWord.classList.remove('is-up', 'is-down');
+        void menuWord.offsetWidth;
+        if (dir) menuWord.classList.add(dir > 0 ? 'is-up' : 'is-down');
+        dream.menuPose(c.pose, c.mood);
+    }
+    function stepMenu(dir) {
+        if (!menuOpen) return;
+        menuIndex = (menuIndex + dir + MENU.length) % MENU.length;
+        sound.whoosh();
+        showCategory(dir);
+    }
+    async function openMenu(from) {
+        menuFrom = from;
+        endCard.hidden = true;
+        fade.style.transition = 'opacity .4s ease';
+        fade.style.background = '#000';
+        fade.style.opacity = 1;
+        await prepareDream();
+        dream.setMenu(true);
+        dreaming = true;
+        html.classList.add('dreaming', 'menu-open');
+        hud.hidden = true;
+        renderer.shadowMap.needsUpdate = true;
+        sound.startDream();
+        menuBack.hidden = from !== 'end';
+        menuEl.hidden = false;
+        menuOpen = true;
+        showCategory();
+        fade.style.opacity = 0;
+        document.getElementById('storm-confirm').focus();
+    }
+    function closeMenu() {
+        menuOpen = false;
+        menuEl.hidden = true;
+        dream.setMenu(false);
+        sound.stopDream(1.2);
+        dreaming = false;
+        html.classList.remove('dreaming', 'menu-open');
+    }
+    function confirmMenu() {
+        if (!menuOpen) return;
+        const page = MENU[menuIndex].page;
+        sound.shimmer();
+        fade.style.opacity = 1;
+        setTimeout(() => {
+            closeMenu();
+            standalone();
+            setTimeout(() => { location.hash = '#page-' + page; }, 400);
+        }, 450);
+    }
+    function backMenu() {
+        if (!menuOpen || menuFrom !== 'end') return;
+        closeMenu();
+        endCard.hidden = false;
+        replayBtn.focus();
+    }
+    openMenuHook = openMenu;
+    document.getElementById('storm-prev').addEventListener('click', () => stepMenu(-1));
+    document.getElementById('storm-next').addEventListener('click', () => stepMenu(1));
+    document.getElementById('storm-confirm').addEventListener('click', confirmMenu);
+    menuBack.addEventListener('click', backMenu);
+    document.addEventListener('keydown', (e) => {
+        if (!menuOpen) return;
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); stepMenu(-1); }
+        else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); stepMenu(1); }
+        else if (e.key === 'Escape') backMenu();
+    });
+    let wheelLock = 0;
+    menuEl.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const now = performance.now();
+        if (now < wheelLock || Math.abs(e.deltaY) < 8) return;
+        wheelLock = now + 350;
+        stepMenu(e.deltaY > 0 ? 1 : -1);
+    }, { passive: false });
+    let touchY = null;
+    menuEl.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+    menuEl.addEventListener('touchend', (e) => {
+        if (touchY === null) return;
+        const dy = e.changedTouches[0].clientY - touchY;
+        touchY = null;
+        if (Math.abs(dy) > 40) stepMenu(dy < 0 ? 1 : -1);
+    });
+
     async function play() {
         fade.style.opacity = 0;
         allowSkip();
         // ?at=shelf|second|bed : démarre plus loin (pour les tests).
         const at = params.get('at');
+        if (at === 'menu') {
+            await openMenu('intro');
+            return;
+        }
         if (at === 'dream') {
             await dreamSequence();
             checkpoint();

@@ -39,6 +39,7 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
 - Qualité : automatique (palier « mobile » sur écran tactile), ou forcée avec `?quality=low`, `?quality=mobile` ou `?quality=high`.
 - Pour tester une étape : `?at=shelf`, `?at=second`, `?at=bed` ou `?at=dream`, et `?speed=3` pour accélérer.
 - Chapitres du rêve (liens de la carte de fin) : `?at=dream&chapitre=kenjutsu`, `suiton`, `ryo` ou `final`.
+- Menu « Sélection de la catégorie » (façon Naruto Storm) : `?at=menu`, ou « Relire la fiche de Hoko » sur la carte de fin.
 
 ## Le second carnet
 
