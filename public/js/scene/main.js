@@ -757,7 +757,7 @@ async function start() {
         fade.style.background = '#000';
         fade.style.opacity = 1;
         await prepareDream();
-        dream.setMenu(true);
+        dream.setMenu(true, sound);
         dreaming = true;
         html.classList.add('dreaming', 'menu-open');
         hud.hidden = true;
