@@ -928,6 +928,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         const tl = timeline;
         snapCamera(V(0.5, 1.9, 7.5), V(0, 1.5, 0));
         setDusk(0);
+        ninja.pouch.scale.setScalar(1);
         sound.startDream();
 
         // 0. Hoko tombe du ciel et se réceptionne sur le rocher, dans la poussière.
@@ -1096,6 +1097,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         // Il se tourne vers le mont des Hokage et lève le poing : « Un jour… »
         hud.hidden = true;
         tl.tween(4.5, setDusk, ease.inOut);
+        // La bourse bien remplie reprend une taille raisonnable pour le plan héroïque.
+        const pouch0 = ninja.pouch.scale.x;
+        tl.tween(1, (k) => { ninja.pouch.scale.setScalar(pouch0 + (1.15 - pouch0) * k); }, ease.inOut);
         tl.tween(1, (k) => { ninja.root.rotation.y = Math.PI * k; }, ease.inOut);
         if (ninja.avatar) ninja.avatar.grip('right', true);
         pose(tl, 'vow', 1);
