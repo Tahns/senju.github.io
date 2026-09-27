@@ -1175,13 +1175,33 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         camera.rotateOnWorldAxis(up, -turn);
     }
 
+    // Corbeau qui traverse le ciel d'orage du menu, ailes battantes.
+    const crowGeo = new THREE.BufferGeometry();
+    crowGeo.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0.3, -1, 0.15, -0.1, 0, 0, -0.25, 0, 0, 0.3, 1, 0.15, -0.1, 0, 0, -0.25], 3));
+    const crow = new THREE.Mesh(crowGeo, new THREE.MeshBasicMaterial({ color: '#0d1413', side: THREE.DoubleSide, fog: false }));
+    crow.visible = false;
+    scene.add(crow);
+
     /* ---------------- Menu « Sélection de la catégorie » ---------------- */
     // Écran façon jeux Naruto Storm : Hoko en contre-plongée dans son aura de
     // chakra, ciel d'orage ; chaque catégorie de la fiche lui donne une pose.
     const menu = { on: false, t: 0, target: null };
     updaters.push((dt) => {
-        if (!menu.on) return;
+        if (!menu.on) {
+            crow.visible = false;
+            return;
+        }
         menu.t += dt;
+        // Le corbeau passe toutes les 9 s, de droite à gauche, loin derrière Hoko.
+        const ct = (menu.t % 9) / 9;
+        crow.visible = ct < 0.6;
+        crow.position.set(14 - ct * 50, 7 + Math.sin(ct * 9) * 0.6, -18);
+        crow.rotation.set(0.2, -Math.PI / 2, 0.1);
+        const flap = Math.sin(menu.t * 9);
+        const cp = crowGeo.attributes.position;
+        cp.setY(1, 0.15 + flap * 0.5);
+        cp.setY(4, 0.15 + flap * 0.5);
+        cp.needsUpdate = true;
         if (menu.target) {
             const a = 1 - Math.exp(-dt / 0.22);
             ninja.setValues(ninja.currentValues().map((f, i) => f.map((v, j) => v + (menu.target[i][j] - v) * a)));

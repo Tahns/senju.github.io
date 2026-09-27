@@ -25,7 +25,7 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
 - **Détails soignés** : kanji au pinceau pour chaque chapitre du rêve, étoile
   filante avant de s'endormir, mécanisme de la boîte à musique, sceaux des
   carnets, vignette à l'encre, copeaux sous le sabre.
-- **Vidéo à partager** : 28 s de temps forts, enregistrée image par image.
+- **Vidéo à partager** : 39 s (menu de sélection puis temps forts du rêve), enregistrée image par image.
 - **Carnet soigné** : couverture en cuir, pages qui se courbent sous le doigt,
   sons de papier, sommaire, chronologie, fermeture du livre.
 - **Robustesse** : repli sur le carnet sans WebGL ou si le processeur graphique

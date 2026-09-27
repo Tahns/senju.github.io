@@ -302,3 +302,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   l'interface glisse et s'efface, puis un flash blanc mène au carnet.
 - **Carnet, chapitres de l'histoire** : médaillon doré à la goutte de chakra
   rouge devant « Chapitre I… IV », repris du cadre de la candidature vidéo.
+- **Menu, ambiance** : un corbeau traverse le ciel d'orage (comme dans la
+  vidéo de référence) ; sur écran tactile, indice « Glisse vers le haut ou
+  le bas ».
+- **Vidéo refaite façon candidature** (39 s) : elle s'ouvre sur le menu
+  « Sélection de la catégorie » (les sept catégories défilent, Hoko change
+  de pose), puis enchaîne sur les temps forts du rêve.

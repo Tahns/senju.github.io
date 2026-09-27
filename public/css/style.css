@@ -2667,6 +2667,33 @@ html.menu-open .scene-skip {
     display: none !important;
 }
 
+/* Indice tactile : seulement sur écran tactile. */
+.storm-menu__hint {
+    display: none;
+}
+
+@media (pointer: coarse) {
+    .storm-menu__hint {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(12vh + 3.4em);
+        display: block;
+        margin: 0;
+        font-size: 12px;
+        letter-spacing: .12em;
+        text-align: center;
+        text-transform: uppercase;
+        color: rgba(220, 255, 235, .75);
+        text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
+        animation: storm-hint 2.4s ease-in-out infinite;
+    }
+}
+
+@keyframes storm-hint {
+    50% { opacity: .35; }
+}
+
 /* Téléphone en portrait : texte en haut, Hoko au centre, bandeau en bas. */
 @media (max-aspect-ratio: 1/1) {
     .storm-menu {
