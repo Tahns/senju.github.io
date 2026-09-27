@@ -761,12 +761,19 @@ async function start() {
         if (!menuOpen) return;
         const page = MENU[menuIndex].page;
         sound.shimmer();
+        sound.whoosh();
+        dream.menuConfirm();
+        menuEl.classList.add('is-confirming');
+        fade.style.transition = 'opacity .5s ease .35s';
+        fade.style.background = '#fff';
         fade.style.opacity = 1;
         setTimeout(() => {
+            menuEl.classList.remove('is-confirming');
+            fade.style.background = '#000';
             closeMenu();
             standalone();
             setTimeout(() => { location.hash = '#page-' + page; }, 400);
-        }, 450);
+        }, 900);
     }
     function backMenu() {
         if (!menuOpen) return;
