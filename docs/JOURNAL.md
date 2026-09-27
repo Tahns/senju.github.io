@@ -243,3 +243,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Étoile filante** : allongé sur le futon, pendant que Hoko regarde le ciel
   par la fenêtre, une étoile filante traverse l'ouverture (sur un carillon)
   juste avant qu'il ne s'endorme — et que le rêve commence.
+- **Boîte à musique** : quand elle s'ouvre, on voit son mécanisme — cylindre
+  de laiton hérissé de picots qui tourne pendant la mélodie, peigne d'acier
+  à douze dents, socle de laiton (avant, un velours rouge presque vide).
