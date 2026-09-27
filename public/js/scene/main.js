@@ -13,7 +13,7 @@ import { setAnisotropy } from './textures.js';
 import { SceneAudio } from './audio.js';
 import { buildDream } from './dream.js';
 import { loadHead } from './head.js';
-import { loadAvatar } from './avatar.js';
+import { loadAvatar, avatarProgress } from './avatar.js';
 import { Radio } from './radio.js';
 
 const html = document.documentElement;
@@ -624,9 +624,20 @@ async function start() {
     }
 
     async function dreamSequence() {
-        await prepareDream();
+        const ready = prepareDream();
+        let isReady = false;
+        ready.then(() => { isReady = true; });
         say('Et il rêva…', 2.6, '夢');
         await timeline.wait(2.4);
+        // Réseau lent : le modèle de Hoko n'est pas encore arrivé. On le dit,
+        // avec l'avancement, plutôt qu'un écran noir silencieux.
+        while (!isReady) {
+            caption.textContent = 'Le rêve se prépare… ' + Math.round(avatarProgress() * 100) + ' %';
+            caption.classList.add('is-visible');
+            await Promise.race([ready, timeline.wait(0.4)]);
+        }
+        caption.classList.remove('is-visible');
+        await ready;
         dreaming = true;
         html.classList.remove('eyes-closing', 'eyes-heavy');
         html.classList.add('dreaming');
