@@ -7,6 +7,7 @@
  */
 import * as THREE from 'three';
 import { rng } from './textures.js';
+import { mergeGeometries } from '../../vendor/utils/BufferGeometryUtils.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 
@@ -968,12 +969,25 @@ export function buildVillage({ low = false } = {}) {
     /* ----- Villageois qui marchent dans les rues ----- */
     const walkers = [];
     const people = 46;
-    const bodyGeo = new THREE.CapsuleGeometry(0.22, 0.85, 6, 12);
-    bodyGeo.translate(0, 0.65, 0);
-    const headGeo = new THREE.SphereGeometry(0.15, 14, 10);
+    // Silhouette : buste, épaules, bas de kimono évasé ; visage et cheveux à part.
+    const trunk = new THREE.CapsuleGeometry(0.2, 0.7, 6, 12);
+    trunk.translate(0, 0.8, 0);
+    const shoulders = new THREE.CapsuleGeometry(0.1, 0.36, 4, 8);
+    shoulders.rotateZ(Math.PI / 2);
+    shoulders.translate(0, 1.16, 0);
+    const skirt = new THREE.CylinderGeometry(0.2, 0.3, 0.62, 12, 1, false);
+    skirt.translate(0, 0.33, 0);
+    const bodyGeo = mergeGeometries([trunk, shoulders, skirt].map((g) => g.toNonIndexed()));
+    const headGeo = new THREE.SphereGeometry(0.14, 14, 10);
     headGeo.translate(0, 1.42, 0);
+    // Cheveux : calotte sur le haut et l'arrière du crâne, le visage reste visible.
+    const hairGeo = new THREE.SphereGeometry(0.155, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55);
+    hairGeo.rotateX(-0.45);
+    hairGeo.translate(0, 1.44, -0.01);
     const bodies = new THREE.InstancedMesh(bodyGeo, new THREE.MeshStandardMaterial({ roughness: 0.85 }), people);
-    const heads = new THREE.InstancedMesh(headGeo, new THREE.MeshStandardMaterial({ roughness: 0.7 }), people);
+    const faces = new THREE.InstancedMesh(headGeo, new THREE.MeshStandardMaterial({ roughness: 0.7 }), people);
+    const heads = new THREE.InstancedMesh(hairGeo, new THREE.MeshStandardMaterial({ roughness: 0.7 }), people);
+    const skins = ['#f1c9a5', '#e3b48f', '#c98f65', '#f5d6ba'];
     const robes = ['#2b3a67', '#6a2f3a', '#3f5f3a', '#7a5a2e', '#e8e2d4', '#4a4a52', '#1f2a44', '#8a3c2a'];
     const hairs = ['#1c1410', '#3a2618', '#d9c27a', '#6a3a22', '#2a2a30', '#b8452f'];
     const color = new THREE.Color();
@@ -984,8 +998,9 @@ export function buildVillage({ low = false } = {}) {
         walkers.push({ alongX, line, pos: (random() - 0.5) * 180, speed: (0.9 + random() * 0.8) * (random() < 0.5 ? -1 : 1), phase: random() * 6 });
         bodies.setColorAt(i, color.set(robes[Math.floor(random() * robes.length)]));
         heads.setColorAt(i, color.set(hairs[Math.floor(random() * hairs.length)]));
+        faces.setColorAt(i, color.set(skins[Math.floor(random() * skins.length)]));
     }
-    [bodies, heads].forEach((m) => {
+    [bodies, faces, heads].forEach((m) => {
         m.castShadow = true;
         m.frustumCulled = false;
         group.add(m);
@@ -1005,9 +1020,11 @@ export function buildVillage({ low = false } = {}) {
             dummy.rotation.set(0, w.alongX ? (w.speed > 0 ? Math.PI / 2 : -Math.PI / 2) : (w.speed > 0 ? 0 : Math.PI), Math.sin(t * 5.5 + w.phase) * 0.04);
             dummy.updateMatrix();
             bodies.setMatrixAt(i, dummy.matrix);
+            faces.setMatrixAt(i, dummy.matrix);
             heads.setMatrixAt(i, dummy.matrix);
         });
         bodies.instanceMatrix.needsUpdate = true;
+        faces.instanceMatrix.needsUpdate = true;
         heads.instanceMatrix.needsUpdate = true;
     }
 

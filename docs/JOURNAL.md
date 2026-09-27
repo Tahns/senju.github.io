@@ -267,3 +267,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Mont des Hokage** : visages plus ovales et sculptés dans la roche
   (joues moins gonflées, menton et mâchoire), deux sourcils froncés au lieu
   d'une barre — moins « masques de lion ».
+- **Villageois** : ce n'étaient que des capsules à tête de la couleur des
+  cheveux ; ils ont maintenant un visage (quatre teintes de peau), des
+  cheveux en calotte, des épaules et un bas de kimono évasé — toujours en
+  objets instanciés (trois appels de dessin pour les 46 passants).
