@@ -342,3 +342,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   derrière la falaise, le ciel et Hoko s'éclairent deux fois de
   suite, puis le tonnerre roule au loin (plus sourd que celui du coup de
   sabre chargé). Désactivé avec « réduire les animations ».
+- **Menu, shunshin (瞬身)** : en confirmant une catégorie, un tourbillon
+  de feuilles se lève autour de Hoko et l'emporte — il disparaît comme
+  avec la technique de déplacement instantané, pendant que la caméra fonce
+  vers lui et que l'écran blanchit avant d'ouvrir le carnet.

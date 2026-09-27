@@ -1248,10 +1248,43 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         }
     }
 
+    // « Confirmer » : shunshin (瞬身) — Hoko disparaît dans un tourbillon de feuilles.
+    const swirlCount = 90;
+    const leafShape = new THREE.Shape();
+    leafShape.moveTo(0, -0.06);
+    leafShape.quadraticCurveTo(0.035, -0.01, 0, 0.06);
+    leafShape.quadraticCurveTo(-0.035, -0.01, 0, -0.06);
+    const swirl = new THREE.InstancedMesh(new THREE.ShapeGeometry(leafShape, 4), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true, fog: false }), swirlCount);
+    swirl.frustumCulled = false; // positions calculées à chaque image
+    swirl.visible = false;
+    const swirlSeeds = Array.from({ length: swirlCount }, (_, i) => {
+        swirl.setColorAt(i, new THREE.Color(['#3f7a2a', '#5f9e3a', '#86b84c', '#4d8a34'][i % 4]));
+        return { a: random() * Math.PI * 2, y: random() * 2.1, r: 0.45 + random() * 0.5, d: random() * 0.35, spin: V(random(), random(), random()).normalize(), s: 0.8 + random() * 0.7 };
+    });
+    scene.add(swirl);
+    const swirlM = new THREE.Matrix4();
+    const swirlQ = new THREE.Quaternion();
+    const swirlP = V();
+    const swirlS = V();
+    function updateSwirl(t) {
+        swirl.visible = t > 0;
+        if (!swirl.visible) return;
+        swirlSeeds.forEach((l, i) => {
+            const k = Math.max(0, t - l.d);
+            const r = l.r * (1 - Math.min(0.6, k * 0.5)) * Math.min(1, k * 6);
+            const a = l.a + k * (5 + k * 9);
+            swirlP.set(Math.sin(a) * r, l.y * (0.6 + k * 0.5) + k * 0.6, Math.cos(a) * r);
+            swirlQ.setFromAxisAngle(l.spin, k * 14 + l.a);
+            swirlS.setScalar(k > 0 ? l.s : 0.0001);
+            swirl.setMatrixAt(i, swirlM.compose(swirlP, swirlQ, swirlS));
+        });
+        swirl.instanceMatrix.needsUpdate = true;
+    }
+
     /* ---------------- Menu « Sélection de la catégorie » ---------------- */
     // Écran façon jeux Naruto Storm : Hoko en contre-plongée dans son aura de
     // chakra, ciel d'orage ; chaque catégorie de la fiche lui donne une pose.
-    const menu = { on: false, t: 0, target: null, sound: null, calm: false };
+    const menu = { on: false, t: 0, target: null, sound: null, calm: false, push: false, pushT: 0 };
     updaters.push((dt) => {
         if (!menu.on) {
             crow.visible = false;
@@ -1281,7 +1314,13 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         // Les 0,8 premières secondes, la caméra reste haute, puis descend.
         if (menu.t < 0.8) return;
         if (menu.push) {
-            // « Confirmer » : la caméra fonce vers le visage de Hoko.
+            // « Confirmer » : les feuilles tourbillonnent, Hoko s'y efface
+            // (shunshin) pendant que la caméra fonce vers son visage.
+            menu.pushT += dt;
+            updateSwirl(menu.pushT);
+            ninja.root.visible = menu.pushT < 0.55;
+            if (!ninja.root.visible) handChakra = 0;
+            auraMat.uniforms.uPower.value = Math.max(0, 0.42 - Math.max(0, menu.pushT - 0.4) * 2);
             camGoal.set(0.25, 1.6, 0.75);
             lookGoal.set(0, 1.62, 0);
             return;
@@ -1296,6 +1335,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         strike.t = -1;
         strike.next = 3.5;
         skyBolt.visible = false;
+        updateSwirl(0);
+        ninja.root.visible = true;
         if (!on) {
             handChakra = 0;
             posts.forEach((p) => { p.base.visible = p.topPart.visible = true; });
@@ -1340,7 +1381,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         scene,
         setMenu,
         menuPose,
-        menuConfirm() { menu.push = true; },
+        menuConfirm() { menu.push = true; menu.pushT = 0; },
         // Pour les tests : déclenche le prochain éclair du menu tout de suite.
         strikeNow() { strike.next = 0; },
         // Pour les tests : position du corbeau à l'écran (-1..1).
