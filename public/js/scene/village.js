@@ -918,16 +918,21 @@ export function buildVillage({ low = false } = {}) {
         head.updateMatrix();
         const m = head.matrix;
         const add = (geo, mat, ...t) => farBatch.add(geo, mat, m, ...t);
-        add(new THREE.SphereGeometry(8, 48, 36), stone, 0, 0, 0, 0, 0, 0, 0.82, 1.02, 0.6);
-        add(new THREE.CapsuleGeometry(1.05, 6.8, 10, 20), stone, 0, 1.9, 3.9, 0, 0, Math.PI / 2, 1, 1, 0.6);
+        // Visage allongé, sculpté dans la roche (pas une boule).
+        add(new THREE.SphereGeometry(8, 48, 36), stone, 0, 0.4, 0, 0, 0, 0, 0.76, 1.12, 0.55);
+        
         [-1, 1].forEach((s) => {
+            // Sourcils : deux arcades froncées, pas une barre continue.
+            add(new THREE.CapsuleGeometry(0.75, 2.4, 8, 16), stone, s * 2.6, 2.0, 3.6, 0, 0, Math.PI / 2 - s * 0.18, 1, 1, 0.6);
             add(new THREE.SphereGeometry(1.4, 24, 16), stoneDark, s * 2.7, 0.6, 3.75, 0, 0, s * 0.12, 1.35, 0.55, 0.45);
-            add(new THREE.SphereGeometry(2.3, 24, 16), stone, s * 3.3, -2, 2.8, 0, 0, 0, 1, 1, 0.55);
+            add(new THREE.SphereGeometry(2.3, 24, 16), stone, s * 3.2, -1.6, 2.6, 0, 0, 0, 0.7, 0.85, 0.4);
             add(new THREE.SphereGeometry(1.6, 20, 14), stone, s * 6.3, 0.2, 0.4, 0, 0, 0, 0.45, 1, 0.7);
         });
         add(new THREE.CapsuleGeometry(0.95, 1.9, 10, 16), stone, 0, -0.9, 4.25, -0.2, 0, 0, 0.85, 1, 0.75);
         add(new THREE.CapsuleGeometry(0.28, 2.6, 8, 12), stoneDark, 0, -4.1, 4.05, 0, 0, Math.PI / 2, 1, 1, 0.6);
-        add(new THREE.SphereGeometry(2.6, 24, 18), stone, 0, -5.8, 2.7, 0, 0, 0, 1, 0.8, 0.7);
+        // Mâchoire carrée et menton.
+        add(new THREE.CapsuleGeometry(2.1, 4.6, 10, 20), stone, 0, -5.4, 0.6, 0, 0, Math.PI / 2, 1, 0.9, 0.62);
+        add(new THREE.SphereGeometry(2, 24, 18), stone, 0, -6.4, 2.3, 0, 0, 0, 1, 0.75, 0.55);
         // Chevelures : pointes, mèches longues, casque ou coiffe arrondie.
         if (k === 0 || k === 3) {
             for (let i = 0; i < 9; i++) {

@@ -264,3 +264,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   sans WebGL, le carnet s'ouvre directement.
 - **Sans WebGL** : la page le détecte d'emblée et ouvre le carnet, sans les
   trois erreurs rouges de three.js dans la console.
+- **Mont des Hokage** : visages plus ovales et sculptés dans la roche
+  (joues moins gonflées, menton et mâchoire), deux sourcils froncés au lieu
+  d'une barre — moins « masques de lion ».
