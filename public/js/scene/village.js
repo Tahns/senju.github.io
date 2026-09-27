@@ -2,7 +2,7 @@
  * Konoha, vu depuis le rocher d'entraînement du rêve.
  * Rues en terre battue, maisons à étages (poutres de bois et enduit clair),
  * balcons, auvents, enseignes, réservoirs d'eau ronds sur les toits, poteaux
- * électriques et leurs fils, grands arbres touffus et le mont des Hokage.
+ * électriques et leurs fils, grands arbres touffus et la falaise boisée.
  * Tout est fusionné par matériau : des milliers de pièces, peu d'appels de dessin.
  */
 import * as THREE from 'three';
@@ -887,7 +887,7 @@ export function buildVillage({ low = false } = {}) {
     }
     farBatch.add(new THREE.CylinderGeometry(0.08, 0.2, 3.4, 10), metal, pagoda, 0, 17.3, 0);
 
-    /* ----- La falaise et le mont des Hokage ----- */
+    /* ----- La falaise (sans visages sculptés) ----- */
     const stoneTex = stoneTexture(random);
     stoneTex.repeat.set(14, 3);
     const cliffGeo = new THREE.CylinderGeometry(118, 124, 50, 220, 24, true, Math.PI * 0.42, Math.PI * 1.16);
@@ -909,45 +909,6 @@ export function buildVillage({ low = false } = {}) {
     cliff.position.set(0, 25, 10);
     cliff.receiveShadow = true;
     group.add(cliff);
-    const stone = new THREE.MeshStandardMaterial({ map: stoneTexture(random), color: '#e8dcc8', roughness: 0.9 });
-    const stoneDark = new THREE.MeshStandardMaterial({ map: stoneTex, color: '#8a7863', roughness: 1 });
-    [-0.2, -0.067, 0.067, 0.2].forEach((da, k) => {
-        const a = Math.PI + da;
-        const head = new THREE.Object3D();
-        head.position.set(Math.sin(a) * 110, 30, Math.cos(a) * 110 + 10);
-        head.lookAt(0, 30, 10);
-        head.updateMatrix();
-        const m = head.matrix;
-        const add = (geo, mat, ...t) => farBatch.add(geo, mat, m, ...t);
-        // Visage allongé, sculpté dans la roche (pas une boule).
-        add(new THREE.SphereGeometry(8, 48, 36), stone, 0, 0.4, 0, 0, 0, 0, 0.76, 1.12, 0.55);
-        
-        [-1, 1].forEach((s) => {
-            // Sourcils : deux arcades froncées, pas une barre continue.
-            add(new THREE.CapsuleGeometry(0.75, 2.4, 8, 16), stone, s * 2.6, 2.0, 3.6, 0, 0, Math.PI / 2 - s * 0.18, 1, 1, 0.6);
-            add(new THREE.SphereGeometry(1.4, 24, 16), stoneDark, s * 2.7, 0.6, 3.75, 0, 0, s * 0.12, 1.35, 0.55, 0.45);
-            add(new THREE.SphereGeometry(2.3, 24, 16), stone, s * 3.2, -1.6, 2.6, 0, 0, 0, 0.7, 0.85, 0.4);
-            add(new THREE.SphereGeometry(1.6, 20, 14), stone, s * 6.3, 0.2, 0.4, 0, 0, 0, 0.45, 1, 0.7);
-        });
-        add(new THREE.CapsuleGeometry(0.95, 1.9, 10, 16), stone, 0, -0.9, 4.25, -0.2, 0, 0, 0.85, 1, 0.75);
-        add(new THREE.CapsuleGeometry(0.28, 2.6, 8, 12), stoneDark, 0, -4.1, 4.05, 0, 0, Math.PI / 2, 1, 1, 0.6);
-        // Mâchoire carrée et menton.
-        add(new THREE.CapsuleGeometry(2.1, 4.6, 10, 20), stone, 0, -5.4, 0.6, 0, 0, Math.PI / 2, 1, 0.9, 0.62);
-        add(new THREE.SphereGeometry(2, 24, 18), stone, 0, -6.4, 2.3, 0, 0, 0, 1, 0.75, 0.55);
-        // Chevelures : pointes, mèches longues, casque ou coiffe arrondie.
-        if (k === 0 || k === 3) {
-            for (let i = 0; i < 9; i++) {
-                const t = (i / 8 - 0.5) * 2.6;
-                add(new THREE.ConeGeometry(1.9, 5.5, 20), stone, Math.sin(t) * 6.2, 5.6 + Math.cos(t) * 2.2, 1.2 + (i % 2) * 0.8, 0, 0, -t * 0.9);
-            }
-        } else if (k === 1) {
-            add(new THREE.CapsuleGeometry(3.2, 9, 10, 24), stone, 0, 4.4, 0.8, 0, 0, Math.PI / 2, 1, 0.75, 0.9);
-            [-1, 1].forEach((s) => add(new THREE.CapsuleGeometry(1.6, 8, 10, 16), stone, s * 6.8, -1.5, 0.8, 0, 0, s * 0.1));
-        } else {
-            add(new THREE.SphereGeometry(8.4, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.42), stone, 0, 0.8, 0.2, -0.15, 0, 0, 0.86, 1, 0.72);
-            add(new THREE.TorusGeometry(6.4, 0.9, 12, 40, Math.PI), stone, 0, 3.4, 3.2, 0.3, 0, 0, 1, 0.8, 1);
-        }
-    });
     // Forêt sur le haut de la falaise.
     for (let i = 0; i < 60; i++) {
         const a = Math.PI * 0.44 + (i / 59) * Math.PI * 1.12 + (random() - 0.5) * 0.03;

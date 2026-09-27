@@ -1096,7 +1096,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         spawnRate = 0;
         collecting = false;
         tl.tween(2, (k) => { glitterMat.opacity = 0.9 * (1 - k); goldLight.intensity = 2.2 * (1 - k); });
-        // Il se tourne vers le mont des Hokage et lève le poing : « Un jour… »
+        // Il se tourne vers la tour du Hokage et lève le poing : « Un jour… »
         hud.hidden = true;
         tl.tween(4.5, setDusk, ease.inOut);
         // La bourse bien remplie reprend une taille raisonnable pour le plan héroïque.

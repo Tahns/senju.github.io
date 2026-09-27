@@ -271,3 +271,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   cheveux ; ils ont maintenant un visage (quatre teintes de peau), des
   cheveux en calotte, des épaules et un bas de kimono évasé — toujours en
   objets instanciés (trois appels de dessin pour les 46 passants).
+- **Visages de la falaise retirés** (retour : « horrible ») : la falaise
+  derrière Konoha est maintenant nue, avec sa forêt au sommet ; image
+  d'aperçu du lien refaite sans eux.
