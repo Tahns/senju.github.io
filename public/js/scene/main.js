@@ -194,7 +194,7 @@ async function start() {
         window.Carnet.setSound(!sound.on);
     });
 
-    // Musique de la chambre : « Hyûga » de Prince OFD (YouTube), ou la boîte à musique en secours.
+    // Musique de la chambre : SD NIGHT (YouTube), ou la boîte à musique en secours.
     function startRoomMusic() {
         radio.play().then((ok) => {
             if (!ok) sound.startMusic();
