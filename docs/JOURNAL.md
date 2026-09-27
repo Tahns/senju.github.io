@@ -262,3 +262,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (`prefers-reduced-motion`), plus de secousse de caméra à l'atterrissage
   (l'ouverture en iris était déjà remplacée par un fondu). Vérifié aussi :
   sans WebGL, le carnet s'ouvre directement.
+- **Sans WebGL** : la page le détecte d'emblée et ouvre le carnet, sans les
+  trois erreurs rouges de three.js dans la console.
