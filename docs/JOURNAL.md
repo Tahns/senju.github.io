@@ -311,3 +311,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Menu, corbeau réparé** : il était invisible (culling du volume englobant,
   puis caché derrière la tête de Hoko) ; il passe maintenant bien au-dessus
   de lui, ailes battantes. Indice tactile plus lisible sur l'herbe.
+- **Menu, entrée en scène** : la caméra part du ciel au-dessus de Konoha et
+  plonge sur Hoko ; puis « Sélection de la catégorie » glisse, le grand mot
+  arrive en rebondissant et le bandeau de parchemin se déroule depuis le
+  centre (rien de tout ça si les animations sont réduites).

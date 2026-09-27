@@ -1212,6 +1212,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         auraMat.uniforms.uPower.value = Math.min(0.42, auraMat.uniforms.uPower.value + dt * 0.4);
         // Caméra basse, qui dérive à peine ; Hoko à droite (texte à gauche), centré en portrait.
         const portrait = camera.aspect < 1;
+        // Les 0,8 premières secondes, la caméra reste haute, puis descend.
+        if (menu.t < 0.8) return;
         if (menu.push) {
             // « Confirmer » : la caméra fonce vers le visage de Hoko.
             camGoal.set(0.25, 1.6, 0.75);
@@ -1245,7 +1247,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         waterMat.opacity = 0;
         setLook(stormLook, 1);
         auraMat.uniforms.uPower.value = 0;
-        snapCamera(V(0.6, 0.6, 2.4), V(-1.05, 1.42, 0));
+        // Entrée : la caméra part du ciel d'orage et plonge vers Hoko (l'amorti fait le reste).
+        snapCamera(V(0.2, 6.5, 4.2), V(-0.4, 4.5, -6));
         // Pas de poteaux d'entraînement au premier plan du menu.
         posts.forEach((p) => { p.base.visible = p.topPart.visible = p.cut.visible = false; });
     }
