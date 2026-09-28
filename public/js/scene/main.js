@@ -160,7 +160,7 @@ async function start() {
     }
 
     const timeline = new Timeline();
-    window.__scene = { timeline, cam, room, renderer };
+    window.__scene = { timeline, cam, room, renderer, arms }; // arms : pour les tests
 
     /* ---------------- Son ---------------- */
     const sound = new SceneAudio();
@@ -360,11 +360,13 @@ async function start() {
         const q = quat(V(0.15, -1, 0), V(1, -0.4, 0));
         return { position: handAt(taker, V(-w / 2 + 0.022, h / 2 + 0.006 + lift, 0), q, TIP.index), quaternion: q };
     }
-    // Main refermée sur le dos du livre (le haut, qui dépasse de l'étagère).
+    // Main refermée sur le haut du livre, qui dépasse de l'étagère : paume contre
+    // le plat gauche, près du dos, doigts vers le fond, pouce sur la tranche. (Paume
+    // sur le dos, la main gauche devrait tourner de 180° : le poignet ne suit pas.)
     function spineGrip(book, out = 0) {
-        const { w, h } = book.userData.size;
-        const q = quat(V(1, 0, 0), V(0, 0.15, -taker.side));
-        return { position: handAt(taker, V(-w / 2 - 0.003 - out, h / 2 - 0.055, 0), q, TIP.palm), quaternion: q };
+        const { w, h, t } = book.userData.size;
+        const q = quat(V(0, 0, 1), V(1, 0.3, 0));
+        return { position: handAt(taker, V(-w / 2 + 0.03 - out, h / 2 - 0.05, -t / 2 - 0.003), q, TIP.palm), quaternion: q };
     }
     // Livre tenu devant soi : doigts à plat derrière, pouces sur la couverture.
     function holdGrip(book, side) {

@@ -497,3 +497,12 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Musique** : « Shirohae (The Rain Stops) » (bande originale de Naruto
   Shippûden), choisie par le joueur, dans la chambre et le menu.
 - **Voix off calée sur la vraie parole** : le texte décrochait dès le 2ᵉ paragraphe (instants estimés, jusqu'à 4,8 s d'avance) ; `data-t`/`data-w` remesurés par reconnaissance vocale (Whisper small ONNX, transformers.js dans Node), alignés mot à mot sur le texte (615/628 mots reconnus, les autres interpolés), débuts de mots recalés sur la fin des silences ; `book.js` : mots en cache, une seule boucle, recalage aussi sur `timeupdate` ; `voice-book.js` vérifie 40 s de lecture continue.
+- **Mains qui se retournaient** (chambre) : la butée de torsion du poignet
+  (±95°) sautait d'un bord à l'autre quand l'orientation voulue passait par
+  180° (retournement d'environ 170° en une image, en prenant et en rangeant
+  les livres, au couvercle de la boîte à musique). La torsion suit maintenant
+  le tour le plus proche de l'image précédente ; la prise du livre (paume sur
+  le dos, impossible pour la main gauche) devient une prise par le haut, paume
+  contre le plat, pouce sur la tranche ; la main au repos part d'une torsion
+  neutre. Rêve vérifié : l'interpolation d'Euler des poses suit le chemin
+  direct, pas de retournement des mains du modèle.
