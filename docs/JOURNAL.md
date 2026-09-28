@@ -475,3 +475,19 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   ventre et bas du haut resserrés de 30 %, manches affinées (×0,88), jambes du
   pantalon élargies (×1,2, progressivement depuis l'aine). Le haut et le
   pantalon partagent les mêmes sommets : chaque vêtement ne déforme que les siens.
+- **Parcours simplifié** : l'accueil n'a plus qu'un bouton « Commencer », qui
+  ouvre le menu (Histoire, HRP). « Histoire » lance la chambre et les deux
+  carnets (histoire lue à voix haute, puis la fiche) ; quand Akira s'endort,
+  une carte « Fin » propose le rêve en bonus (ses chapitres apparaissent après).
+  Les écrans Histoire et Personnage du menu, en double avec les carnets, sont retirés.
+- **Kaiten comme dans l'anime** : dôme bleu presque opaque aux reflets nuageux
+  qui tournent, anneaux de poussière beige, poussière au sol ; les poteaux sont
+  soufflés vers l'extérieur, dans l'axe qui part d'Akira, en tournoyant.
+- **Proportions et squelette** : haut du bras et cuisse rallongés (ils étaient
+  plus courts que l'avant-bras et le tibia), épaules élargies, tête un peu plus
+  petite (5,9 → 6,4 têtes), bassin remonté pour garder les pieds au sol.
+  Écart squelette d'animation / os du modèle mesuré : 5 à 6 mm dans toutes les poses.
+- **Cou** : élargissement plus léger et identique sur le visage et le corps
+  (plus de marche à la couture) ; peau sous le col cachée.
+- **Blocs noirs dans le ciel du menu** : un pixel invalide se propageait par le
+  halo et le flou ; le post-traitement filtre maintenant ces valeurs.

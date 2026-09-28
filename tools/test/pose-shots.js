@@ -12,7 +12,7 @@ const [pose = 'stand', tag = 'pose', shotsArg, handsArg] = process.argv.slice(2)
   const errs = []; p.on('pageerror', (e) => errs.push(e.message));
   await p.route('**/*', (r) => (r.request().url().startsWith('http://localhost') ? r.continue() : r.abort()));
   await p.goto('http://localhost:8765/?at=dream&quality=high', { waitUntil: 'commit' });
-  await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Entrer', null, { timeout: 90000 });
+  await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Commencer', null, { timeout: 90000 });
   await p.click('#scene-start');
   await p.waitForFunction(() => window.__scene.dream && document.documentElement.classList.contains('dreaming'), null, { timeout: 120000 });
   await p.evaluate(() => { window.__scene.timeline.update = () => {}; window.requestAnimationFrame = () => 0; });

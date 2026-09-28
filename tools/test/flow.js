@@ -13,8 +13,13 @@ const { chromium } = require(process.env.PLAYWRIGHT || 'playwright');
   // Hors-ligne : on coupe les ressources externes (polices, YouTube) qui peuvent bloquer.
   await p.route('**/*', (r) => (r.request().url().startsWith('http://localhost') ? r.continue() : r.abort()));
   await p.goto('http://localhost:8765/?' + query, { waitUntil: 'commit' });
-  await p.waitForFunction(() => window.__scene && document.getElementById('scene-start').textContent === 'Entrer', null, { timeout: 90000 });
+  await p.waitForFunction(() => window.__scene && document.getElementById('scene-start').textContent === 'Commencer', null, { timeout: 90000 });
   await p.click('#scene-start');
+  // Sans ?at=…, « Commencer » ouvre le menu : on confirme « Histoire ».
+  if (!/(^|&)at=/.test(query)) {
+    await p.waitForFunction(() => !document.getElementById('storm-menu').hidden, null, { timeout: 180000 });
+    await p.click('#storm-confirm');
+  }
   const stamps = (process.argv[4] || '').split(',').filter(Boolean).map(Number);
   await p.evaluate(() => { window.__t = 0; const tl = window.__scene.timeline; const u = tl.update.bind(tl); tl.update = (dt) => { window.__t += dt * tl.scale; u(dt); }; });
   for (let round = 0; round < 3; round++) {

@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Permanent+Marker&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap&text=%E3%81%84%E3%81%8A%E3%81%95%E3%81%99%E3%81%AA%E3%81%AE%E3%81%BF%E3%82%84%E3%82%A2%E3%82%AD%E3%82%B3%E3%83%9B%E3%83%A1%E3%83%A9%E3%83%B3%E3%83%BC%E4%B8%A1%E4%B8%BB%E4%BA%BA%E5%85%AC%E5%85%B7%E5%88%B6%E5%89%9B%E5%89%A3%E5%8A%AA%E5%8D%83%E5%8E%B3%E5%8F%B2%E5%90%91%E5%96%84%E5%9B%9E%E5%9B%A3%E5%A4%A2%E5%A4%A9%E5%A7%BF%E5%AD%90%E5%AE%BF%E5%B0%8E%E5%B1%8B%E5%B7%B1%E5%BD%93%E5%BD%B1%E5%BF%83%E5%BF%8D%E5%BF%97%E6%81%A9%E6%82%AA%E6%83%85%E6%84%8F%E6%88%91%E6%89%8B%E6%8B%B3%E6%97%A5%E6%9A%A6%E6%9C%AC%E6%9F%94%E6%A5%B5%E6%A5%BD%E6%AF%92%E6%B0%B4%E7%81%AB%E7%8B%AC%E7%99%BD%E7%9C%9F%E7%9C%BC%E7%9E%AC%E7%9F%A5%E8%8C%B6%E8%96%AC%E8%A1%8C%E8%A1%93%E8%BA%AB%E9%81%81%E9%81%93%E9%9B%B7">
-    <link rel="stylesheet" href="public/css/style.css?v=e0e6dfac">
+    <link rel="stylesheet" href="public/css/style.css?v=0a660870">
 </head>
 
 <body>
@@ -427,23 +427,23 @@
         <p class="scene-card__text">Domaine Hyûga, Konoha. La nuit est tombée…</p>
         <p class="sr-only" id="intro-summary">Courte scène animée en 3D, vue par les yeux d'Akira : il entre dans sa chambre, lance une boîte à musique, lit son carnet (lisible au clavier et au lecteur d'écran), en prend un second, puis s'endort. Il rêve alors de lui adulte, jōnin de Konoha : Byakugan, maître du Jûken et du Kaiten, et trésorier du village qui fait pleuvoir les ryō. Les sous-titres sont annoncés à mesure.</p>
         <button class="scene-button" id="scene-start" type="button" disabled>Chargement…</button>
-        <a class="scene-card__link scene-card__link--menu" href="#menu"><span aria-hidden="true">✦</span> Sélection de la catégorie</a>
-        <a class="scene-card__link" href="#page-1">Aller directement au carnet</a>
         <p class="scene-card__credits">© PrinceOFD · Naissance Hyûga<br>Ver. Early Access</p>
     </div>
 
     <div class="scene-card scene-card--end scene-only" id="scene-end" role="dialog" aria-labelledby="end-title" hidden>
         <p class="scene-card__kana" lang="ja" aria-hidden="true">おやすみなさい</p>
-        <h2 class="scene-card__title" id="end-title">Bonne nuit</h2>
-        <button class="scene-button" id="scene-replay" type="button">Recommencer</button>
-        <a class="scene-card__link" href="?at=dream" id="scene-dream">Revoir le rêve</a>
+        <h2 class="scene-card__title" id="end-title">Fin</h2>
+        <p class="scene-card__text scene-end__lead">Akira s'endort. Démarrer l'aventure&nbsp;?</p>
+        <button class="scene-button" id="scene-bonus" type="button"><span aria-hidden="true">✦</span> Bonus&nbsp;: le rêve d'Akira</button>
+        <!-- Après le rêve : ses chapitres, pour revoir un passage. -->
         <nav class="scene-chapters" aria-label="Chapitres du rêve">
             <a href="?at=dream&amp;chapitre=juken"><span lang="ja" aria-hidden="true">柔拳</span>Jûken</a>
             <a href="?at=dream&amp;chapitre=kaiten"><span lang="ja" aria-hidden="true">回天</span>Kaiten</a>
             <a href="?at=dream&amp;chapitre=ryo"><span lang="ja" aria-hidden="true">両</span>Trésorier</a>
             <a href="?at=dream&amp;chapitre=final"><span lang="ja" aria-hidden="true">当主</span>Un jour…</a>
         </nav>
-        <a class="scene-card__link scene-card__link--menu" href="#menu" id="scene-read"><span aria-hidden="true">✦</span> Relire la fiche d'Akira</a>
+        <a class="scene-card__link scene-card__link--menu" href="#menu" id="scene-read"><span aria-hidden="true">✦</span> Revenir au menu</a>
+        <button class="scene-card__link scene-card__link--plain" id="scene-replay" type="button">Recommencer</button>
     </div>
 
     <!-- Menu « Sélection de la catégorie », façon jeux Naruto Storm : Akira en 3D derrière. -->
@@ -551,7 +551,7 @@
     <p class="sr-only" id="announcer" aria-live="polite"></p>
 
     <script src="public/js/book.js?v=b5ea7eb9"></script>
-    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=db883315", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=b3d494cc", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=24dc4111", "./public/js/scene/head.js": "./public/js/scene/head.js?v=b91baeb1", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=ce3e0b8a", "./public/js/scene/post.js": "./public/js/scene/post.js?v=332bcc41", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c3b7ad90", "./public/js/scene/room.js": "./public/js/scene/room.js?v=95bddc89", "./public/js/scene/screens.js": "./public/js/scene/screens.js?v=08beac83", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=f16f6061", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=b2bf91ed", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=3c3023d5", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=535bacc1", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
+    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=db883315", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=5f67ba8f", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=aad27dbc", "./public/js/scene/head.js": "./public/js/scene/head.js?v=b91baeb1", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=ce3e0b8a", "./public/js/scene/post.js": "./public/js/scene/post.js?v=18718c3f", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c3b7ad90", "./public/js/scene/room.js": "./public/js/scene/room.js?v=95bddc89", "./public/js/scene/screens.js": "./public/js/scene/screens.js?v=ef8219ff", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=f16f6061", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=b2bf91ed", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=3c3023d5", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=535bacc1", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
     <!-- Si le navigateur gère les modules, la scène se charge ; sinon, ou en cas d'erreur, le carnet s'affiche seul. -->
     <script type="module">window.SceneLoading = true;</script>
     <script>
@@ -574,7 +574,7 @@
             }).catch(function () {});
         })();
     </script>
-    <script type="module" src="public/js/scene/main.js?v=14e6ce66" onerror="window.Carnet && window.Carnet.standalone()"></script>
+    <script type="module" src="public/js/scene/main.js?v=a2016121" onerror="window.Carnet && window.Carnet.standalone()"></script>
 </body>
 
 </html>

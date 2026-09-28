@@ -72,7 +72,6 @@ choisir.
 
 ```sh
 python3 -m RangeHTTPServer 8765        # serveur qui gère les requêtes partielles (pip install rangehttpserver)
-node tools/test/voice.js               # écran Histoire : le paragraphe suit la voix
 node tools/test/voice-book.js captures # carnet de l'histoire : mots lus, page qui suit la voix
 ```
 

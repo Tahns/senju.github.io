@@ -569,8 +569,13 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         }, ease.out).then(() => { ring.material.opacity = 0; });
     }
 
-    // Hakkeshō Kaiten (rotation céleste) : un dôme de chakra qui tourbillonne
-    // autour d'Akira pendant qu'il tourne sur lui-même, puis éclate.
+    // Hakkeshō Kaiten (rotation céleste), comme dans l'anime : un dôme bleu
+    // presque opaque aux reflets nuageux qui tournent, ceinturé d'anneaux de
+    // poussière beige, avec un nuage de poussière au ras du sol.
+    const NOISE = `float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float noise(vec2 p){ vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+            return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
+        float fbm(vec2 p){ return noise(p) * 0.55 + noise(p * 2.1 + 3.7) * 0.3 + noise(p * 4.3 + 9.1) * 0.15; }`;
     const kaitenMat = new THREE.ShaderMaterial({
         uniforms: { uTime: { value: 0 }, uOpacity: { value: 0 } },
         vertexShader: `varying vec2 vUv; varying vec3 vN; varying vec3 vV;
@@ -580,26 +585,57 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
                 vN = normalize(normalMatrix * normal); vV = -mv.xyz;
                 gl_Position = projectionMatrix * mv;
             }`,
-        // Bandes en spirale qui tournent vite, plus denses sur les bords (contre-jour).
         fragmentShader: `uniform float uTime; uniform float uOpacity; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+            ${NOISE}
             void main(){
-                float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 1.6);
-                float band = sin(vUv.x * 62.83 * 3.0 - uTime * 26.0 + vUv.y * 9.0);
-                float streak = smoothstep(0.2, 1.0, band) * 0.8 + smoothstep(0.85, 1.0, sin(vUv.x * 62.83 * 7.0 - uTime * 40.0 + vUv.y * 20.0)) * 0.5;
-                float ground = smoothstep(0.0, 0.25, 1.0 - vUv.y);
-                float a = (0.12 + rim * 0.9) * (0.35 + streak) * mix(0.6, 1.0, ground) * uOpacity;
-                vec3 col = mix(vec3(0.55, 0.75, 1.0), vec3(0.95, 0.97, 1.0), streak);
-                gl_FragColor = vec4(col * 1.5, a);
+                float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0);
+                // Nuages de chakra étirés dans le sens de la rotation.
+                vec2 q = vec2(vUv.x * 10.0 - uTime * 4.5, vUv.y * 3.0);
+                float n = fbm(q);
+                float light = smoothstep(0.45, 0.8, n);
+                float dark = 1.0 - smoothstep(0.2, 0.5, n);
+                // Petits traits de vitesse blancs.
+                float speed = smoothstep(0.92, 1.0, sin(vUv.x * 160.0 - uTime * 30.0 + vUv.y * 4.0)) * smoothstep(0.3, 0.9, noise(vec2(vUv.x * 30.0, vUv.y * 8.0)));
+                vec3 col = mix(vec3(0.16, 0.36, 0.78), vec3(0.62, 0.8, 1.0), light);
+                col = mix(col, vec3(0.08, 0.2, 0.55), dark * 0.7);
+                col += speed * 0.35 + rim * vec3(0.25, 0.4, 0.7) * 0.4;
+                gl_FragColor = vec4(col, (0.92 + rim * 0.08) * uOpacity);
             }`,
         transparent: true,
         depthWrite: false,
-        blending: THREE.AdditiveBlending,
+        toneMapped: false,
         side: THREE.DoubleSide
     });
     const kaiten = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 24, 0, Math.PI * 2, 0, Math.PI / 2), kaitenMat);
     kaiten.visible = false;
+    kaiten.renderOrder = 2;
     scene.add(kaiten);
-    updaters.push((dt, time) => { kaitenMat.uniforms.uTime.value = time; });
+    // Anneaux de poussière qui tournent autour du dôme (bandes beiges effilochées).
+    const dustRingMat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uOpacity: { value: 0 } },
+        vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: `uniform float uTime; uniform float uOpacity; varying vec2 vUv;
+            ${NOISE}
+            void main(){
+                float n = fbm(vec2(vUv.x * 24.0 - uTime * 6.0, vUv.y * 2.0));
+                float edge = smoothstep(0.0, 0.35, vUv.y) * (1.0 - smoothstep(0.65, 1.0, vUv.y));
+                float a = edge * smoothstep(0.2, 0.5, n + edge * 0.35) * uOpacity;
+                gl_FragColor = vec4(mix(vec3(0.5, 0.43, 0.32), vec3(0.72, 0.66, 0.52), n), a);
+            }`,
+        transparent: true,
+        depthWrite: false,
+        toneMapped: false,
+        side: THREE.DoubleSide
+    });
+    [[0.08, 1.04, 0.16], [0.4, 0.95, 0.12], [0.7, 0.74, 0.1]].map(([y, r, w], i) => {
+        // Bande verticale (cylindre ouvert) légèrement inclinée.
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.03, w, 72, 1, true), dustRingMat);
+        m.position.y = y;
+        m.rotation.set((i - 1) * 0.08, 0, (i % 2 ? -1 : 1) * 0.06);
+        m.renderOrder = 3;
+        kaiten.add(m);
+    });
+    updaters.push((dt, time) => { kaitenMat.uniforms.uTime.value = time; dustRingMat.uniforms.uTime.value = time; });
     const sparkCount = 90;
     const sparkPos = new Float32Array(sparkCount * 3);
     const sparkGeo = new THREE.BufferGeometry();
@@ -931,7 +967,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
 
         // 3. Hakkeshō Kaiten : il tourne sur lui-même dans un dôme de chakra, qui éclate.
         onAct('kaiten');
-        const low = shot(tl, V(0.2, 0.9, 4.6), V(0, 1.2, 0), 2);
+        const low = shot(tl, V(0.4, 1.1, 5.6), V(0, 1.0, 0), 2);
         await pose(tl, 'kaiten', 0.5);
         await low;
         say('Hakkeshō Kaiten', 3.5, '回天');
@@ -940,22 +976,49 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         kaiten.scale.setScalar(0.4);
         const rot0 = ninja.root.rotation.y;
         for (let i = 0; i < 4; i++) tl.wait(i * 0.5).then(() => sound.whoosh());
-        // Le dôme grandit pendant que la rotation s'accélère.
-        await tl.tween(2.2, (k) => {
-            ninja.root.rotation.y = rot0 + Math.PI * 2 * 3.2 * k * k;
-            kaiten.scale.set(0.4 + 1.0 * Math.min(1, k * 1.6), 0.4 + 0.9 * Math.min(1, k * 1.6), 0.4 + 1.0 * Math.min(1, k * 1.6));
-            kaitenMat.uniforms.uOpacity.value = Math.min(1, k * 2);
+        // Le dôme grandit pendant que la rotation s'accélère ; la poussière se lève.
+        burst();
+        await tl.tween(1.4, (k) => {
+            ninja.root.rotation.y = rot0 + Math.PI * 2 * 2 * k * k;
+            const g = Math.min(1, k * 1.5);
+            kaiten.scale.set(0.4 + 1.2 * g, 0.4 + 1.75 * g, 0.4 + 1.2 * g);
+            kaitenMat.uniforms.uOpacity.value = Math.min(1, k * 2.5);
+            dustRingMat.uniforms.uOpacity.value = Math.min(1, k * 2);
+        }, ease.linear);
+        // Le dôme repousse tout autour de lui : les poteaux sont soufflés vers
+        // l'extérieur, dans l'axe qui part d'Akira, en tournoyant.
+        sound.splash();
+        if (sound.thunder) sound.thunder();
+        burst();
+        const flying = [];
+        posts.forEach((post) => {
+            post.cut.visible = false;
+            [post.base, post.topPart].forEach((o, j) => {
+                const dir = V(o.position.x, 0, o.position.z);
+                if (dir.lengthSq() < 1e-4) dir.set(1, 0, 0);
+                dir.normalize();
+                flying.push({ o, dir, p0: o.position.clone(), r0: o.rotation.clone(), d: 5 + j * 1.5 + Math.random() * 2, h: 1.2 + Math.random(), spin: (Math.random() < 0.5 ? -1 : 1) * (4 + Math.random() * 3) });
+            });
+        });
+        const blast = tl.tween(1.6, (k) => {
+            flying.forEach((f) => {
+                f.o.position.set(f.p0.x + f.dir.x * f.d * k, f.p0.y + f.h * Math.sin(Math.PI * Math.min(1, k * 1.2)) - 1.5 * k * k, f.p0.z + f.dir.z * f.d * k);
+                // Bascule vers l'extérieur (axe perpendiculaire à la poussée).
+                f.o.rotation.set(f.r0.x + f.dir.z * f.spin * k, f.r0.y, f.r0.z - f.dir.x * f.spin * k);
+            });
+        }, ease.out).then(() => flying.forEach((f) => { f.o.visible = false; }));
+        await tl.tween(1.2, (k) => {
+            ninja.root.rotation.y = rot0 + Math.PI * 4 + Math.PI * 2 * 1.5 * k;
         }, ease.linear);
         ninja.root.rotation.y = rot0;
-        sound.splash();
-        burst();
-        if (sound.thunder) sound.thunder();
-        // Il s'arrête net ; le dôme éclate vers l'extérieur.
+        // Il s'arrête net ; le dôme se dissipe, la poussière retombe.
         pose(tl, 'guard', 0.3, ease.out);
         await tl.tween(0.8, (k) => {
-            kaiten.scale.setScalar(1.4 + k * 2.2);
+            kaiten.scale.set(1.6 + k * 0.5, 2.15 * (1 - k * 0.3), 1.6 + k * 0.5);
             kaitenMat.uniforms.uOpacity.value = 1 - k;
+            dustRingMat.uniforms.uOpacity.value = 1 - k;
         }, ease.out);
+        await blast;
         kaiten.visible = false;
         byakugan(0);
         face(tl, 'angry', 0, 0.5);

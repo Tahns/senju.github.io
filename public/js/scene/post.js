@@ -38,10 +38,13 @@ export class Post {
         this.bright = new THREE.ShaderMaterial({
             uniforms: { tColor: { value: null }, texel: { value: new THREE.Vector2() } },
             vertexShader: VERTEX,
+            // safe() : un pixel invalide (NaN) ou démesuré ne doit pas se propager
+            // par le halo et le flou (il faisait des blocs noirs dans le ciel).
             fragmentShader: `uniform sampler2D tColor; uniform vec2 texel; varying vec2 vUv;
+                vec3 safe(vec3 c){ return clamp(vec3(c.r == c.r ? c.r : 0.0, c.g == c.g ? c.g : 0.0, c.b == c.b ? c.b : 0.0), 0.0, 64.0); }
                 void main(){
-                    vec3 c = texture2D(tColor, vUv + texel * vec2(-1.0, -1.0)).rgb + texture2D(tColor, vUv + texel * vec2(1.0, -1.0)).rgb
-                           + texture2D(tColor, vUv + texel * vec2(-1.0, 1.0)).rgb + texture2D(tColor, vUv + texel * vec2(1.0, 1.0)).rgb;
+                    vec3 c = safe(texture2D(tColor, vUv + texel * vec2(-1.0, -1.0)).rgb) + safe(texture2D(tColor, vUv + texel * vec2(1.0, -1.0)).rgb)
+                           + safe(texture2D(tColor, vUv + texel * vec2(-1.0, 1.0)).rgb) + safe(texture2D(tColor, vUv + texel * vec2(1.0, 1.0)).rgb);
                     c *= 0.25;
                     float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
                     float k = smoothstep(0.75, 1.6, l);
@@ -55,10 +58,11 @@ export class Post {
             uniforms: { tColor: { value: null }, dir: { value: new THREE.Vector2() } },
             vertexShader: VERTEX,
             fragmentShader: `uniform sampler2D tColor; uniform vec2 dir; varying vec2 vUv;
+                vec3 safe(vec3 c){ return clamp(vec3(c.r == c.r ? c.r : 0.0, c.g == c.g ? c.g : 0.0, c.b == c.b ? c.b : 0.0), 0.0, 64.0); }
                 void main(){
-                    vec3 c = texture2D(tColor, vUv).rgb * 0.227;
-                    c += (texture2D(tColor, vUv + dir * 1.385).rgb + texture2D(tColor, vUv - dir * 1.385).rgb) * 0.316;
-                    c += (texture2D(tColor, vUv + dir * 3.231).rgb + texture2D(tColor, vUv - dir * 3.231).rgb) * 0.07;
+                    vec3 c = safe(texture2D(tColor, vUv).rgb) * 0.227;
+                    c += (safe(texture2D(tColor, vUv + dir * 1.385).rgb) + safe(texture2D(tColor, vUv - dir * 1.385).rgb)) * 0.316;
+                    c += (safe(texture2D(tColor, vUv + dir * 3.231).rgb) + safe(texture2D(tColor, vUv - dir * 3.231).rgb)) * 0.07;
                     gl_FragColor = vec4(c, 1.0);
                 }`,
             depthTest: false,
@@ -83,9 +87,10 @@ export class Post {
                 uniform vec2 disk[${TAPS}];
                 varying vec2 vUv;
                 float viewZ(vec2 uv){ float d = texture2D(tDepth, uv).x * 2.0 - 1.0; return 2.0 * near * far / (far + near - d * (far - near)); }
-                float coc(float z){ float c = (z - focus) / z; return c > 0.0 ? clamp(c * 1.5, 0.0, 1.0) : clamp(-c * 0.5, 0.0, 1.0); }
+                float coc(float z){ float c = (z - focus) / max(z, 1e-3); c = c == c ? c : 0.0; return c > 0.0 ? clamp(c * 1.5, 0.0, 1.0) : clamp(-c * 0.5, 0.0, 1.0); }
+                vec3 safe(vec3 c){ return clamp(vec3(c.r == c.r ? c.r : 0.0, c.g == c.g ? c.g : 0.0, c.b == c.b ? c.b : 0.0), 0.0, 64.0); }
                 void main(){
-                    vec3 col = texture2D(tColor, vUv).rgb;
+                    vec3 col = safe(texture2D(tColor, vUv).rgb);
                     float c = coc(viewZ(vUv));
                     if (c > 0.03) {
                         vec3 sum = col;
@@ -95,12 +100,12 @@ export class Post {
                             float cs = coc(viewZ(uv));
                             // Un point net (Akira) ne bave pas sur le fond flou.
                             float w = smoothstep(0.0, 0.25, cs);
-                            sum += texture2D(tColor, uv).rgb * w;
+                            sum += safe(texture2D(tColor, uv).rgb) * w;
                             wsum += w;
                         }
                         col = sum / wsum;
                     }
-                    col += texture2D(tBloom, vUv).rgb * 0.26;
+                    col += safe(texture2D(tBloom, vUv).rgb) * 0.26;
                     // Étalonnage : couleurs un peu plus riches, ombres légèrement bleutées.
                     float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
                     col = mix(vec3(l), col, 1.14);

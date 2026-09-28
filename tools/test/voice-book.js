@@ -11,7 +11,7 @@ const { chromium } = require(process.env.PLAYWRIGHT || 'playwright');
   let fails = 0;
   try {
     await p.goto('http://localhost:8765/?quality=low&speed=3&at=shelf');
-    await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Entrer', null, { timeout: 120000 });
+    await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Commencer', null, { timeout: 120000 });
     await p.click('#scene-start');
     await p.waitForFunction(() => document.documentElement.classList.contains('scene-frozen'), null, { timeout: 200000 });
     const book = await p.evaluate(() => document.getElementById('stage').dataset.book);
