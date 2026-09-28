@@ -67,3 +67,14 @@ est fluide même si le rendu logiciel est lent ; hors des passages demandés,
 le rêve avance au même pas sans être dessiné. Les intervalles sont en
 secondes de rêve ; le script affiche l'instant de chaque sous-titre pour les
 choisir.
+
+## Voix off
+
+```sh
+python3 -m RangeHTTPServer 8765        # serveur qui gère les requêtes partielles (pip install rangehttpserver)
+node tools/test/voice.js               # écran Histoire : le paragraphe suit la voix
+node tools/test/voice-book.js captures # carnet de l'histoire : mots lus, page qui suit la voix
+```
+
+Le petit serveur `python3 -m http.server` ne gère pas les requêtes partielles :
+le navigateur ne peut alors pas se déplacer dans l'audio (GitHub Pages, lui, les gère).

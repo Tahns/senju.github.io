@@ -436,3 +436,12 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   manette ✕ / ○ partout ; lecture des chapitres dans une fenêtre à barre
   orange ● ■ ▲ avec emblème et fumée ; écran HRP comme le Canva (Akira à
   gauche avec nom et pastilles, présentation à droite, caméra déplacée).
+- **Texte de la voix off** : le chapitre 1 complet (11 paragraphes) est calé
+  sur la narration (repères trouvés dans les pauses de la voix, débit régulier
+  de 14 à 17 caractères par seconde). Quelques fautes corrigées (« inconnues »,
+  « en corrélation avec », « des taijutsu-men », « Hyûga »).
+- **Deux carnets réorganisés** : le premier est l'histoire lue à voix haute (le
+  texte avance mot après mot avec la voix, les pages tournent seules, barre de
+  progression dans la barre du carnet) ; le second est la fiche (présentation,
+  résumé de l'histoire, caractère, objectifs, HRP). Le registre des comptes est
+  retiré. L'écran Histoire suit aussi la voix, paragraphe par paragraphe.

@@ -363,8 +363,9 @@ export function buildRoom(scene) {
 
     const random = T.rng(101);
     const specials = {
-        hoko: { row: 2, z: -0.3, mesh: specialBook('hoko') },
-        second: { row: 2, z: 0.3, mesh: specialBook('second') }
+        // Pris dans cet ordre : d'abord l'histoire (voix off), puis la fiche.
+        histoire: { row: 2, z: -0.3, mesh: specialBook('histoire') },
+        fiche: { row: 2, z: 0.3, mesh: specialBook('fiche') }
     };
     const books = {};
     const ROT = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);

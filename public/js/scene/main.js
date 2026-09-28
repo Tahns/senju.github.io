@@ -791,14 +791,17 @@ async function start() {
         dreaming = false;
         html.classList.remove('dreaming', 'menu-open');
     }
+    // Voix off (écran Histoire ou carnet de l'histoire) : musique et ambiance s'effacent.
+    function duckForVoice(speaking) {
+        radio.setVolume(sound.on ? volumes.music * (speaking ? 0.2 : 1) : 0);
+        sound.setVolumes({ ...volumes, music: volumes.music * (speaking ? 0.2 : 1), ambience: volumes.ambience * (speaking ? 0.35 : 1) });
+    }
+    document.addEventListener('senju-voice', (e) => duckForVoice(e.detail));
     // Écran de la catégorie (façon Storm) ; « Oui » dans la pause ramène au menu.
     const screens = createScreens({
         sound,
         // Voix off : la musique et l'ambiance s'effacent pendant qu'elle parle.
-        onVoice(speaking) {
-            radio.setVolume(sound.on ? volumes.music * (speaking ? 0.2 : 1) : 0);
-            sound.setVolumes({ ...volumes, music: volumes.music * (speaking ? 0.2 : 1), ambience: volumes.ambience * (speaking ? 0.35 : 1) });
-        },
+        onVoice: duckForVoice,
         muted: () => !sound.on,
         onSide: (side) => dream.menuSide(side),
         onExit() {
@@ -922,15 +925,15 @@ async function start() {
             await goToShelf();
         }
         if (!at || at === 'shelf') {
-            await takeBook('hoko');
-            await read('hoko');
-            await putBack('hoko');
+            await takeBook('histoire');
+            await read('histoire');
+            await putBack('histoire');
         }
         if (at !== 'bed') {
-            say('Et le registre du clan…', 2.5);
-            await takeBook('second');
-            await read('second');
-            await putBack('second');
+            say('Et sa fiche…', 2.5);
+            await takeBook('fiche');
+            await read('fiche');
+            await putBack('fiche');
         }
         await goToBed();
         await dreamSequence();

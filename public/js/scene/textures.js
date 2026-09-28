@@ -285,8 +285,8 @@ export function pageEdges() {
 }
 
 const THEMES = {
-    hoko: { leather: ['#8a261c', '#641710', '#3a0c08'], gold: '#d6b35e', light: '#f0d78f', title: ['AKIRA', 'HYÛGA'], seal: '日向', sealBg: '#b3261b', kicker: 'CLAN HYÛGA · KONOHA' },
-    second: { leather: ['#34427a', '#1f2856', '#0e1230'], gold: '#c8d2e6', light: '#eef2fb', title: ['REGISTRE', ''], subtitle: '', seal: '両', sealBg: '#3a4a8c', kicker: 'CLAN HYÛGA · COMPTES' }
+    fiche: { leather: ['#8a261c', '#641710', '#3a0c08'], gold: '#d6b35e', light: '#f0d78f', title: ['AKIRA', 'HYÛGA'], seal: '日向', sealBg: '#b3261b', kicker: 'CLAN HYÛGA · KONOHA' },
+    histoire: { leather: ['#34427a', '#1f2856', '#0e1230'], gold: '#c8d2e6', light: '#eef2fb', title: ['HISTOIRE', ''], subtitle: '', seal: '史', sealBg: '#3a4a8c', kicker: 'NAISSANCE HYÛGA' }
 };
 
 function leather(ctx, w, h, colors, random) {
@@ -305,7 +305,7 @@ function leather(ctx, w, h, colors, random) {
 // Couverture (reprend le dessin de la couverture HTML du carnet).
 export function bookCover(kind) {
     const theme = THEMES[kind];
-    const random = rng(kind === 'hoko' ? 5 : 6);
+    const random = rng(kind === 'fiche' ? 5 : 6);
     return canvasTexture(512, 712, (ctx, w, h) => {
         leather(ctx, w, h, theme.leather, random);
         // Cadre doré.
@@ -351,7 +351,7 @@ export function bookCover(kind) {
 
 export function bookBack(kind) {
     const theme = THEMES[kind];
-    const random = rng(kind === 'hoko' ? 8 : 9);
+    const random = rng(kind === 'fiche' ? 8 : 9);
     return canvasTexture(256, 356, (ctx, w, h) => {
         leather(ctx, w, h, theme.leather, random);
         ctx.strokeStyle = theme.gold;
@@ -365,7 +365,7 @@ export function bookBack(kind) {
 
 export function bookSpine(kind) {
     const theme = THEMES[kind];
-    const random = rng(kind === 'hoko' ? 12 : 13);
+    const random = rng(kind === 'fiche' ? 12 : 13);
     return canvasTexture(96, 512, (ctx, w, h) => {
         leather(ctx, w, h, theme.leather, random);
         ctx.fillStyle = theme.gold;
