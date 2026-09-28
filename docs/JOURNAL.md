@@ -491,3 +491,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (plus de marche à la couture) ; peau sous le col cachée.
 - **Blocs noirs dans le ciel du menu** : un pixel invalide se propageait par le
   halo et le flou ; le post-traitement filtre maintenant ces valeurs.
+- **« Accélérer » permanent** : « Passer » (qui disparaissait et ne s'arrêtait
+  plus) devient un interrupteur ×4 en bas à droite, qu'on active et désactive
+  quand on veut ; masqué dans les menus, les cartes et pendant la lecture.
+- **Musique** : « Shirohae (The Rain Stops) » (bande originale de Naruto
+  Shippûden), choisie par le joueur, dans la chambre et le menu.

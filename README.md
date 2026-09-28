@@ -12,7 +12,7 @@ façon jeux Naruto Storm.
 Avant le carnet, une petite scène en 3D, vue à la première personne :
 
 1. Akira arrive dans le couloir et fait glisser la porte (shoji) de sa chambre.
-2. Il va au coffre près de l'entrée et remonte une boîte à musique en laque : la musique « Sadness and Sorrow » (bande originale de Naruto, publication officielle Aniplex) démarre dans le lecteur YouTube officiel, dans un coin. Si YouTube ne se charge pas, la boîte joue « Sakura Sakura ».
+2. Il va au coffre près de l'entrée et remonte une boîte à musique en laque : la musique « Shirohae » (bande originale de Naruto Shippûden) démarre dans le lecteur YouTube officiel, dans un coin. Si YouTube ne se charge pas, la boîte joue « Sakura Sakura ».
 3. Il se dirige vers la bibliothèque : l'index gauche fait basculer le carnet de son histoire, la main gauche le prend par le dos (les bras ne se croisent jamais) et il l'ouvre.
 4. Le visiteur lit l'histoire (ou l'écoute avec **Écouter** : le texte avance avec la voix), puis clique sur **Ranger** : Akira remet le livre en place et le redresse du bout du doigt.
 5. Il prend un deuxième carnet, la fiche d'Akira, le feuillette, le range.
@@ -34,7 +34,8 @@ Le texte des écrans est lu dans les pages du carnet (`index.html`) : on ne l'é
 - Bouton son en haut à droite : volumes Musique / Ambiance / Effets, mémorisés.
 - Style des écrans inspiré des serveurs Naruto RP (lettrage pinceau, violet et magenta), rêve au rendu lisse façon Zenkai RP : ombrage doux, herbe qui ondule, profondeur de champ et halo lumineux. Konoha est construit en entier : rues en terre, maisons à étages en bois et enduit, balcons, auvents, enseignes, réservoirs d'eau ronds, poteaux électriques, arbres touffus, tour du Hokage, falaise boisée, villageois et oiseaux.
 - Bruitages et musique générés (pas, porte, livres, boîte à musique, grillons, taiko et flûte dans le rêve), activés par défaut, avec un bouton pour couper le son.
-- Bouton **Passer** pour accélérer jusqu'au prochain livre, liens « Sélection de la catégorie » et « Aller directement au carnet » sur l'écran d'accueil.
+- Parcours : l'accueil n'a qu'un bouton **Commencer**, qui ouvre le menu (Histoire, HRP). **Histoire** lance la chambre et les deux carnets ; à la fin, une carte « Fin » propose le rêve en bonus.
+- Bouton **Accélérer** en bas à droite : un interrupteur (×4) qu'on active et désactive quand on veut ; masqué dans les menus et pendant la lecture.
 - Police pinceau (Permanent Marker, licence Apache 2.0) servie par le site : `public/fonts/`.
 - Tout est dessiné en code (aucune image, sauf l'aperçu de partage `public/img/og.jpg`) : `public/js/scene/`.
   - `room.js` : la chambre (tatamis, porte, bibliothèque, futon, lanterne, fenêtre…)

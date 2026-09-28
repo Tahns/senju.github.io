@@ -214,7 +214,7 @@ async function start() {
         window.Carnet.setSound(!sound.on);
     });
 
-    // Musique de la chambre : « Sadness and Sorrow » (YouTube), ou la boîte à musique en secours.
+    // Musique de la chambre : « Shirohae » (YouTube), ou la boîte à musique en secours.
     function startRoomMusic() {
         radio.play('room').then((ok) => {
             if (!ok) sound.startMusic();
@@ -321,18 +321,27 @@ async function start() {
         timeline.wait(seconds).then(() => caption.classList.remove('is-visible'));
     }
 
-    // « Passer » accélère jusqu'au prochain moment de lecture.
+    // « Accélérer » : un interrupteur permanent (en bas à droite), qu'on
+    // active et désactive quand on veut ; masqué dans les menus et pendant la lecture.
     const baseSpeed = Number(params.get('speed')) || 1; // ?speed=4 : pour les tests
+    let fast = false;
+    const speed = () => baseSpeed * (fast ? 4 : 1);
+    function renderFast() {
+        skipBtn.classList.toggle('is-on', fast);
+        skipBtn.setAttribute('aria-pressed', String(fast));
+        skipBtn.innerHTML = fast ? 'Vitesse normale <span aria-hidden="true">▶</span>' : 'Accélérer <span aria-hidden="true">⏩</span>';
+    }
     function checkpoint() {
-        timeline.scale = baseSpeed;
-        skipBtn.hidden = true;
+        timeline.scale = speed();
     }
     function allowSkip() {
         skipBtn.hidden = false;
+        renderFast();
     }
     skipBtn.addEventListener('click', () => {
-        timeline.scale = 14;
-        skipBtn.hidden = true;
+        fast = !fast;
+        timeline.scale = speed();
+        renderFast();
     });
 
     /* ---------------- Poses des mains ---------------- */
@@ -683,7 +692,7 @@ async function start() {
         const onAct = (name) => {
             if (!skipping || name !== chapter) return;
             skipping = false;
-            timeline.scale = baseSpeed;
+            timeline.scale = speed();
             sound.setOn(sound.on);
             caption.hidden = false;
             allowSkip();
@@ -1092,6 +1101,6 @@ async function start() {
     }, { once: true });
     replayBtn.addEventListener('click', () => location.reload());
 
-    timeline.scale = baseSpeed;
+    timeline.scale = speed();
     if (params.has('autostart')) startBtn.click();
 }
