@@ -542,8 +542,8 @@ export function buildNinja(sculpt, avatarGltf = null) {
         // Bandes et étui de cuisse ajustés à la jambe du modèle.
         J.hipR.children.forEach((o) => {
             if (!o.isMesh) return;
-            if (o.material === M.bandage) o.scale.set(0.85, 1, 0.85);
-            else o.position.x = 0.064;
+            if (o.material === M.bandage) o.scale.set(0.95, 1, 0.95);
+            else o.position.x = 0.074;
         });
     }
 

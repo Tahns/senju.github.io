@@ -187,11 +187,95 @@ function hideCoveredSkin(model) {
     });
 }
 
+// Silhouette : le haut du modèle est un sweat ample (poche kangourou, bas
+// évasé) qui gonflait le ventre, avec des manches bouffantes, alors que le
+// pantalon est très fin (jambes plus fines que les bras). On resserre le
+// devant du ventre, on affine un peu les manches et on
+// élargit les jambes du pantalon (déformation dans l'espace de liaison).
+function reshapeClothes(model) {
+    model.updateMatrixWorld(true);
+    const m4 = new THREE.Matrix4();
+    const v = new THREE.Vector3();
+    const a = new THREE.Vector3();
+    const b = new THREE.Vector3();
+    const ab = new THREE.Vector3();
+    const q = new THREE.Vector3();
+    const CHILD = { UpperArm: 'LowerArm', LowerArm: 'Hand', UpperLeg: 'LowerLeg', LowerLeg: 'Foot' };
+    model.traverse((o) => {
+        if (!o.isSkinnedMesh) return;
+        const name = o.material.name || '';
+        const top = /Tops/.test(name);
+        const bottom = /Bottoms/.test(name);
+        if (!top && !bottom) return;
+        const bones = o.skeleton.bones;
+        const at = bones.map((bn, i) => new THREE.Vector3().setFromMatrixPosition(m4.copy(o.skeleton.boneInverses[i]).invert()).applyMatrix4(o.bindMatrixInverse));
+        const find = (n) => bones.findIndex((bn) => bn.name === n);
+        const hips = find('J_Bip_C_Hips');
+        const chest = find('J_Bip_C_UpperChest') >= 0 ? find('J_Bip_C_UpperChest') : find('J_Bip_C_Chest');
+        const neck = find('J_Bip_C_Neck');
+        if (hips < 0 || chest < 0 || neck < 0) return;
+        // Devant du ventre : côté +z dans l'espace de liaison de ce modèle.
+        const front = 1;
+        const axisZ = at[hips].z;
+        const pos = o.geometry.attributes.position;
+        const idx = o.geometry.attributes.skinIndex;
+        const wt = o.geometry.attributes.skinWeight;
+        // Le haut et le pantalon partagent les mêmes sommets (un seul maillage à
+        // deux matériaux) : on ne touche qu'aux sommets de ce vêtement.
+        const own = new Set(o.geometry.index ? o.geometry.index.array : []);
+        for (let i = 0; i < pos.count; i++) {
+            if (own.size && !own.has(i)) continue;
+            let best = -1;
+            let bw = 0;
+            for (let k = 0; k < 4; k++) {
+                const w = wt.getComponent(i, k);
+                if (w > bw) { bw = w; best = idx.getComponent(i, k); }
+            }
+            if (best < 0) continue;
+            const bone = bones[best].name;
+            v.fromBufferAttribute(pos, i);
+            const limb = /_(UpperArm|LowerArm|UpperLeg|LowerLeg)$/.exec(bone);
+            // Bas du haut accroché aux cuisses : traité comme le ventre.
+            if (limb && !(top && limb[1].endsWith('Leg'))) {
+                const arm = limb[1].endsWith('Arm');
+                // Manches affinées (sweat) ; jambes du pantalon élargies.
+                const f = top && arm ? 0.88 : bottom && !arm ? 1.2 : 1;
+                if (f === 1) continue;
+                const child = find(bone.replace(limb[1], CHILD[limb[1]]));
+                if (child < 0) continue;
+                a.copy(at[best]);
+                b.copy(at[child]);
+                ab.subVectors(b, a);
+                const t = Math.max(0, Math.min(1, q.subVectors(v, a).dot(ab) / ab.lengthSq()));
+                q.copy(a).addScaledVector(ab, t);
+                // Cuisse : élargie progressivement (rien à l'aine, sinon le
+                // pantalon dépasse du bas du haut).
+                const g = limb[1] === 'UpperLeg' ? 1 + (f - 1) * THREE.MathUtils.smoothstep(t, 0.08, 0.45) : f;
+                v.sub(q).multiplyScalar(g).add(q);
+                pos.setXYZ(i, v.x, v.y, v.z);
+                continue;
+            }
+            if (!top || !(limb || /_C_(Hips|Spine|Chest|UpperChest)$/.test(bone))) continue;
+            // Ventre : devant resserré, surtout entre le nombril et le bas du haut.
+            const yTop = at[chest].y;
+            if (v.y > yTop) continue;
+            // 0 à la poitrine, 1 du ventre jusqu'en bas du haut.
+            const belly = 1 - THREE.MathUtils.smoothstep(v.y, yTop - 0.14, yTop);
+            const dz = v.z - axisZ;
+            if (dz * front > 0) v.z = axisZ + dz * (1 - 0.3 * belly);
+            pos.setXYZ(i, v.x, v.y, v.z);
+        }
+        pos.needsUpdate = true;
+        o.geometry.computeBoundingSphere();
+    });
+}
+
 function restyle(model) {
     mergeHair(model);
     thickenNeck(model);
     tuckSkin(model);
     hideCoveredSkin(model);
+    reshapeClothes(model);
     // Le haut porte déjà le gilet de jōnin peint dans sa texture ; le bas passe au bleu nuit.
     const tints = { Bottoms: '#8f9ad8' };
     // Peau un peu plus chaude (le blanc VRoid paraissait délavé sous le soleil).
