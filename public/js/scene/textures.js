@@ -343,8 +343,11 @@ export function bookCover(kind) {
         ctx.fillRect(-18, -38, 36, 76);
         ctx.fillStyle = '#f7e3c8';
         ctx.font = '26px "Yuji Syuku", serif';
-        ctx.fillText(theme.seal[0], 0, -8);
-        ctx.fillText(theme.seal[1], 0, 24);
+        // Sceau d'un ou deux kanji (un seul : centré ; sinon « undefined » s'affichait).
+        if (theme.seal.length > 1) {
+            ctx.fillText(theme.seal[0], 0, -8);
+            ctx.fillText(theme.seal[1], 0, 24);
+        } else ctx.fillText(theme.seal, 0, 8);
         ctx.restore();
     });
 }
@@ -372,8 +375,7 @@ export function bookSpine(kind) {
         [0.07, 0.1, 0.9, 0.93].forEach((y) => ctx.fillRect(6, y * h, w - 12, 4));
         ctx.textAlign = 'center';
         ctx.font = '40px "Yuji Syuku", serif';
-        ctx.fillText(theme.seal[0], w / 2, h * 0.3);
-        ctx.fillText(theme.seal[1], w / 2, h * 0.3 + 46);
+        [...theme.seal].forEach((c, i) => ctx.fillText(c, w / 2, h * 0.3 + i * 46));
         konoha(ctx, w / 2, h * 0.72, 46, theme.gold, 8);
         const shade = ctx.createLinearGradient(0, 0, w, 0);
         shade.addColorStop(0, 'rgba(0,0,0,.4)');

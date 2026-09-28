@@ -528,3 +528,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   couverture ; trajets courbés pour contourner les coins ; porte : doigts
   serrés dont le bout entre dans le creux. Même mise en scène, mêmes durées ;
   plus rien au-delà d'1 mm sur tout le parcours.
+- Couverture et dos du carnet de l'histoire : le sceau d'un seul kanji (史)
+  affichait « undefined » ; il est maintenant centré.
