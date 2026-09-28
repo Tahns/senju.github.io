@@ -1,107 +1,101 @@
 # SWOT : Akira Hyûga, Naissance Hyûga
 
-Revue complète au 28 septembre, après le transfert de la candidature Canva
-(« Hyûga par PrinceOFD ») sur le site. Les faiblesses sont classées par
-visibilité : on corrige d'abord ce qu'un visiteur remarque en premier.
+Revue au 28 septembre (soir), après le parcours simplifié, le Kaiten façon
+anime, les corrections du modèle, des mains et du suivi de la voix off. Les
+faiblesses sont classées par visibilité : on corrige d'abord ce qu'un
+visiteur remarque en premier.
 
 ## Forces
 
-- **Le Canva en entier, en mieux** : histoire, caractère (6 traits), objectifs
-  à court, moyen et long terme, présentation HRP. Le texte n'est écrit qu'une
-  fois, dans le carnet (`index.html`) : les écrans du menu le relisent.
-- **Le style du Canva reproduit** :
-  - écran titre noir (« Entrer ✕ ») ;
-  - sélection de la catégorie à trois entrées (Histoire, Personnage, HRP), avec
-    bandes noires, bandeau de parchemin et symboles de manette ✕ / ○ ;
-  - écrans de catégorie : sélection des chapitres, caractère révélé trait par
-    trait, objectifs en panneaux, HRP avec le personnage à gauche ;
-  - pause « Revenir à la sélection de la catégorie ? Oui / Non » ;
-  - transitions (bandeau, glissé-zoom, zoom depuis la carte du chapitre).
-- **L'histoire lue à voix haute** : le premier carnet suit la voix off mot
-  après mot. Chaque mot a son instant, calculé sur l'audio (activité de la
-  voix, fins de phrases calées sur les pauses). Les pages tournent seules et la
-  musique baisse pendant la voix. L'écran Histoire suit aussi la voix.
-- **Voix off optimisée** : mono, -16 LUFS, Opus 1,6 Mo (MP3 de repli), chargée
-  seulement au clic.
-- **Mise en scène 3D unique** : chambre vue à la première personne, deux
-  carnets pris dans la bibliothèque (l'histoire, puis la fiche), puis un rêve
-  façon Hyûga :
+- **Un parcours clair** : « Commencer » ouvre le menu (Histoire, HRP).
+  « Histoire » lance la chambre et les deux carnets. Quand Akira s'endort, une
+  carte « Fin » propose le rêve en bonus. Plus de doublons entre menu, carnets
+  et rêve.
+- **Tout le Canva, en carnets** :
+  - le carnet de l'histoire, lu à voix haute ;
+  - la fiche : présentation, résumé, caractère (6 traits), objectifs à court,
+    moyen et long terme, HRP.
+  Le texte n'est écrit qu'une fois, dans `index.html`.
+- **Voix off calée sur la vraie parole** : chaque mot a son instant, mesuré par
+  reconnaissance vocale (615 mots sur 628 reconnus). Le texte s'encre mot après
+  mot, les pages tournent seules et la musique baisse pendant la voix. Vérifié
+  en lecture continue, sans décalage. La voix est optimisée (1,6 Mo, chargée au clic).
+- **Le style du Canva** : écran titre noir, menu avec bandes « cinéma » et
+  bandeau de parchemin, symboles ✕ / ○, écran HRP (personnage à gauche,
+  présentation à droite), pause « Oui / Non ».
+- **Un rêve façon Hyûga** :
   - Byakugan (yeux pâles qui s'illuminent) ;
   - Jûken : garde basse, rafale des 64 paumes, Hakke Kûshô ;
-  - Hakkeshō Kaiten ;
-  - pluie de ryō du trésorier (son objectif « Comptabilité ») ;
-  - « Un jour… chef du clan Hyûga ».
-- **Menu vivant** : Akira en 3D dans son aura, une pose par catégorie, orage,
-  shunshin et clin d'œil en confirmant.
-- **Musique officielle** : bande originale de Naruto publiée par Aniplex sur
-  YouTube, « Sadness and Sorrow » dans la chambre et « Man of the World » dans
-  le menu. Replis en place (boîte à musique, ambiance d'orage).
-- **Corrections de rendu** : la peau ne traverse plus les vêtements, les pieds
-  restent au sol dans les gardes basses.
+  - Kaiten comme dans l'anime : dôme bleu nuageux, anneaux de poussière,
+    poteaux soufflés vers l'extérieur ;
+  - pluie de ryō du trésorier, puis « Un jour… chef du clan Hyûga ».
+- **Un modèle corrigé** :
+  - proportions humaines (6,4 têtes, bras et cuisses rallongés) ;
+  - ventre et jambes rééquilibrés, cou sans couture ;
+  - peau qui ne traverse plus les vêtements ;
+  - mains qui ne se retournent plus.
+  L'écart entre le squelette d'animation et le modèle est de 5 à 6 mm.
+- **Confort** : interrupteur « Accélérer » (×4) permanent, réglages de volume,
+  musique choisie par le joueur (« Shirohae »).
 - **Robustesse** :
-  - le carnet s'affiche seul si WebGL manque ou si la carte graphique lâche ;
-  - qualité adaptative dès ~30 images/s, 3D allégée derrière les écrans ;
+  - qualité adaptative ;
+  - post-traitement protégé contre les pixels invalides ;
+  - repli sur le carnet seul (avec l'histoire et la voix) si la 3D manque ;
   - fichiers versionnés contre le cache.
-- **Tests automatiques** dans `tools/test/` : menu, voix off de l'écran,
-  carnet lu (précision au mot), parcours complet, poses sous plusieurs angles.
-- **Léger à héberger** : pas d'outil de build, GitHub Pages suffit ; tout est
-  dessiné en code, sauf le modèle 3D (CC0) et la voix.
+- **Tests automatiques** (`tools/test/`) : menu, parcours complet, carnet lu
+  (précision au mot et lecture continue), carnet seul, poses, enregistrement
+  vidéo.
+- **Partage** : image d'aperçu et vidéo de 31 s refaites avec la version finale.
 
 ## Faiblesses
 
 | # | Faiblesse | Visibilité | Piste |
 |---|-----------|-----------|-------|
-| F1 | Physique d'un Hyûga en partie : cheveux noirs et yeux du Byakugan faits ; la coupe reste celle du modèle VRoid (cheveux courts). | Moyenne | Modèle VRoid dédié (cheveux longs dans la même texture, tenue du clan) |
-| F2 | Jamais vérifié sur un vrai appareil pendant ces changements : fluidité, son, lecteurs YouTube, voix Opus sur Safari. Tout a été testé en rendu logiciel, sans son. | Haute (risque) | Tour complet sur ordinateur et téléphone par le propriétaire |
-| F3 | ~~Histoire inaccessible sans la 3D~~ | — | Corrigé : bouton « Histoire » / « Fiche » dans la barre du carnet seul |
-| F4 | Images du Canva non reprises (captures de l'anime, pour les droits) : traits illustrés par des kanji, portrait « à venir » (et une erreur 404 dans la console). | Moyenne | Illustrations du joueur (portrait, tenues Chûnin / Enfant) |
-| F5 | Un seul chapitre écrit sur 8 : la grille des chapitres est surtout faite de cases « À venir ». | Moyenne | Écrire les chapitres suivants (le carnet et l'écran les prennent automatiquement) |
-| F6 | Suivi du texte encore approximatif au milieu des longues phrases sans pause (instants calculés sur l'énergie de la voix, pas par reconnaissance vocale). | Faible à moyenne | Recalage manuel d'un passage signalé, ou transcription horodatée si un outil devient accessible |
-| F7 | ~~Vidéo et image d'aperçu anciennes~~ | — | Corrigé : toutes deux refaites |
-| F8 | ~~Restes du rêve de Hoko~~ | — | Corrigé : code retiré, Kûshô filmé vers le village |
-| F9 | Zoom vers la lecture raccourci ; à confirmer sur un appareil lent. | Faible | Désactiver en qualité basse si besoin |
-| F10 | Poids au premier chargement : ~4 Mo de modèle + ~0,7 Mo de three.js (la voix n'est chargée qu'au clic). | Faible | Modèle allégé (textures, maillage) |
+| F1 | Rien n'a été vu sur un vrai appareil : fluidité, son, lecteur YouTube, voix Opus sur Safari, téléphone. Tout est testé en rendu logiciel et sans son. | Haute (risque) | Tour complet sur ordinateur et téléphone par le joueur, puis corrections |
+| F2 | Menu à 2 catégories : la « roue » affiche la même catégorie au-dessus et en dessous (« HRP / HRP »). | Moyenne | Masquer les voisines (ou n'en afficher qu'une) quand il n'y a que 2 catégories |
+| F3 | Coupe du modèle VRoid : cheveux courts, alors qu'un Hyûga les porte souvent longs. Les cheveux noirs et le Byakugan sont faits. | Moyenne | Modèle VRoid dédié (cheveux longs dans la même texture, tenue du clan) |
+| F4 | Images du Canva non reprises (captures de l'anime, pour les droits) : portrait « à venir », avec une erreur 404 dans la console. | Moyenne | Illustrations du joueur (portrait, tenues Chûnin / Enfant) |
+| F5 | Un seul chapitre écrit sur 8 (« Chapitres écrits : 1 sur 8 »). | Moyenne | Chapitres suivants, avec leur voix off (même outil de calage) |
+| F6 | Deux écarts entre le texte et la voix : « en corrélation **avec** » et « **des taijutsu-men** » à l'écrit, pas à l'oral. | Faible | Aligner l'écrit sur la voix, ou réenregistrer ces phrases |
+| F7 | Chambre : la main posée sur la porte reste un peu repliée, et la main gauche est légèrement retenue pendant le transport du livre (limites du poignet). | Faible | Retoucher ces deux gestes |
+| F8 | Restes de code des écrans retirés (Histoire, Personnage) dans `screens.js` et `style.css`. | Faible (maintenance) | Nettoyage |
+| F9 | Poids au premier chargement : ~4 Mo de modèle et ~0,7 Mo de three.js (la voix n'est chargée qu'au clic). | Faible | Modèle allégé (textures, maillage) |
 
 ## Opportunités
 
-- **Un vrai Akira** : un modèle VRoid Hyûga (cheveux longs, Byakugan, tenue du
-  clan) serait le gain le plus visible de tout le site.
-- **Le rêve de son histoire** : le récit se termine sur le dojo qu'il veut bâtir
-  pour rallier les maîtres du taijutsu et les Hyûga. Une scène finale au dojo
-  relierait l'histoire, le rêve et les objectifs.
-- **Byakugan plus marqué** : veines autour des yeux à l'activation, vision à
-  360° (effet de caméra).
-- **Voix off ailleurs** : le Canva avait « Écouter » ; le caractère et les
-  objectifs pourraient être lus aussi. Le système mot à mot est prêt pour tout
-  texte avec son audio.
-- **Chapitres qui se débloquent** : « Chapitres finis 1/8 » se remplit tout seul
-  à chaque chapitre écrit ; la carte du chapitre peut recevoir une image.
-- **Partage** : nouvelle vidéo (menu façon Canva, carnet qui suit la voix, Jûken)
-  et nouvelle image d'aperçu pour les liens (Discord, réseaux).
+- **Un vrai Akira** : un modèle VRoid Hyûga (cheveux longs, tenue du clan)
+  serait le gain le plus visible.
+- **Le dojo de son histoire** : le récit se termine sur le dojo qu'il veut
+  bâtir. Une scène finale du rêve au dojo relierait l'histoire, le rêve et les
+  objectifs.
+- **La voix off ailleurs** : le système mot à mot et l'outil de calage par
+  reconnaissance vocale sont prêts. On peut lire aussi la fiche (caractère,
+  objectifs) ou les prochains chapitres.
+- **Byakugan plus marqué** : veines autour des yeux à l'activation.
+- **Partage** : la vidéo et l'image d'aperçu sont prêtes pour Discord et les
+  réseaux.
 
 ## Menaces
 
-- **Contenus tiers** : les vidéos YouTube de la bande originale peuvent être
-  retirées ou bloquées selon le pays (replis en place). L'univers Naruto reste
-  une œuvre protégée, utilisée ici en création de fan.
+- **Contenus tiers** : la vidéo YouTube de la musique peut être retirée ou
+  bloquée (repli : boîte à musique, orage). L'univers Naruto est une œuvre
+  protégée, utilisée ici en création de fan.
 - **Données personnelles publiques** : la partie HRP (âge, métier,
-  disponibilités, heures de jeu) est en ligne, visible de tous, et le dépôt est
-  public.
+  disponibilités, heures de jeu) est en ligne, et le dépôt est public.
 - **Appareils faibles** : modèle animé, post-traitement et herbe sur mobile
   d'entrée de gamme (paliers de qualité en place, à confirmer en vrai).
-- **Navigateurs** : WebGL2 requis pour la scène ; lecture de l'Opus variable sur
-  les anciens Safari (repli MP3 choisi automatiquement).
+- **Navigateurs** : WebGL2 requis pour la scène ; l'Opus peut manquer sur les
+  anciens Safari (repli MP3 automatique).
 - **Mises à jour** : oublier `python3 tools/version.py` après une modification
-  peut servir un mélange d'anciens et de nouveaux fichiers pendant ~10 min.
+  peut mélanger anciens et nouveaux fichiers pendant ~10 min.
 - **Attentes de style** : chaque retour peut remettre en cause un choix. Le
-  Canva sert de référence : à garder comme arbitre.
+  Canva et les captures de l'anime servent d'arbitre.
 
 ## Plan (ordre de passage)
 
-1. F2 : tour complet sur un vrai ordinateur et un vrai téléphone (son, YouTube,
-   voix, fluidité), puis corrections.
-2. F1 : modèle Hyûga (cheveux longs, tenue).
-3. F7 : nouvelle vidéo et nouvelle image d'aperçu.
-4. F3 : carnet de l'histoire accessible sans la 3D.
-5. F4, F5 : illustrations et chapitres fournis par le joueur.
-6. F8, F9, F10 : nettoyage, zoom, poids.
+1. F1 : tour complet sur un vrai ordinateur et un vrai téléphone, retours en captures.
+2. F2 : roue du menu à 2 catégories.
+3. F6, F7, F8 : écarts texte/voix, gestes de la chambre, nettoyage.
+4. F3 : modèle Hyûga.
+5. F4, F5 : illustrations et chapitres suivants fournis par le joueur.
+6. F9 : allègement du modèle.
