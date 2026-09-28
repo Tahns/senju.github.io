@@ -475,3 +475,4 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   ventre et bas du haut resserrés de 30 %, manches affinées (×0,88), jambes du
   pantalon élargies (×1,2, progressivement depuis l'aine). Le haut et le
   pantalon partagent les mêmes sommets : chaque vêtement ne déforme que les siens.
+- **Voix off calée sur la vraie parole** : le texte décrochait dès le 2ᵉ paragraphe (instants estimés, jusqu'à 4,8 s d'avance) ; `data-t`/`data-w` remesurés par reconnaissance vocale (Whisper small ONNX, transformers.js dans Node), alignés mot à mot sur le texte (615/628 mots reconnus, les autres interpolés), débuts de mots recalés sur la fin des silences ; `book.js` : mots en cache, une seule boucle, recalage aussi sur `timeupdate` ; `voice-book.js` vérifie 40 s de lecture continue.

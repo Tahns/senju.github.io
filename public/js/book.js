@@ -983,7 +983,7 @@
     const voiceBtn = document.getElementById('voice');
     const voiceBar = document.getElementById('voice-bar');
     const voiceTime = document.getElementById('voice-time');
-    const voice = { audio: null, paras: [], raf: 0, current: -1 };
+    const voice = { audio: null, paras: [], words: [], times: [], raf: 0, current: -1 };
 
     function voiceSrc(path) {
         const opus = path.replace(/\.mp3$/, '.webm');
@@ -1023,6 +1023,10 @@
             .filter((p, i, all) => all.indexOf(p) === i)
             .sort((a, b) => a.dataset.t - b.dataset.t);
         voice.paras.forEach(wrapWords);
+        // Mots et instants lus une fois pour toutes : la boucle d'affichage ne
+        // refait ni recherche dans la page ni découpage de data-w à chaque image.
+        voice.words = voice.paras.map((p) => Array.from(p.querySelectorAll('.w')));
+        voice.times = voice.paras.map((p) => (p.dataset.w ? p.dataset.w.split(',').map(Number) : null));
         voice.src = voiceSrc(path);
         renderVoice();
     }
@@ -1054,13 +1058,13 @@
         voice.paras.forEach((p, k) => {
             const start = Number(p.dataset.t);
             const end = k + 1 < voice.paras.length ? Number(voice.paras[k + 1].dataset.t) : d;
-            const words = p.querySelectorAll('.w');
+            const words = voice.words[k];
             let read = 0;
             if (k < i) read = words.length;
             else if (k === i) {
                 // Instant de chaque mot (data-w, calculé sur l'audio) ; sinon,
                 // progression régulière entre les repères des paragraphes.
-                const times = p.dataset.w ? p.dataset.w.split(',').map(Number) : null;
+                const times = voice.times[k];
                 if (times && times.length === words.length) {
                     while (read < times.length && times[read] <= t + 0.06) read++;
                 } else {
@@ -1086,7 +1090,9 @@
         renderVoice();
     }
 
+    // Une seule boucle à la fois (pause puis lecture rapprochées).
     function tickVoice() {
+        cancelAnimationFrame(voice.raf);
         followVoice();
         if (voice.audio && !voice.audio.paused) voice.raf = requestAnimationFrame(tickVoice);
     }
@@ -1100,6 +1106,9 @@
             voice.audio.addEventListener('ended', () => { voice.audio.currentTime = 0; voice.current = -1; followVoice(); });
             voice.audio.addEventListener('loadedmetadata', renderVoice);
             voice.audio.addEventListener('seeked', followVoice);
+            // Filet de sécurité si les images sont suspendues (onglet en arrière-plan) :
+            // le texte est recalé au moins quatre fois par seconde.
+            voice.audio.addEventListener('timeupdate', followVoice);
             window.__bookVoice = voice.audio; // pour les tests (tools/test/voice.js)
         }
         const a = voice.audio;
