@@ -463,3 +463,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   raccourci ; le test du parcours se ferme proprement en cas d'erreur.
 - **Image d'aperçu refaite** (`public/img/og.jpg`) : Akira aux yeux du Byakugan
   et aux cheveux noirs, bras croisés devant la tour du Hokage.
+- **Audit du modèle** (8 poses × 4 angles, `pose-shots.js`) : la bourse des
+  ryō pendait dans le vide à côté de la hanche et la sacoche du bas du dos
+  flottait derrière (placées pour l'ancien corps, plus large que le modèle).
+  La bourse est recalée contre la hanche, sous l'ourlet du haut ; la sacoche
+  est masquée (le gilet peint a déjà sa poche). Rien d'autre à signaler :
+  pas de peau à travers les vêtements, mains, cou, bandeau et sandales en place.
