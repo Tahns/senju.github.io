@@ -517,3 +517,16 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Boîte à musique** : c'était un bloc plein avec le mécanisme posé dessus ;
   le cylindre dépassait de ~4 cm et traversait le couvercle fermé. Coffret
   creux (fond et quatre parois), mécanisme à l'intérieur, sous le couvercle.
+- **Mains qui traversaient les livres et la porte** : mesuré phalange par
+  phalange (distance à la boîte du livre, au panneau et au creux de la porte),
+  jusqu'à 33 mm de paume et 30 mm de doigts dans les livres, 4 mm à la porte.
+  Les doigts se referment maintenant comme de vrais doigts (`fitDigits`) :
+  toutes les articulations plient ensemble, chaque phalange qui touche
+  s'arrête et les suivantes s'enroulent autour. Prise du dos : paume et doigts
+  à plat contre le plat, pouce passé autour du dos (nouveau réglage `wrap`,
+  pouce un peu allongé) ; livre tenu : doigts derrière, pouces sur la
+  couverture ; trajets courbés pour contourner les coins ; porte : doigts
+  serrés dont le bout entre dans le creux. Même mise en scène, mêmes durées ;
+  plus rien au-delà d'1 mm sur tout le parcours.
+- Couverture et dos du carnet de l'histoire : le sceau d'un seul kanji (史)
+  affichait « undefined » ; il est maintenant centré.

@@ -139,6 +139,18 @@ export function buildRoom(scene) {
     const doorHandle = new THREE.Object3D();
     doorHandle.position.set(-0.36, 1.02, 0.03);
     door.add(doorHandle);
+    // Forme de la porte pour les doigts (distance signée, repère de la porte) :
+    // un panneau plein de 3,5 cm, creusé d'1,1 cm à la poignée côté couloir.
+    const doorTouch = {
+        object: door,
+        radius: 1.2,
+        sd(p) {
+            const qx = Math.abs(p.x) - 0.475, qy = Math.abs(p.y - 1) - 1, qz = Math.abs(p.z) - 0.0175;
+            const panel = Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0);
+            const e = Math.hypot((p.x + 0.36) / 0.0176, (p.y - 1.02) / 0.0275);
+            return Math.max(panel, -Math.max((e - 1) * 0.0176, 0.006 - p.z));
+        }
+    };
     // Rail et linteau.
     box(room, 2.0, 0.03, 0.08, darkWood, 0.45, 0.015, D / 2 - 0.035);
     box(room, 2.0, 0.06, 0.08, darkWood, 0.45, 2.03, D / 2 - 0.035);
@@ -678,6 +690,7 @@ export function buildRoom(scene) {
         door,
         musicBox: { group: musicBox, lid, key, lidEdge, keyGrip, setPlaying(speed) { drumSpeed = speed; } },
         doorHandle,
+        doorTouch,
         books,
         bed: { x: bedX, z: bedZ },
         shelf: { front, boards },

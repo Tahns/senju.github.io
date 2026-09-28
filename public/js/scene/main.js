@@ -7,7 +7,7 @@
  */
 import * as THREE from 'three';
 import { buildRoom, EYE } from './room.js';
-import { Arm, handQuaternion } from './arms.js';
+import { Arm, handQuaternion, boxTouch } from './arms.js';
 import { Timeline, ease } from './timeline.js';
 import { setAnisotropy } from './textures.js';
 import { SceneAudio } from './audio.js';
@@ -149,6 +149,9 @@ async function start() {
     const right = new Arm(rig, 1);
     const left = new Arm(rig, -1);
     const arms = [right, left];
+    // Ce que les doigts touchent sans le traverser : les deux carnets et la porte.
+    const touch = [...Object.values(room.books).map(({ mesh }) => boxTouch(mesh)), room.doorTouch];
+    arms.forEach((arm) => { arm.touch = touch; });
 
     /* ---------------- Caméra (les yeux d'Akira) ---------------- */
     const cam = { pos: V(0, EYE, 4.55), yaw: 0, pitch: -0.04, roll: 0, bobY: 0, bobRoll: 0 };
@@ -262,7 +265,9 @@ async function start() {
     }
 
     // Déplace la cible d'une main sous `parent`, jusqu'à une pose locale.
-    function reach(arm, parent, position, quaternion, seconds, grip = null, easing = ease.inOut) {
+    // via.position (repère de `parent`) courbe le trajet, pour contourner l'objet
+    // au lieu de passer au travers.
+    function reach(arm, parent, position, quaternion, seconds, grip = null, easing = ease.inOut, via = {}) {
         arm.attachTo(parent);
         const p0 = arm.target.position.clone();
         const q0 = arm.target.quaternion.clone();
@@ -271,6 +276,7 @@ async function start() {
         const to = (key) => (grip[key] === null ? (grip.curl !== undefined ? grip.curl : g0.curl) : grip[key]);
         return timeline.tween(seconds, (k) => {
             arm.target.position.lerpVectors(p0, position, k);
+            if (via.position) arm.target.position.addScaledVector(via.position.clone().multiplyScalar(2).sub(p0).sub(position), k * (1 - k));
             arm.target.quaternion.slerpQuaternions(q0, quaternion, k);
             if (grip) {
                 Object.keys(grip).forEach((key) => {
@@ -280,7 +286,11 @@ async function start() {
         }, easing);
     }
 
-    const rest = (arm, seconds = 0.8) => reach(arm, rig, arm.rest.position, arm.rest.quaternion, seconds, { curl: 0.25, thumb: 0.2, index: null });
+    // `drop` : la main descend d'abord (sous le livre qu'elle tenait).
+    const rest = (arm, seconds = 0.8, drop = 0) => {
+        const via = drop ? arm.target.getWorldPosition(V(0, 0, 0)).applyMatrix4(new THREE.Matrix4().copy(rig.matrixWorld).invert()).lerp(arm.rest.position, 0.5).add(V(0, -drop, 0)) : null;
+        return reach(arm, rig, arm.rest.position, arm.rest.quaternion, seconds, { curl: 0.25, thumb: 0.2, index: null, wrap: 0, spread: 0.4 }, ease.inOut, { position: via });
+    };
 
     // Place la main pour qu'un point précis de la main (bout d'un doigt, paume…)
     // tombe exactement sur `point`, avec l'orientation voulue.
@@ -360,20 +370,26 @@ async function start() {
         const q = quat(V(0.15, -1, 0), V(1, -0.4, 0));
         return { position: handAt(taker, V(-w / 2 + 0.022, h / 2 + 0.006 + lift, 0), q, TIP.index), quaternion: q };
     }
-    // Main refermée sur le haut du livre, qui dépasse de l'étagère : paume contre
-    // le plat gauche, près du dos, doigts vers le fond, pouce sur la tranche. (Paume
-    // sur le dos, la main gauche devrait tourner de 180° : le poignet ne suit pas.)
+    // Main refermée sur le haut du livre, qui dépasse de l'étagère : paume et
+    // doigts à plat contre le plat gauche, doigts vers le fond, pouce passé autour
+    // du dos jusqu'à l'autre plat (une vraie pince). (Paume sur le dos, la main
+    // gauche devrait tourner de 180° ; doigts vers le haut, le poignet plierait à
+    // plus de 70° : il ne suit pas.) La paume reste à 6 mm du plat : le talon de
+    // la main dépasse sous elle.
+    const SPINE = { curl: 0.9, thumb: 1.8, wrap: 1, index: null };
     function spineGrip(book, out = 0) {
         const { w, h, t } = book.userData.size;
-        const q = quat(V(0, 0, 1), V(1, 0.3, 0));
-        return { position: handAt(taker, V(-w / 2 + 0.03 - out, h / 2 - 0.05, -t / 2 - 0.003), q, TIP.palm), quaternion: q };
+        const q = quat(V(0, 0, 1), V(1, 0.4, 0));
+        return { position: handAt(taker, V(-w / 2 + 0.015 - out, h / 2 - 0.0625, -t / 2 - 0.006), q, TIP.palm), quaternion: q };
     }
-    // Livre tenu devant soi : doigts à plat derrière, pouces sur la couverture.
+    // Livre tenu devant soi : doigts à plat derrière, pouces passés par-dessus
+    // la tranche, sur la couverture.
+    const HOLD = { curl: 0.15, thumb: 1.5, wrap: 1, index: null };
     function holdGrip(book, side) {
         const { w, h, t } = book.userData.size;
         const arm = side > 0 ? right : left;
         const q = quat(V(0, 0, 1), V(-side * 0.35, 1, 0));
-        return { position: handAt(arm, V(side * (w / 2 - 0.035), -h / 2 + 0.06, -t / 2 - 0.004), q, TIP.palm), quaternion: q };
+        return { position: handAt(arm, V(side * (w / 2 - 0.015), -h / 2 + 0.06, -t / 2 - 0.006), q, TIP.palm), quaternion: q };
     }
 
     // Pose d'un livre penché de `angle` sur son arête basse, côté dos.
@@ -407,9 +423,11 @@ async function start() {
         timeline.tween(0.8, (k) => cam.pos.lerpVectors(p0, V(-0.05, EYE - 0.04, 3.4), k));
         const onDoor = quat(V(1, 0, 0.3), V(0.3, 0.12, -1));
         const handle = room.doorHandle.position;
-        const flat = (gap) => handAt(left, V(handle.x, handle.y - 0.005, 0.0175 + gap), onDoor, V(-0.0075, -0.021, -0.155));
-        await reach(left, room.door, flat(0.04), onDoor, 0.8, { curl: 0.05, thumb: 0.1, index: null });
-        await reach(left, room.door, flat(0.001), onDoor, 0.25, { curl: 0.14, thumb: 0.15 });
+        // Doigts serrés : le majeur et ses voisins entrent dans le creux (1 cm),
+        // l'auriculaire, trop bas, se pose contre le panneau.
+        const flat = (gap) => handAt(left, V(handle.x - 0.006, handle.y + 0.005, 0.0035 + gap), onDoor, V(-0.0075, -0.021, -0.155));
+        await reach(left, room.door, flat(0.04), onDoor, 0.8, { curl: 0.05, thumb: 0.1, index: null, spread: 0 });
+        await reach(left, room.door, flat(0.001), onDoor, 0.25, { curl: 0.2, thumb: 0.15 });
         sound.door();
         const x0 = room.door.position.x;
         const slide = timeline.tween(1.5, (k) => { room.door.position.x = x0 + 0.88 * k; }, ease.inOut);
@@ -502,11 +520,13 @@ async function start() {
         await reach(taker, book, press.position, press.quaternion, 0.25, { index: 0.22 });
         sound.bookTilt();
         await tilt(kind, 0, 0.36, 0.55);
-        // 2. La main se referme sur le dos du livre, qui dépasse maintenant.
+        // 2. La main se referme sur le dos du livre, qui dépasse maintenant ; elle
+        // contourne le coin du haut au lieu de le traverser.
         const grip = spineGrip(book, 0.05);
-        await reach(taker, book, grip.position, grip.quaternion, 0.35, { curl: 0.2, thumb: 0.3, index: null });
+        const { w, h, t } = book.userData.size;
+        await reach(taker, book, grip.position, grip.quaternion, 0.35, { curl: 0.2, thumb: 0.3, index: null, wrap: 0 }, ease.inOut, { position: V(-w / 2 - 0.08, h / 2 + 0.02, -t / 2 - 0.06) });
         const hold = spineGrip(book);
-        await reach(taker, book, hold.position, hold.quaternion, 0.3, { curl: 0.78, thumb: 0.75 });
+        await reach(taker, book, hold.position, hold.quaternion, 0.3, SPINE);
         // 3. Il le fait glisser hors de l'étagère.
         sound.bookSlide();
         await tilt(kind, 0.36, 0.2, 0.55, [0, 0.19]);
@@ -516,11 +536,14 @@ async function start() {
         const lifting = move(book, rig, V(-0.02, -0.19, -0.4), show, 1.1);
         look(1.1, { pitch: -0.12 });
         await timeline.wait(0.5);
+        // La main droite arrive par-dessous et par-derrière le livre.
         const r = holdGrip(book, 1);
-        reach(right, book, r.position, r.quaternion, 0.6, { curl: 0.06, thumb: 0.85 });
+        reach(right, book, r.position, r.quaternion, 0.45, { curl: 0.1, thumb: 0.3, wrap: 0 }, ease.inOut, { position: r.position.clone().add(V(0.05, -0.12, -0.12)) })
+            .then(() => reach(right, book, r.position, r.quaternion, 0.15, HOLD));
         await lifting;
+        // La main gauche glisse le long du dos, le pouce toujours autour.
         const l = holdGrip(book, -1);
-        await reach(left, book, l.position, l.quaternion, 0.45, { curl: 0.06, thumb: 0.85, index: null });
+        await reach(left, book, l.position, l.quaternion, 0.45, HOLD);
         await timeline.wait(0.5);
     }
 
@@ -536,9 +559,9 @@ async function start() {
     async function putBack(kind) {
         const { mesh: book, slot } = room.books[kind];
         await move(book, rig, V(-0.02, -0.19, -0.4), new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.32, -0.12, -0.04)), 0.7);
-        rest(right, 0.7);
+        rest(right, 0.7, 0.25);
         const hold = spineGrip(book);
-        await reach(taker, book, hold.position, hold.quaternion, 0.5, { curl: 0.78, thumb: 0.75 });
+        await reach(taker, book, hold.position, hold.quaternion, 0.5, SPINE);
         lookAt(0.9, slot.position);
         // Il glisse le livre, encore penché, dans sa place…
         const out = tiltedPose(kind, 0.2, 0.19);
@@ -547,9 +570,10 @@ async function start() {
         await tilt(kind, 0.2, 0.3, 0.5, [0.19, 0]);
         // …puis le redresse du bout de l'index.
         const grip = spineGrip(book, 0.05);
-        await reach(taker, book, grip.position, grip.quaternion, 0.25, { curl: 0.15, thumb: 0.3 });
+        await reach(taker, book, grip.position, grip.quaternion, 0.25, { curl: 0.15, thumb: 0.3, wrap: 0 });
         const push = topFingerGrip(book, 0.03);
-        await reach(taker, book, push.position, push.quaternion, 0.35, { curl: 0.85, thumb: 0.6, index: 0.05 });
+        const { w, h, t } = book.userData.size;
+        await reach(taker, book, push.position, push.quaternion, 0.35, { curl: 0.85, thumb: 0.6, index: 0.05 }, ease.inOut, { position: V(-w / 2 - 0.08, h / 2 + 0.03, -t / 2 - 0.06) });
         const press = topFingerGrip(book);
         await reach(taker, book, press.position, press.quaternion, 0.2, { index: 0.2 });
         await tilt(kind, 0.3, 0, 0.4);
