@@ -1243,6 +1243,13 @@ html:not(.js) .js-only {
     stroke-width: 1.8;
 }
 
+.vignette--sword {
+    width: 88%;
+    margin-top: 2.4em;
+    stroke-width: 1.5;
+    opacity: .45;
+}
+
 .book-end {
     margin-top: 1.6em !important;
     text-align: center;

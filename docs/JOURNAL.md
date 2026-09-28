@@ -361,3 +361,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
 - **Test automatique du menu** (`tools/test/menu.js`) : fait le tour des
   7 catégories (mot, kanji, voisines), confirme et vérifie que le carnet
   s'ouvre à la bonne page.
+- **Carnet, page Ambitions** : le bas de la page était vide ; une vignette
+  à l'encre y montre l'épée de sa lignée (« Récupérer l'épée de sa
+  lignée ») posée sur son support — fourreau, garde, poignée tressée et
+  cordon —, dans le même trait que la vignette de la Chronologie.
