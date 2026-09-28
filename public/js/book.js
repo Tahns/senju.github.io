@@ -1057,11 +1057,17 @@
             let read = 0;
             if (k < i) read = words.length;
             else if (k === i) {
-                // Progression dans le paragraphe, pondérée par la longueur des mots.
-                const f = Math.min(1, (t - start) / Math.max(0.5, end - start - 0.6));
-                const total = p.textContent.length;
-                let acc = 0;
-                words.forEach((w) => { if ((acc += w.textContent.length + 1) <= f * total + 1) read++; });
+                // Instant de chaque mot (data-w, calculé sur l'audio) ; sinon,
+                // progression régulière entre les repères des paragraphes.
+                const times = p.dataset.w ? p.dataset.w.split(',').map(Number) : null;
+                if (times && times.length === words.length) {
+                    while (read < times.length && times[read] <= t + 0.06) read++;
+                } else {
+                    const f = Math.min(1, (t - start) / Math.max(0.5, end - start - 0.6));
+                    const total = p.textContent.length;
+                    let acc = 0;
+                    words.forEach((w) => { if ((acc += w.textContent.length + 1) <= f * total + 1) read++; });
+                }
             }
             words.forEach((w, n) => {
                 w.classList.toggle('is-read', n < read);
@@ -1092,6 +1098,7 @@
             voice.audio.addEventListener('pause', () => { announceVoice(false); followVoice(); });
             voice.audio.addEventListener('ended', () => { voice.audio.currentTime = 0; voice.current = -1; followVoice(); });
             voice.audio.addEventListener('loadedmetadata', renderVoice);
+            voice.audio.addEventListener('seeked', followVoice);
             window.__bookVoice = voice.audio; // pour les tests (tools/test/voice.js)
         }
         const a = voice.audio;

@@ -445,3 +445,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   progression dans la barre du carnet) ; le second est la fiche (présentation,
   résumé de l'histoire, caractère, objectifs, HRP). Le registre des comptes est
   retiré. L'écran Histoire suit aussi la voix, paragraphe par paragraphe.
+- **Suivi du texte recalé sur la voix** : il y avait un décalage (les mots
+  avançaient à vitesse constante dans chaque paragraphe). Chaque mot a
+  maintenant son propre instant (`data-w`), calculé sur l'audio : les mots
+  n'avancent que quand la voix parle (jamais pendant les silences), et les fins
+  de phrases et virgules sont calées sur les pauses réelles (la plupart des
+  ponctuations tombent sur une pause). Mise à jour aussi quand on saute dans l'audio.

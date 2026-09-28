@@ -35,6 +35,29 @@ const { chromium } = require(process.env.PLAYWRIGHT || 'playwright');
       console.log(ok ? 'ok  ' : 'FAIL', `${t} s → « ${r.text}… » ${r.read}/${r.all} mots lus | ${r.folio}`);
       if (process.argv[2]) await p.screenshot({ path: `${process.argv[2]}-${t}.png` });
     }
+    // Précision au mot : chaque paragraphe a un instant par mot, et à l'instant
+    // d'un mot donné, exactement les mots jusqu'à lui sont colorés.
+    const check = await p.evaluate(async () => {
+      const a = window.__bookVoice;
+      a.pause();
+      const res = [];
+      const ps = [...document.querySelectorAll('#book p[data-w]')];
+      for (const [pi, wi] of [[1, 10], [4, 20], [9, 30]]) {
+        const pp = ps[pi];
+        const times = pp.dataset.w.split(',').map(Number);
+        const words = pp.querySelectorAll('.w').length;
+        a.currentTime = times[wi] + 0.02;
+        await new Promise((r) => a.addEventListener('seeked', r, { once: true }));
+        await new Promise((r) => setTimeout(r, 100));
+        res.push({ pi, wi, same: times.length === words, read: pp.querySelectorAll('.w.is-read').length, now: pp.querySelector('.w.is-now')?.textContent });
+      }
+      return res;
+    });
+    check.forEach((c) => {
+      const ok = c.same && c.read === c.wi + 1;
+      if (!ok) fails++;
+      console.log(ok ? 'ok  ' : 'FAIL', `paragraphe ${c.pi + 1}, mot ${c.wi + 1} « ${c.now} » : ${c.read} mots colorés${c.same ? '' : ' (nombre de mots différent !)'}`);
+    });
   } catch (e) {
     fails++;
     console.log('ERR', e.message.split('\n')[0]);
