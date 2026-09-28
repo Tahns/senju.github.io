@@ -321,7 +321,7 @@ export function bindAvatar(gltf, J, parent) {
         g.binds.forEach((bind) => faces.forEach((m) => { if (meshIndex(m) === bind.mesh) targets.push([m, bind.index, bind.weight / 100]); }));
         return (value) => targets.forEach(([m, i, w]) => { m.morphTargetInfluences[i] = value * w; });
     };
-    const expressions = { blink: morph('Blink'), angry: morph('Angry'), joy: morph('Joy'), fun: morph('Fun') };
+    const expressions = { blink: morph('Blink'), wink: morph('Blink_R'), angry: morph('Angry'), joy: morph('Joy'), fun: morph('Fun') };
 
     // Doigts : repliés vers la paume (main détendue, ou poing fermé sur la poignée).
     // Côté « L » du modèle = main droite du personnage (x > 0).

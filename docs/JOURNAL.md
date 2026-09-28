@@ -369,3 +369,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   qui s'arrêtait à mi-page se termine par une petite vignette à l'encre —
   la forêt de Takumi (II), la feuille noyée dans l'eau du test de chakra
   (III), un rouleau des récits du clan déroulé (IV).
+- **Menu, clin d'œil** : en confirmant une catégorie, Hoko fait un clin
+  d'œil et sourit à la caméra qui fonce vers lui, juste avant de
+  disparaître dans son tourbillon de feuilles (expression « Blink_R » du
+  modèle). SWOT mis à jour (menu, vignettes).
