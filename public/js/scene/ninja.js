@@ -226,111 +226,6 @@ function dressAvatar(avatar, M) {
     chest.add(swirl);
 }
 
-// Cheveux longs des Hyûga (comme Neji) : une longue mèche part de la nuque,
-// tombe dans le dos et se noue près de la pointe. Elle pend toujours avec la
-// gravité (légèrement écartée du dos) et ondule au vent.
-function hyugaHair(avatar) {
-    const head = avatar.head;
-    const box = new THREE.Box3();
-    const v = new THREE.Vector3();
-    avatar.model.updateMatrixWorld(true);
-    const eyes = new THREE.Vector3();
-    let n = 0;
-    avatar.model.traverse((o) => {
-        if (!o.isSkinnedMesh) return;
-        const name = o.material.name || '';
-        const hairMesh = /HAIR/.test(name);
-        const iris = /EyeIris/.test(name);
-        if (!hairMesh && !iris) return;
-        const pos = o.geometry.attributes.position;
-        for (let i = 0; i < pos.count; i += 3) {
-            o.getVertexPosition(i, v);
-            o.localToWorld(v);
-            head.worldToLocal(v);
-            if (hairMesh) box.expandByPoint(v);
-            else { eyes.add(v); n++; }
-        }
-    });
-    if (box.isEmpty() || !n) return null;
-    eyes.divideScalar(n);
-    const k = 1 / head.getWorldScale(v).x;
-    const c = box.getCenter(new THREE.Vector3());
-    // Le dos de la tête est du côté opposé aux yeux.
-    const back = eyes.z > c.z ? -1 : 1;
-    const pivot = new THREE.Group();
-    pivot.position.set(c.x, c.y - (box.max.y - box.min.y) * 0.12, back > 0 ? box.max.z - 0.02 * k : box.min.z + 0.02 * k);
-    head.add(pivot);
-    // Profil de la mèche : large sous la nuque, resserrée au nœud, pointe effilée.
-    const LEN = 0.62;
-    const rings = 40;
-    const segs = 28;
-    const width = (t) => (t < 0.72 ? 0.075 - t * 0.045 : t < 0.78 ? 0.036 - (t - 0.72) * 0.18 : 0.034 * (1 - (t - 0.78) / 0.22) ** 0.7 + 0.004);
-    const pos = [];
-    const idx = [];
-    for (let r = 0; r <= rings; r++) {
-        const t = r / rings;
-        const w = width(t);
-        const d = w * 0.42;
-        // La mèche s'écarte un peu en bas (elle glisse sur le dos).
-        const zOff = 0.012 + t * 0.035;
-        for (let q = 0; q <= segs; q++) {
-            const a = (q / segs) * Math.PI * 2;
-            // Stries des mèches : un léger relief sur le pourtour.
-            const ridge = 1 + 0.07 * Math.sin(a * 9 + t * 3) * (1 - t * 0.5);
-            pos.push(Math.cos(a) * w * ridge * k, -t * LEN * k, (Math.sin(a) * d * ridge + zOff) * k);
-        }
-    }
-    for (let r = 0; r < rings; r++) {
-        for (let q = 0; q < segs; q++) {
-            const a = r * (segs + 1) + q;
-            const b = a + segs + 1;
-            idx.push(a, b, a + 1, b, b + 1, a + 1);
-        }
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    geo.setIndex(idx);
-    geo.computeVertexNormals();
-    const mat = new THREE.MeshStandardMaterial({ color: '#33241f', roughness: 0.55, metalness: 0.05, emissive: '#1a110e', emissiveIntensity: 0.25 });
-    const tail = new THREE.Mesh(geo, mat);
-    tail.castShadow = true;
-    const hang = new THREE.Group();
-    hang.add(tail);
-    pivot.add(hang);
-    // Attache blanche près de la pointe.
-    const tie = new THREE.Mesh(new THREE.CylinderGeometry(0.03 * k, 0.03 * k, 0.03 * k, 20), new THREE.MeshStandardMaterial({ color: '#e9e6dd', roughness: 0.7 }));
-    tie.scale.set(1, 1, 0.5);
-    tie.position.set(0, -0.745 * LEN * k, (0.012 + 0.745 * 0.035) * k);
-    hang.add(tie);
-    const backDir = new THREE.Vector3();
-    const up = new THREE.Vector3();
-    const side = new THREE.Vector3();
-    const m = new THREE.Matrix4();
-    const qParent = new THREE.Quaternion();
-    const qWant = new THREE.Quaternion();
-    return {
-        update(time) {
-            // Dos du personnage, à l'horizontale, dans le monde.
-            head.getWorldQuaternion(qParent);
-            backDir.set(0, 0, back).applyQuaternion(qParent);
-            backDir.y = 0;
-            if (backDir.lengthSq() < 1e-6) backDir.set(0, 0, 1);
-            backDir.normalize();
-            // Gravité, un peu écartée du dos, avec un balancement au vent.
-            const sway = Math.sin(time * 1.7) * 0.05 + Math.sin(time * 2.9) * 0.02;
-            up.set(0, 1, 0).addScaledVector(backDir, -0.08 - Math.sin(time * 1.3) * 0.02).normalize();
-            side.crossVectors(up, backDir).normalize();
-            up.addScaledVector(side, sway).normalize();
-            const z = backDir.clone().addScaledVector(up, -backDir.dot(up)).normalize();
-            side.crossVectors(up, z).normalize();
-            m.makeBasis(side, up, z);
-            qWant.setFromRotationMatrix(m);
-            pivot.parent.getWorldQuaternion(qParent);
-            hang.quaternion.copy(qParent.invert().multiply(qWant));
-        }
-    };
-}
-
 // `sculpt` : la tête sculptée (repli) ; `avatarGltf` : le modèle anime chargé (voir avatar.js).
 export function buildNinja(sculpt, avatarGltf = null) {
     // Ombrage lisse : tissus avec un léger lustre (sheen), peau satinée.
@@ -647,7 +542,6 @@ export function buildNinja(sculpt, avatarGltf = null) {
     }
 
     let avatar = null;
-    let hair = null;
     if (avatarGltf) {
         fitToAvatar(measureAvatar(avatarGltf));
         avatar = bindAvatar(avatarGltf, J, root);
@@ -665,7 +559,6 @@ export function buildNinja(sculpt, avatarGltf = null) {
         });
         fitHeadband(avatar, M, tails);
         dressAvatar(avatar, M);
-        hair = hyugaHair(avatar);
     }
 
     // Vie : clignements, respiration, regard qui flâne, pans du bandeau au vent.
@@ -678,7 +571,6 @@ export function buildNinja(sculpt, avatarGltf = null) {
         if (avatar) {
             avatar.expressions.blink(blinking ? 1 : 0);
             avatar.wind(time);
-            if (hair) hair.update(time);
         } else {
             const map = blinking ? faceClosed : faceOpen;
             if (M.head.map !== map) M.head.map = map;

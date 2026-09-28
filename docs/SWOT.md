@@ -51,7 +51,7 @@ visibilité : on corrige d'abord ce qu'un visiteur remarque en premier.
 
 | # | Faiblesse | Visibilité | Piste |
 |---|-----------|-----------|-------|
-| F1 | ~~Physique d'un Hyûga~~ : cheveux sombres et longue mèche nouée faits ; la coupe du devant reste celle du modèle VRoid. | Moyenne | Modèle VRoid dédié pour aller plus loin (frange, tenue du clan) |
+| F1 | Physique d'un Hyûga en partie : cheveux noirs et yeux du Byakugan faits ; la coupe reste celle du modèle VRoid (cheveux courts). | Moyenne | Modèle VRoid dédié (cheveux longs dans la même texture, tenue du clan) |
 | F2 | Jamais vérifié sur un vrai appareil pendant ces changements : fluidité, son, lecteurs YouTube, voix Opus sur Safari. Tout a été testé en rendu logiciel, sans son. | Haute (risque) | Tour complet sur ordinateur et téléphone par le propriétaire |
 | F3 | ~~Histoire inaccessible sans la 3D~~ | — | Corrigé : bouton « Histoire » / « Fiche » dans la barre du carnet seul |
 | F4 | Images du Canva non reprises (captures de l'anime, pour les droits) : traits illustrés par des kanji, portrait « à venir » (et une erreur 404 dans la console). | Moyenne | Illustrations du joueur (portrait, tenues Chûnin / Enfant) |
