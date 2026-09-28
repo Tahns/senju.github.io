@@ -1,5 +1,5 @@
 /*
- * Tête de Hoko adulte côté rendu : on lance la sculpture dans un worker dès
+ * Tête d'Akira adulte côté rendu : on lance la sculpture dans un worker dès
  * le début (elle prend une à quatre secondes), puis on en fait des maillages.
  * Le visage est peint sur une toile et projeté de face.
  */

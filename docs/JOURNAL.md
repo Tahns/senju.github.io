@@ -377,3 +377,30 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   avec toutes ses nouveautés (plaque, kanji, roue, éclair, clin d'œil,
   shunshin), puis les temps forts du rêve. Enregistreur du menu ajouté au
   dépôt (`tools/test/record-menu.js`).
+
+## Lundi 28 septembre
+
+- **Candidature Canva transférée sur le site** : le contenu est désormais celui
+  de la présentation Canva « Hyûga par PrinceOFD » — Akira Hyûga, « The vulgar
+  child ». Carnet réécrit : présentation et tenues, histoire (chapitre 1),
+  caractère (six traits, chacun son kanji et sa couleur), objectifs à court,
+  moyen et long terme, HRP (présentation, motivation, disponibilités,
+  expérience). Couverture 3D, plaque du menu, accueil, sous-titres du rêve
+  (« Trésorier de Konoha », « Un jour… chef du clan Hyûga ») mis à jour ;
+  mentions « © PrinceOFD · Naissance Hyûga · Ver. Early Access ».
+- **Menu à trois catégories comme le Canva** (Histoire, Personnage, HRP), avec
+  une lueur par catégorie (dorée, verte, rose).
+- **Écrans des catégories** (`public/js/scene/screens.js`) : après
+  « Confirmer », au lieu d'ouvrir le carnet, un écran façon Storm d'après le
+  Canva — sélection des chapitres, caractère révélé trait par trait,
+  panneaux d'objectifs, présentation HRP — et la pause « Revenir à la
+  sélection de la catégorie ? Oui / Non » (ou lire la page dans le carnet).
+  Test du menu mis à jour.
+- **Rêve façon Hyûga** : Akira a les yeux pâles du Byakugan (iris sans
+  pupille, qui s'illuminent à l'activation) et se bat à mains nues (sabre et
+  fourreau rangés). Le kenjutsu devient le **Jûken** : garde basse, trois
+  frappes de paume à distance (onde de chakra en anneau et éclat blanc), le
+  dernier coup « Jûken et Gôken réunis » au ralenti. Le Suiton devient le
+  **Hakkeshō Kaiten** : il tourne sur lui-même dans un dôme de chakra à
+  bandes tournoyantes, qui éclate. Chapitres de la carte de fin : Jûken,
+  Kaiten, Trésorier, Un jour… (anciens liens redirigés).

@@ -1,5 +1,5 @@
 /*
- * La scène : Hoko entre dans sa chambre, prend son carnet dans la
+ * La scène : Akira entre dans sa chambre, prend son carnet dans la
  * bibliothèque, le lit, le range, en prend un second, puis va se coucher.
  *
  * Tout le scénario est dans la fonction `play()` plus bas : chaque étape est
@@ -15,6 +15,7 @@ import { buildDream } from './dream.js';
 import { loadHead } from './head.js';
 import { loadAvatar, avatarProgress } from './avatar.js';
 import { Radio } from './radio.js';
+import { createScreens } from './screens.js';
 
 const html = document.documentElement;
 const canvas = document.getElementById('scene');
@@ -140,7 +141,7 @@ async function start() {
 
     // Les textures des couvertures utilisent les polices du carnet.
     await Promise.race([
-        Promise.all(['700 64px Cinzel', '46px "Great Vibes"', '40px "Yuji Syuku"'].map((f) => document.fonts.load(f, '千手忍道火の意志 HOKO'))),
+        Promise.all(['700 64px Cinzel', '46px "Great Vibes"', '40px "Yuji Syuku"'].map((f) => document.fonts.load(f, '日向忍道火の意志 AKIRA'))),
         new Promise((resolve) => setTimeout(resolve, 2500))
     ]).catch(() => {});
 
@@ -149,7 +150,7 @@ async function start() {
     const left = new Arm(rig, -1);
     const arms = [right, left];
 
-    /* ---------------- Caméra (les yeux de Hoko) ---------------- */
+    /* ---------------- Caméra (les yeux d'Akira) ---------------- */
     const cam = { pos: V(0, EYE, 4.55), yaw: 0, pitch: -0.04, roll: 0, bobY: 0, bobRoll: 0 };
     let time = 0;
     function applyCamera() {
@@ -603,7 +604,7 @@ async function start() {
         pockets.textContent = ryo(k * k * k * 9750000);
     }
 
-    // La tête de Hoko adulte se sculpte en arrière-plan dès maintenant.
+    // La tête d'Akira adulte se sculpte en arrière-plan dès maintenant.
     const headReady = loadHead();
     const avatarReady = loadAvatar();
     let dreamReady = null;
@@ -648,7 +649,7 @@ async function start() {
         ready.then(() => { isReady = true; });
         say('Et il rêva…', 2.6, '夢');
         await timeline.wait(2.4);
-        // Réseau lent : le modèle de Hoko n'est pas encore arrivé. On le dit,
+        // Réseau lent : le modèle d'Akira n'est pas encore arrivé. On le dit,
         // avec l'avancement, plutôt qu'un écran noir silencieux.
         while (!isReady) {
             caption.textContent = 'Le rêve se prépare… ' + Math.round(avatarProgress() * 100) + ' %';
@@ -661,10 +662,11 @@ async function start() {
         html.classList.remove('eyes-closing', 'eyes-heavy');
         html.classList.add('dreaming');
         renderer.shadowMap.needsUpdate = true;
-        // ?at=dream&chapitre=suiton : le rêve défile en silence, écran noir,
-        // jusqu'au chapitre demandé (liens de la carte de fin).
-        const chapter = params.get('chapitre');
-        let skipping = ['kenjutsu', 'suiton', 'ryo', 'final'].includes(chapter);
+        // ?at=dream&chapitre=kaiten : le rêve défile en silence, écran noir,
+        // jusqu'au chapitre demandé (liens de la carte de fin). Les anciens
+        // liens (kenjutsu, suiton) mènent aux actes qui les remplacent.
+        const chapter = { kenjutsu: 'juken', suiton: 'kaiten' }[params.get('chapitre')] || params.get('chapitre');
+        let skipping = ['juken', 'kaiten', 'ryo', 'final'].includes(chapter);
         if (skipping) {
             fade.style.transition = 'none';
             fade.style.opacity = 1;
@@ -709,7 +711,7 @@ async function start() {
 
     /* ---------------- Menu « Sélection de la catégorie » ---------------- */
     // Inspiré des menus des jeux Naruto Storm : grand mot au pinceau, flèches,
-    // bandeau de parchemin ; Hoko en 3D dans son aura, une pose par catégorie.
+    // bandeau de parchemin ; Akira en 3D dans son aura, une pose par catégorie.
     const menuEl = document.getElementById('storm-menu');
     const menuWord = document.getElementById('storm-word');
     const menuKanji = document.getElementById('storm-kanji');
@@ -717,14 +719,11 @@ async function start() {
     const nearNext = document.getElementById('storm-near-next');
     const menuDesc = document.getElementById('storm-desc');
     const menuBack = document.getElementById('storm-back');
+    // Les trois catégories de la candidature Canva, chacune avec sa lueur.
     const MENU = [
-        { word: 'Personnage', kanji: '人', desc: 'Identité : nom, âge, taille, natures de chakra et famille', page: 3, pose: 'crossed' },
-        { word: 'Apparence', kanji: '姿', desc: 'Le portrait du shinobi', page: 2, pose: 'stand', mood: 'fun' },
-        { word: 'Personnalité', kanji: '心', desc: "Personnalité et caractère d'une personne", page: 4, pose: 'crossed', mood: 'fun' },
-        { word: 'Ambitions', kanji: '志', desc: 'Ses objectifs, et ce qu\'il veut bâtir pour Konoha', page: 5, pose: 'vow', mood: 'angry' },
-        { word: 'Histoire', kanji: '史', desc: 'Son passé, du village de Takumi au domaine Senju', page: 7, pose: 'seal', mood: 'angry' },
-        { word: 'Nindo', kanji: '忍道', desc: 'La voie du ninja, celle qu\'il ne reniera jamais', page: 11, pose: 'release', mood: 'angry' },
-        { word: 'Chronologie', kanji: '暦', desc: 'Les grandes dates de sa vie', page: 12, pose: 'stand' }
+        { word: 'Histoire', kanji: '史', desc: "Vivre l'histoire d'Akira Hyûga", page: 3, screen: 'histoire', tone: 'gold', pose: 'seal', mood: 'angry' },
+        { word: 'Personnage', kanji: '人', desc: "Personnalité et caractère d'une personne", page: 4, screen: 'personnage', tone: 'green', pose: 'crossed', mood: 'fun' },
+        { word: 'HRP', kanji: '己', desc: 'Informations personnelles', page: 9, screen: 'hrp', tone: 'pink', pose: 'stand' }
     ];
     let menuIndex = 0;
     let menuOpen = false;
@@ -732,6 +731,7 @@ async function start() {
     function showCategory(dir = 0) {
         const c = MENU[menuIndex];
         menuWord.textContent = c.word;
+        menuEl.dataset.tone = c.tone;
         menuKanji.textContent = c.kanji;
         menuKanji.classList.toggle('is-long', c.kanji.length > 1);
         // Les catégories voisines, en petit au-dessus et en dessous (roue façon Storm).
@@ -788,9 +788,29 @@ async function start() {
         dreaming = false;
         html.classList.remove('dreaming', 'menu-open');
     }
+    // Écran de la catégorie (façon Storm) ; « Oui » dans la pause ramène au menu.
+    const screens = createScreens({
+        sound,
+        onExit() {
+            menuEl.hidden = false;
+            menuOpen = true;
+            showCategory();
+            document.getElementById('storm-confirm').focus();
+        },
+        onBook(page) {
+            fade.style.transition = 'opacity .4s ease';
+            fade.style.opacity = 1;
+            setTimeout(() => {
+                closeMenu();
+                standalone();
+                setTimeout(() => { location.hash = '#page-' + page; }, 400);
+            }, 400);
+        }
+    });
     function confirmMenu() {
         if (!menuOpen) return;
-        const page = MENU[menuIndex].page;
+        const c = MENU[menuIndex];
+        menuOpen = false;
         sound.shimmer();
         sound.whoosh();
         dream.menuConfirm();
@@ -799,11 +819,15 @@ async function start() {
         fade.style.background = '#fff';
         fade.style.opacity = 1;
         setTimeout(() => {
+            // Akira revient derrière l'écran de la catégorie, qui sort du flash blanc.
             menuEl.classList.remove('is-confirming');
-            fade.style.background = '#000';
-            closeMenu();
-            standalone();
-            setTimeout(() => { location.hash = '#page-' + page; }, 400);
+            menuEl.hidden = true;
+            dream.menuReturn();
+            dream.menuPose(c.pose, c.mood);
+            screens.open(c.screen, c.page);
+            fade.style.transition = 'opacity .6s ease';
+            fade.style.opacity = 0;
+            setTimeout(() => { fade.style.background = '#000'; }, 600);
         }, 900);
     }
     function backMenu() {

@@ -1,6 +1,6 @@
 /*
  * Post-traitement du rêve, façon moteur de jeu : profondeur de champ (le
- * village flou derrière Hoko), halo lumineux doux, étalonnage et vignette.
+ * village flou derrière Akira), halo lumineux doux, étalonnage et vignette.
  * Trois petites passes seulement, pour rester fluide.
  */
 import * as THREE from 'three';
@@ -93,7 +93,7 @@ export class Post {
                         for (int i = 0; i < ${TAPS}; i++) {
                             vec2 uv = vUv + disk[i] * texel * blur * c;
                             float cs = coc(viewZ(uv));
-                            // Un point net (Hoko) ne bave pas sur le fond flou.
+                            // Un point net (Akira) ne bave pas sur le fond flou.
                             float w = smoothstep(0.0, 0.25, cs);
                             sum += texture2D(tColor, uv).rgb * w;
                             wsum += w;

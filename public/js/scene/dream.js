@@ -1,5 +1,5 @@
 /*
- * Le rêve de Hoko (vu à la troisième personne) : adulte, jōnin de Konoha,
+ * Le rêve d'Akira (vu à la troisième personne) : adulte, jōnin de Konoha,
  * maître du sabre et du Suiton… et chef de la section économique, qui fait
  * prospérer le village tout en remplissant ses poches.
  */
@@ -322,7 +322,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         leafGeo.attributes.position.needsUpdate = true;
     });
 
-    /* ---------------- Hoko adulte ---------------- */
+    /* ---------------- Akira adulte ---------------- */
     const ninja = buildNinja(head, avatar);
     scene.add(ninja.root);
     const spineY = ninja.J.spine.position.y;
@@ -351,7 +351,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         return m;
     });
 
-    // Dragon d'eau : un tube qui s'enroule autour de Hoko, puis jaillit.
+    // Dragon d'eau : un tube qui s'enroule autour d'Akira, puis jaillit.
     const dragonPoints = [];
     for (let i = 0; i <= 64; i++) {
         const t = i / 64;
@@ -665,14 +665,14 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         fog: false
     });
     const rainbow = new THREE.Mesh(new THREE.RingGeometry(5.2, 6.1, 96, 1, 0, Math.PI), rainbowMat);
-    // Derrière Hoko, au-dessus du village (dans l'axe des plans suivants).
+    // Derrière Akira, au-dessus du village (dans l'axe des plans suivants).
     rainbow.position.set(-6, -6, -60);
     rainbow.scale.setScalar(6);
     rainbow.visible = false;
     scene.add(rainbow);
 
     // Aura de chakra (Suiton) : une flamme bleue translucide qui monte autour
-    // de Hoko pendant les mudras, et des étincelles qui s'élèvent.
+    // d'Akira pendant les mudras, et des étincelles qui s'élèvent.
     const auraMat = new THREE.ShaderMaterial({
         uniforms: { uTime: { value: 0 }, uPower: { value: 0 } },
         // La surface ondule (silhouette vivante, pas un tube rigide).
@@ -711,6 +711,65 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     aura.position.y = 1.1;
     aura.visible = false;
     scene.add(aura);
+
+    // Hakke Kûshô (paume du vide) : une onde de chakra en anneau part de la
+    // paume et file jusqu'au poteau, avec un éclat blanc.
+    const palmWaves = [0, 1, 2].map(() => {
+        const ring = new THREE.Mesh(
+            new THREE.RingGeometry(0.1, 0.17, 48),
+            new THREE.MeshBasicMaterial({ color: '#d8e8ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })
+        );
+        const flash = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot(), color: '#eef4ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+        scene.add(ring, flash);
+        return { ring, flash };
+    });
+    function palmWave(timeline, index, from, to, big = false) {
+        const { ring, flash } = palmWaves[index];
+        const size = big ? 2.2 : 1;
+        flash.position.copy(from);
+        timeline.tween(0.35, (k) => {
+            flash.material.opacity = (1 - k) * 0.9;
+            flash.scale.setScalar((0.3 + k * 0.9) * size);
+        }, ease.out);
+        return timeline.tween(big ? 0.4 : 0.28, (k) => {
+            ring.position.lerpVectors(from, to, k);
+            ring.lookAt(to);
+            ring.scale.setScalar((1 + k * 4) * size);
+            ring.material.opacity = 0.9 * (1 - k * k);
+        }, ease.out).then(() => { ring.material.opacity = 0; });
+    }
+
+    // Hakkeshō Kaiten (rotation céleste) : un dôme de chakra qui tourbillonne
+    // autour d'Akira pendant qu'il tourne sur lui-même, puis éclate.
+    const kaitenMat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uOpacity: { value: 0 } },
+        vertexShader: `varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+            void main(){
+                vUv = uv;
+                vec4 mv = modelViewMatrix * vec4(position, 1.0);
+                vN = normalize(normalMatrix * normal); vV = -mv.xyz;
+                gl_Position = projectionMatrix * mv;
+            }`,
+        // Bandes en spirale qui tournent vite, plus denses sur les bords (contre-jour).
+        fragmentShader: `uniform float uTime; uniform float uOpacity; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+            void main(){
+                float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 1.6);
+                float band = sin(vUv.x * 62.83 * 3.0 - uTime * 26.0 + vUv.y * 9.0);
+                float streak = smoothstep(0.2, 1.0, band) * 0.8 + smoothstep(0.85, 1.0, sin(vUv.x * 62.83 * 7.0 - uTime * 40.0 + vUv.y * 20.0)) * 0.5;
+                float ground = smoothstep(0.0, 0.25, 1.0 - vUv.y);
+                float a = (0.12 + rim * 0.9) * (0.35 + streak) * mix(0.6, 1.0, ground) * uOpacity;
+                vec3 col = mix(vec3(0.55, 0.75, 1.0), vec3(0.95, 0.97, 1.0), streak);
+                gl_FragColor = vec4(col * 1.5, a);
+            }`,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide
+    });
+    const kaiten = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 24, 0, Math.PI * 2, 0, Math.PI / 2), kaitenMat);
+    kaiten.visible = false;
+    scene.add(kaiten);
+    updaters.push((dt, time) => { kaitenMat.uniforms.uTime.value = time; });
     const sparkCount = 90;
     const sparkPos = new Float32Array(sparkCount * 3);
     const sparkGeo = new THREE.BufferGeometry();
@@ -960,7 +1019,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         }, ease.in);
     }
 
-    // onAct(nom) : appelé au début de chaque chapitre (kenjutsu, suiton, ryo, final).
+    // onAct(nom) : appelé au début de chaque chapitre (juken, kaiten, ryo, final).
     async function play({ timeline, sound, say, hud, counters, onAct = () => {} }) {
         const tl = timeline;
         snapCamera(V(0.5, 1.9, 7.5), V(0, 1.5, 0));
@@ -968,7 +1027,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         ninja.pouch.scale.setScalar(1);
         sound.startDream();
 
-        // 0. Hoko tombe du ciel et se réceptionne sur le rocher, dans la poussière.
+        // 0. Akira tombe du ciel et se réceptionne sur le rocher, dans la poussière.
         const hipsY = ninja.J.hips.position.y;
         ninja.setValues(ninja.poseValues('fall'));
         ninja.root.position.y = 8;
@@ -987,8 +1046,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         pose(tl, 'land', 0.12, ease.out);
         await tl.tween(0.14, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * k; }, ease.out);
         await tl.wait(0.7);
-        // 1. Hoko, adulte, se relève et domine le village.
-        say('Hoko Senju — jōnin de Konoha', 4.5, '千手');
+        // 1. Akira, adulte, se relève et domine le village.
+        say('Akira Hyûga — jōnin de Konoha', 4.5, '日向');
         tl.tween(0.9, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * (1 - k); }, ease.inOut);
         pose(tl, 'crossed', 0.9);
         // Bras croisés : les mains se referment sur les bras (doigts rentrés).
@@ -1001,39 +1060,49 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await tl.wait(0.6);
         face(tl, 'fun', 0, 0.5);
 
-        // 2. Maître du kenjutsu : trois coups de sabre, trois poteaux tranchés.
-        onAct('kenjutsu');
+        // 2. Byakugan, puis le Jûken : trois frappes de paume à distance, trois poteaux brisés.
+        onAct('juken');
+        const byakugan = (k) => { if (ninja.avatar && ninja.avatar.byakugan) ninja.avatar.byakugan(k); };
+        say('Byakugan', 2.2, '白眼');
+        face(tl, 'angry', 0.6, 0.3);
+        sound.whoosh();
+        await tl.tween(0.5, byakugan, ease.out);
+        await tl.wait(0.9);
         const side = shot(tl, V(-2.6, 1.55, 3.6), V(0.8, 1.1, 0.4), 2.6);
         tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * k; });
-        // Il ne porte la main au sabre qu'une fois la caméra éloignée du gros plan.
-        await tl.wait(0.9);
-        await pose(tl, 'draw', 0.5);
+        if (ninja.avatar) { ninja.avatar.grip('right', 0); ninja.avatar.grip('left', 0); }
+        await pose(tl, 'guard', 0.6);
         await side;
-        if (ninja.avatar) ninja.avatar.grip('left', false);
-        ninja.drawKatana();
-        say('Maître du kenjutsu', 3.5, '剣術');
-        face(tl, 'angry', 0.75, 0.4);
-        // Trois grands coups : on arme (sabre loin derrière), puis on balaie tout l'arc.
-        const cuts = [['strikeA', [0.2, 0.9, 0.6], V(0.7, 1.15, 0.95), 'windA'], ['strikeB', [-0.3, 1.1, -0.4], V(1.1, 1.1, 0.35), 'windB'], ['strikeC', [1.2, 1.2, 0], V(1.25, 1.15, -0.2), 'windC']];
+        say('Jûken : le poing souple des Hyûga', 3.2, '柔拳');
+        const strikes = ['palmR', 'palmL', 'palmR'];
+        const palm = V();
+        const target = V();
         for (let i = 0; i < 3; i++) {
-            if (i === 2) {
-                // Dernier coup : la lame se charge de foudre (Kiminari).
-                say('Kiminari : la lame chargée de foudre', 2.4, '雷');
-                if (sound.crackle) sound.crackle(1.4);
-                raiton = 1;
+            const last = i === 2;
+            if (last) {
+                // Dernier coup : Jûken et Gôken réunis (son objectif), la paume chargée à bloc.
+                say('Jûken et Gôken, enfin réunis', 2.6, '剛拳');
+                tl.tween(0.5, (k) => { auraMat.uniforms.uPower.value = 0.7 * k; }, ease.out);
+                handChakra = 0.9;
+                if (sound.crackle) sound.crackle(1.2);
+                await pose(tl, 'guard', 0.45, ease.inOut);
+                await tl.wait(0.35);
+                handChakra = 0;
+            } else {
+                await pose(tl, 'guard', 0.22, ease.inOut);
             }
-            await pose(tl, cuts[i][3], i === 2 ? 0.5 : 0.24, ease.inOut);
-            // La foudre monte le long de la lame avant le coup final.
-            if (i === 2) await tl.wait(0.45);
             sound.whoosh();
-            await pose(tl, cuts[i][0], 0.16, ease.out);
-            slash(tl, i, cuts[i][1], cuts[i][2]);
+            await pose(tl, strikes[i], 0.14, ease.out);
+            (strikes[i] === 'palmR' ? ninja.J.handR : ninja.J.handL).getWorldPosition(palm);
+            posts[i].topPart.getWorldPosition(target);
+            target.y += 0.2;
+            await palmWave(tl, i, palm, target, last);
             sound.cut();
-            if (i === 2 && sound.thunder) sound.thunder();
+            if (last && sound.thunder) sound.thunder();
+            burst();
             cutPost(tl, i);
-            if (i === 2) {
-                // Dernier coup : ralenti, le temps d'admirer la coupe.
-                // (si « Passer » change la vitesse entre-temps, on ne la touche plus)
+            if (last) {
+                // Ralenti sur l'impact final.
                 const normal = tl.scale;
                 let mine = normal * 0.3;
                 tl.scale = mine;
@@ -1044,59 +1113,51 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
                     tl.scale = mine;
                 }, ease.inOut);
                 if (tl.scale === mine) tl.scale = normal;
+                tl.tween(0.6, (k) => { auraMat.uniforms.uPower.value = 0.7 * (1 - k); });
             } else {
-                await tl.wait(0.35);
+                await tl.wait(0.3);
             }
         }
-        await tl.tween(0.4, (k) => { raiton = 1 - k; });
-        raiton = 0;
-        await tl.wait(0.1);
-        await pose(tl, 'draw', 0.35);
-        ninja.sheathe();
         tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * (1 - k); });
         face(tl, 'angry', 0, 0.5);
         await pose(tl, 'stand', 0.4);
 
-        // 3. Maître du Suiton : mudras, puis un dragon d'eau.
-        onAct('suiton');
-        const low = shot(tl, V(0.2, 0.9, 4.6), V(0, 1.45, 0), 2);
-        await pose(tl, 'seal', 0.5);
-        tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = k; }, ease.out);
+        // 3. Hakkeshō Kaiten : il tourne sur lui-même dans un dôme de chakra, qui éclate.
+        onAct('kaiten');
+        const low = shot(tl, V(0.2, 0.9, 4.6), V(0, 1.2, 0), 2);
+        await pose(tl, 'kaiten', 0.5);
         await low;
-        say('Suiton : maître de l\'eau', 3.5, '水遁');
-        face(tl, 'angry', 0.5, 0.5);
-        sound.water(2.6);
-        if (sound.roar) tl.wait(1.2).then(() => sound.roar(1.6));
-        waterMat.opacity = 0.55;
-        const D = dragonMat.uniforms;
-        await tl.tween(2.4, (k) => { waterState.rise = k; D.uHead.value = spiralEnd * k; D.uTail.value = 0; }, ease.out);
-        await pose(tl, 'release', 0.25, ease.out);
+        say('Hakkeshō Kaiten', 3.5, '回天');
+        face(tl, 'angry', 0.5, 0.4);
+        kaiten.visible = true;
+        kaiten.scale.setScalar(0.4);
+        const rot0 = ninja.root.rotation.y;
+        for (let i = 0; i < 4; i++) tl.wait(i * 0.5).then(() => sound.whoosh());
+        // Le dôme grandit pendant que la rotation s'accélère.
+        await tl.tween(2.2, (k) => {
+            ninja.root.rotation.y = rot0 + Math.PI * 2 * 3.2 * k * k;
+            kaiten.scale.set(0.4 + 1.0 * Math.min(1, k * 1.6), 0.4 + 0.9 * Math.min(1, k * 1.6), 0.4 + 1.0 * Math.min(1, k * 1.6));
+            kaitenMat.uniforms.uOpacity.value = Math.min(1, k * 2);
+        }, ease.linear);
+        ninja.root.rotation.y = rot0;
         sound.splash();
-        // La caméra lève les yeux pour suivre le dragon qui s'envole.
-        shot(tl, V(0.5, 1.1, 5.4), V(0.6, 3.4, -2), 2.2);
-        await tl.tween(1.8, (k) => {
-            waterState.blast = k;
-            waterMat.opacity = 0.55 * (1 - k * k);
-            D.uHead.value = spiralEnd + (1.09 - spiralEnd) * k;
-            D.uTail.value = k * 1.05;
-        }, ease.in);
-        D.uHead.value = 0;
-        D.uTail.value = 0;
-        waterState.rise = 0;
-        waterState.blast = 0;
-        tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = 1 - k; }, ease.in);
-        // L'arc-en-ciel apparaît dans les embruns, puis s'efface.
-        rainbow.visible = true;
-        tl.tween(1, (k) => { rainbowMat.uniforms.uOpacity.value = k; }, ease.out)
-            .then(() => tl.wait(1.6))
-            .then(() => tl.tween(1.4, (k) => { rainbowMat.uniforms.uOpacity.value = 1 - k; }))
-            .then(() => { rainbow.visible = false; });
-        await pose(tl, 'stand', 0.4);
+        burst();
+        if (sound.thunder) sound.thunder();
+        // Il s'arrête net ; le dôme éclate vers l'extérieur.
+        pose(tl, 'guard', 0.3, ease.out);
+        await tl.tween(0.8, (k) => {
+            kaiten.scale.setScalar(1.4 + k * 2.2);
+            kaitenMat.uniforms.uOpacity.value = 1 - k;
+        }, ease.out);
+        kaiten.visible = false;
+        byakugan(0);
+        face(tl, 'angry', 0, 0.5);
+        await pose(tl, 'stand', 0.5);
 
-        // 4. Chef de la section économique : une pluie de ryō.
+        // 4. Trésorier de Konoha (son ambition « Comptabilité ») : une pluie de ryō.
         onAct('ryo');
         await shot(tl, V(1.9, 1.75, 3.5), V(0, 1.15, 0.2), 2);
-        say('Chef de la section économique de Konoha', 4, '両');
+        say('Trésorier de Konoha', 4, '両');
         face(tl, 'angry', 0, 0.3);
         face(tl, 'joy', 0.7, 0.6);
         hud.hidden = false;
@@ -1142,7 +1203,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         tl.tween(1, (k) => { ninja.root.rotation.y = Math.PI * k; }, ease.inOut);
         if (ninja.avatar) ninja.avatar.grip('right', true);
         pose(tl, 'vow', 1);
-        say('Un jour…', 3.5, '火影');
+        say('Un jour… chef du clan Hyûga', 3.5, '当主');
         face(tl, 'joy', 0, 0.8);
         face(tl, 'fun', 0.4, 0.8);
         await shot(tl, V(-1.6, 1.2, 3.4), V(0.5, 2, -6), 3.5, ease.sine);
@@ -1157,7 +1218,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     snapCamera(V(0.5, 1.9, 7.5), V(0, 1.5, 0));
 
     // Téléphone en portrait : l'image est étroite, un plan pensé pour l'écran
-    // large coupe Hoko au bord. On tourne la caméra juste assez pour qu'il reste
+    // large coupe Akira au bord. On tourne la caméra juste assez pour qu'il reste
     // dans le cadre (sans toucher aux plans où il est déjà bien placé).
     const framePoint = V();
     const up = V(0, 1, 0);
@@ -1248,7 +1309,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         }
     }
 
-    // « Confirmer » : shunshin (瞬身) — Hoko disparaît dans un tourbillon de feuilles.
+    // « Confirmer » : shunshin (瞬身) — Akira disparaît dans un tourbillon de feuilles.
     const swirlCount = 90;
     const leafShape = new THREE.Shape();
     leafShape.moveTo(0, -0.06);
@@ -1282,7 +1343,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     }
 
     /* ---------------- Menu « Sélection de la catégorie » ---------------- */
-    // Écran façon jeux Naruto Storm : Hoko en contre-plongée dans son aura de
+    // Écran façon jeux Naruto Storm : Akira en contre-plongée dans son aura de
     // chakra, ciel d'orage ; chaque catégorie de la fiche lui donne une pose.
     const menu = { on: false, t: 0, target: null, sound: null, calm: false, push: false, pushT: 0 };
     updaters.push((dt) => {
@@ -1291,7 +1352,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             return;
         }
         menu.t += dt;
-        // Le corbeau passe toutes les 9 s, de droite à gauche, loin derrière Hoko.
+        // Le corbeau passe toutes les 9 s, de droite à gauche, loin derrière Akira.
         const ct = (menu.t % 9) / 9;
         crow.visible = ct < 0.6;
         // Trajectoire dans le haut du cadre (la caméra est basse et regarde un peu vers le haut).
@@ -1309,12 +1370,12 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             ninja.setValues(ninja.currentValues().map((f, i) => f.map((v, j) => v + (menu.target[i][j] - v) * a)));
         }
         auraMat.uniforms.uPower.value = Math.min(0.42, auraMat.uniforms.uPower.value + dt * 0.4);
-        // Caméra basse, qui dérive à peine ; Hoko à droite (texte à gauche), centré en portrait.
+        // Caméra basse, qui dérive à peine ; Akira à droite (texte à gauche), centré en portrait.
         const portrait = camera.aspect < 1;
         // Les 0,8 premières secondes, la caméra reste haute, puis descend.
         if (menu.t < 0.8) return;
         if (menu.push) {
-            // « Confirmer » : les feuilles tourbillonnent, Hoko s'y efface
+            // « Confirmer » : les feuilles tourbillonnent, Akira s'y efface
             // (shunshin) pendant que la caméra fonce vers son visage.
             menu.pushT += dt;
             updateSwirl(menu.pushT);
@@ -1365,7 +1426,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         waterMat.opacity = 0;
         setLook(stormLook, 1);
         auraMat.uniforms.uPower.value = 0;
-        // Entrée : la caméra part du ciel d'orage et plonge vers Hoko (l'amorti fait le reste).
+        // Entrée : la caméra part du ciel d'orage et plonge vers Akira (l'amorti fait le reste).
         snapCamera(V(0.2, 6.5, 4.2), V(-0.4, 4.5, -6));
         // Pas de poteaux d'entraînement au premier plan du menu.
         posts.forEach((p) => { p.base.visible = p.topPart.visible = p.cut.visible = false; });
@@ -1388,6 +1449,14 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         setMenu,
         menuPose,
         menuConfirm() { menu.push = true; menu.pushT = 0; },
+        // Après le shunshin : Akira réapparaît derrière l'écran de la catégorie.
+        menuReturn() {
+            menu.push = false;
+            updateSwirl(0);
+            ninja.root.visible = true;
+            ninja.express('wink', 0);
+            ninja.express('joy', 0);
+        },
         // Pour les tests : déclenche le prochain éclair du menu tout de suite.
         strikeNow() { strike.next = 0; },
         // Pour les tests : position du corbeau à l'écran (-1..1).
@@ -1403,7 +1472,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         setRainbow(v) { rainbow.visible = v > 0; rainbowMat.uniforms.uOpacity.value = v; },
         play,
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
-        // Rendu avec profondeur de champ : la mise au point suit Hoko.
+        // Rendu avec profondeur de champ : la mise au point suit Akira.
         render() {
             keepInFrame();
             if (!post) {

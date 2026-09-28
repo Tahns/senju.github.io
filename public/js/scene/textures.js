@@ -285,7 +285,7 @@ export function pageEdges() {
 }
 
 const THEMES = {
-    hoko: { leather: ['#8a261c', '#641710', '#3a0c08'], gold: '#d6b35e', light: '#f0d78f', title: ['HOKO', 'SENJU'], seal: '千手', sealBg: '#b3261b', kicker: 'CLAN SENJU · KONOHA' },
+    hoko: { leather: ['#8a261c', '#641710', '#3a0c08'], gold: '#d6b35e', light: '#f0d78f', title: ['AKIRA', 'HYÛGA'], seal: '日向', sealBg: '#b3261b', kicker: 'CLAN HYÛGA · KONOHA' },
     second: { leather: ['#34427a', '#1f2856', '#0e1230'], gold: '#c8d2e6', light: '#eef2fb', title: ['CARNET', ''], subtitle: '', seal: '忍道', sealBg: '#3a4a8c', kicker: '' }
 };
 
