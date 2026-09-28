@@ -149,8 +149,9 @@ async function start() {
     const right = new Arm(rig, 1);
     const left = new Arm(rig, -1);
     const arms = [right, left];
-    // Ce que les doigts touchent sans le traverser : les deux carnets et la porte.
-    const touch = [...Object.values(room.books).map(({ mesh }) => boxTouch(mesh)), room.doorTouch];
+    // Ce que les doigts touchent sans le traverser : les deux carnets, la porte
+    // et la boîte à musique (coffret, couvercle, clé).
+    const touch = [...Object.values(room.books).map(({ mesh }) => boxTouch(mesh)), room.doorTouch, ...room.musicBoxTouch];
     arms.forEach((arm) => { arm.touch = touch; });
 
     /* ---------------- Caméra (les yeux d'Akira) ---------------- */
@@ -289,7 +290,7 @@ async function start() {
     // `drop` : la main descend d'abord (sous le livre qu'elle tenait).
     const rest = (arm, seconds = 0.8, drop = 0) => {
         const via = drop ? arm.target.getWorldPosition(V(0, 0, 0)).applyMatrix4(new THREE.Matrix4().copy(rig.matrixWorld).invert()).lerp(arm.rest.position, 0.5).add(V(0, -drop, 0)) : null;
-        return reach(arm, rig, arm.rest.position, arm.rest.quaternion, seconds, { curl: 0.25, thumb: 0.2, index: null, wrap: 0, spread: 0.4 }, ease.inOut, { position: via });
+        return reach(arm, rig, arm.rest.position, arm.rest.quaternion, seconds, { curl: 0.25, thumb: 0.2, index: null, wrap: 0, pinch: 0, spread: 0.4 }, ease.inOut, { position: via });
     };
 
     // Place la main pour qu'un point précis de la main (bout d'un doigt, paume…)
@@ -445,31 +446,40 @@ async function start() {
         await look(1.1, { yaw: 0.35, pitch: -0.05 });
         await lookAt(1.2, boxPos.clone().add(V(0, 0.1, 0)));
         await walking;
-        // Il se penche au-dessus du coffre.
+        // Il s'approche et se penche au-dessus du coffre (la boîte à portée de
+        // main : 30 cm devant lui).
         const p0 = cam.pos.clone();
-        const bend = V(-1.72, 1.2, boxPos.z + 0.02);
+        const bend = V(boxPos.x + 0.3, 1.16, boxPos.z + 0.02);
         timeline.tween(0.9, (k) => cam.pos.lerpVectors(p0, bend, k));
         await lookAt(0.9, boxPos.clone().add(V(0.02, 0.06, -0.02)), bend);
 
-        // Main gauche : le bout des doigts sous le rebord du couvercle, qui se soulève.
-        const lidQ = quat(V(0, 1, 0), V(-1, 0.2, 0));
-        const under = handAt(left, V(0.01, -0.012, 0.01), lidQ, TIP.middle);
-        await reach(left, box.lidEdge, under.clone().add(V(0.05, -0.03, 0)), lidQ, 0.7, { curl: 0.15, thumb: 0.2 });
-        await reach(left, box.lidEdge, under, lidQ, 0.25, { curl: 0.3 });
+        // Main gauche : paume vers le haut, le bout de l'index et du majeur sous
+        // le rebord du couvercle (qui dépasse d'1 cm), et le couvercle se soulève.
+        const lidQ = quat(V(0, 1, -0.6), V(-1, 0.25, 0.1));
+        const under = handAt(left, V(-0.005, -0.013, 0.012), lidQ, TIP.middle);
+        await reach(left, box.lidEdge, under.clone().add(V(0.05, -0.03, 0)), lidQ, 0.7, { curl: 0.1, index: 0.5, thumb: 0.2, spread: 0.1 });
+        await reach(left, box.lidEdge, under, lidQ, 0.25, { curl: 0.3, index: 0.75 });
         sound.lid();
-        await timeline.tween(0.8, (k) => { box.lid.rotation.z = 1.15 * k; }, ease.inOut);
+        // Les doigts accompagnent le couvercle jusqu'à ~35°, puis le lâchent : il
+        // finit de s'ouvrir sur son élan.
+        await timeline.tween(0.55, (k) => { box.lid.rotation.z = 0.6 * k; }, ease.inOut);
         rest(left, 0.7);
-        await timeline.tween(0.5, (k) => { box.lid.rotation.z = 1.15 + 0.6 * k; }, ease.out);
+        await timeline.tween(0.75, (k) => { box.lid.rotation.z = 0.6 + 1.15 * k; }, ease.out);
 
-        // Main droite : pince la clé entre le pouce et l'index, et la tourne trois fois.
+        // Main droite : paume tournée vers la boîte, elle pince la molette de la
+        // clé entre le bout du pouce et celui de l'index (les autres doigts
+        // repliés), la tourne d'un quart de tour, la lâche et la reprend : trois fois.
         const pivot = new THREE.Object3D();
         box.key.getWorldPosition(pivot.position);
         box.group.getWorldQuaternion(pivot.quaternion);
         scene.add(pivot);
-        const keyQ = quat(V(0, 0, 1), V(-0.2, -1, 0.15));
-        const pinch = handAt(right, V(0, 0.006, -0.026), keyQ, V(-0.02, -0.004, -0.13));
-        await reach(right, pivot, pinch.clone().add(V(0, 0, -0.05)), keyQ, 0.7, { curl: 0.2, thumb: 0.2 });
-        await reach(right, pivot, pinch, keyQ, 0.25, { curl: 0.5, thumb: 0.65 });
+        const keyQ = quat(V(0, 0, 1), V(-1, -0.3, 0));
+        // Milieu de la pince (repère de la main), et la molette, au bout de la tige.
+        const PINCH = V(-0.0278, -0.051, -0.0922);
+        const pinch = handAt(right, V(0, 0, -0.023), keyQ, PINCH);
+        const held = { curl: 0.9, index: 0.7, thumb: 0.4, pinch: 1, spread: 0.1, wrap: 0 };
+        await reach(right, pivot, pinch.clone().add(V(0.01, 0.02, -0.04)), keyQ, 0.7, { ...held, index: 0.3, thumb: 0.9 });
+        await reach(right, pivot, pinch, keyQ, 0.25, held);
         for (let turn = 0; turn < 3; turn++) {
             sound.wind(0.5);
             const k0 = box.key.rotation.z;
@@ -478,10 +488,12 @@ async function start() {
                 pivot.rotation.z = -(Math.PI / 2) * k;
             }, ease.inOut);
             if (turn < 2) {
-                // Il relâche, revient, reprend la clé.
+                // Il desserre les doigts, revient, et pince de nouveau la molette.
                 await timeline.tween(0.28, (k) => {
                     pivot.rotation.z = -(Math.PI / 2) * (1 - k);
-                    right.grip.thumb = 0.65 - 0.4 * Math.sin(Math.PI * k);
+                    const open = Math.sin(Math.PI * k);
+                    right.grip.thumb = 0.4 + 0.5 * open;
+                    right.grip.index = 0.7 - 0.35 * open;
                 }, ease.inOut);
             }
         }

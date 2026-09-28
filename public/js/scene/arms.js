@@ -140,8 +140,9 @@ export class Arm {
         rig.add(this.target);
 
         // curl : doigts pliés (0 à 1) ; index : l'index seul (null = comme les autres) ;
-        // wrap : pouce qui enveloppe un bord (0 à 1).
-        this.grip = { curl: 0.25, thumb: 0.2, spread: 0.4, index: null, wrap: 0 };
+        // wrap : pouce qui enveloppe un bord (0 à 1) ; pinch : pouce ramené face
+        // à l'index, pour pincer du bout des doigts (0 à 1).
+        this.grip = { curl: 0.25, thumb: 0.2, spread: 0.4, index: null, wrap: 0, pinch: 0 };
         // Objets que les doigts touchent sans les traverser (voir fitDigits).
         this.touch = [];
 
@@ -188,11 +189,11 @@ export class Arm {
         this.fitDigits();
     }
 
-    // Base du pouce : `thumb` le ramène sous la paume (opposition), `wrap` le
-    // fait passer par-dessus un bord.
+    // Base du pouce : `thumb` le ramène sous la paume (opposition), `pinch` le
+    // tourne face à l'index, `wrap` le fait passer par-dessus un bord.
     thumbPose(thumb) {
         const q = this.parts.thumbBase.quaternion;
-        q.setFromEuler(thumbEuler.set(-0.25 - 0.55 * thumb, 0.8 - 0.55 * thumb, -0.45));
+        q.setFromEuler(thumbEuler.set(-0.25 - 0.55 * thumb, (0.8 - 0.55 * thumb) * (1 - (this.grip.pinch || 0)), -0.45));
         if (this.grip.wrap) q.slerp(WRAP, this.grip.wrap);
     }
 
