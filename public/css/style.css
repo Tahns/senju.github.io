@@ -1243,6 +1243,11 @@ html:not(.js) .js-only {
     stroke-width: 1.8;
 }
 
+.vignette--chapter {
+    width: 62%;
+    margin-top: 1.8em;
+}
+
 .vignette--sword {
     width: 88%;
     margin-top: 2.4em;
