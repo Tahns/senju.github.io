@@ -768,6 +768,7 @@ async function start() {
         hud.hidden = true;
         renderer.shadowMap.needsUpdate = true;
         sound.startDream();
+        sound.setStorm(true);
         menuBack.hidden = false;
         menuEl.classList.add('is-entering');
         menuEl.hidden = false;

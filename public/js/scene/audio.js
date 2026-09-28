@@ -465,10 +465,15 @@ export class SceneAudio {
         wind.start(t);
         gust.start(t);
         wind.onended = () => gust.stop();
-        const day = { bus, wind, timer: 0 };
+        const day = { bus, wind, band, level, timer: 0, storm: false };
         this.day = day;
         // Oiseaux : petites phrases de 2 à 5 notes sifflées, de part et d'autre.
         const song = () => {
+            // Sous l'orage (menu), les oiseaux se taisent.
+            if (day.storm) {
+                day.timer = setTimeout(song, 1500);
+                return;
+            }
             const notes = 2 + Math.floor(Math.random() * 4);
             const base = 2600 + Math.random() * 1400;
             const pan = (Math.random() - 0.5) * 1.6;
@@ -495,6 +500,16 @@ export class SceneAudio {
             day.timer = setTimeout(song, 1200 + Math.random() * 3000);
         };
         day.timer = setTimeout(song, 900);
+    }
+
+    // Ciel d'orage du menu : plus d'oiseaux, vent plus fort et plus grave.
+    setStorm(on) {
+        const day = this.day;
+        if (!day || day.storm === on) return;
+        day.storm = on;
+        const t = this.ctx.currentTime;
+        day.level.gain.setTargetAtTime(on ? 0.07 : 0.035, t, 0.8);
+        day.band.frequency.setTargetAtTime(on ? 260 : 420, t, 0.8);
     }
 
     whoosh() {

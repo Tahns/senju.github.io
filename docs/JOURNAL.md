@@ -354,3 +354,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   s'affichent en petit, pâles, au-dessus et en dessous des flèches — on
   voit où on va, comme la roue des menus Storm (clic dessus pour y aller ;
   masquées en portrait, faute de place).
+- **Menu, ambiance sonore d'orage** : le menu reprenait l'ambiance du rêve
+  en plein jour (oiseaux qui chantent) sous un ciel d'orage. Désormais les
+  oiseaux se taisent et le vent souffle plus fort et plus grave ; le
+  tonnerre des éclairs complète l'ambiance.
