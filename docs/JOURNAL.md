@@ -451,8 +451,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   n'avancent que quand la voix parle (jamais pendant les silences), et les fins
   de phrases et virgules sont calées sur les pauses réelles (la plupart des
   ponctuations tombent sur une pause). Mise à jour aussi quand on saute dans l'audio.
-- **Physique Hyûga** : cheveux presque noirs et longue mèche nouée dans le dos
-  (comme Neji), qui pend avec la gravité, reste contre le dos et ondule au vent.
+- **Physique Hyûga** : cheveux presque noirs. (Une longue mèche nouée dans le
+  dos a été essayée puis retirée : couleur et texture ne collaient pas à la
+  chevelure du modèle.)
 - **Histoire sans la 3D** : en carnet seul, un bouton « Histoire » / « Fiche »
   passe de la fiche au carnet de l'histoire lu à voix haute (test
   `tools/test/standalone.js`). Titre en double retiré de la première page du récit.
@@ -461,4 +462,4 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   image) ; Hakke Kûshô filmé avec le village en fond ; zoom vers la lecture
   raccourci ; le test du parcours se ferme proprement en cas d'erreur.
 - **Image d'aperçu refaite** (`public/img/og.jpg`) : Akira aux yeux du Byakugan
-  et aux cheveux longs, bras croisés devant la tour du Hokage.
+  et aux cheveux noirs, bras croisés devant la tour du Hokage.

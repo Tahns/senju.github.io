@@ -109,5 +109,5 @@ Sans image, le cadre affiche « Portrait à venir ».
 | `public/img/` | Emblème de Konoha (SVG), favicon, portrait |
 | `public/js/scene/` | Scène 3D de la chambre |
 | `public/vendor/` | Three.js et son chargeur glTF (moteur 3D, licence MIT) |
-| `public/models/hoko.vrm` | Modèle d'Akira adulte : « HairSample_Male » du projet VRoid (pixiv), publié en CC0 ; allégé (textures WebP) et recoloré (yeux pâles du Byakugan, cheveux presque noirs avec une longue mèche nouée dans le dos, gilet de jōnin peint, bleu nuit) |
+| `public/models/hoko.vrm` | Modèle d'Akira adulte : « HairSample_Male » du projet VRoid (pixiv), publié en CC0 ; allégé (textures WebP) et recoloré (yeux pâles du Byakugan, cheveux presque noirs, gilet de jōnin peint, bleu nuit) |
 
