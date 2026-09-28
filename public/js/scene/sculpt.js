@@ -1,5 +1,5 @@
 /*
- * Tête de Hoko adulte, sculptée d'un seul bloc (crâne, visage en V, menton,
+ * Tête d'Akira adulte, sculptée d'un seul bloc (crâne, visage en V, menton,
  * pommettes, petit nez, oreilles, cou) et chevelure en grosses pointes anime,
  * fondues dans une calotte. Code pur (sans three.js) : il tourne dans un
  * worker pour ne pas figer l'animation.

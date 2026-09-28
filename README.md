@@ -1,6 +1,9 @@
-# Hoko Senju : Fiche Personnage
+# Akira Hyûga : Naissance Hyûga
 
-Le carnet de Hoko Senju, présenté comme un livre relié qu'on feuillette.
+La candidature d'Akira Hyûga, « The vulgar child », transférée depuis la présentation
+Canva « Hyûga par PrinceOFD » : histoire, caractère, objectifs et présentation HRP,
+présentés comme un carnet relié qu'on feuillette, avec une scène 3D et des écrans
+façon jeux Naruto Storm.
 
 **Lien :** https://tahns.github.io/senju.github.io
 
@@ -8,18 +11,25 @@ Le carnet de Hoko Senju, présenté comme un livre relié qu'on feuillette.
 
 Avant le carnet, une petite scène en 3D, vue à la première personne :
 
-1. Hoko arrive dans le couloir et fait glisser la porte (shoji) de sa chambre.
+1. Akira arrive dans le couloir et fait glisser la porte (shoji) de sa chambre.
 2. Il va au coffre près de l'entrée et remonte une boîte à musique en laque : la musique « SD NIGHT » de VEN1 démarre (lecteur YouTube officiel, dans un coin). Si YouTube ne se charge pas, la boîte joue « Sakura Sakura ».
 3. Il se dirige vers la bibliothèque : l'index gauche fait basculer son carnet, la main gauche le prend par le dos (les bras ne se croisent jamais) et il l'ouvre.
-4. Le visiteur lit le carnet, puis clique sur **Ranger** : Hoko remet le livre en place et le redresse du bout du doigt.
+4. Le visiteur lit le carnet, puis clique sur **Ranger** : Akira remet le livre en place et le redresse du bout du doigt.
 5. Il prend un deuxième carnet (vierge), le feuillette, le range.
 6. Il s'allonge sur son futon, regarde les étoiles par la fenêtre ouverte, la boîte à musique ralentit, ses yeux se ferment…
-7. **Le rêve** (à la troisième personne) : Hoko adulte, jōnin de Konoha, sur un rocher d'entraînement au-dessus du village. Maître du sabre (croissants de lumière, poteaux tranchés), maître du Suiton (un dragon d'eau s'enroule autour de lui puis jaillit), et chef de la section économique : une pluie de ryō dorés remplit le trésor du village… et ses poches.
+7. **Le rêve** (à la troisième personne) : Akira adulte, jōnin de Konoha, sur un rocher d'entraînement au-dessus du village. Maître du sabre (croissants de lumière, poteaux tranchés), maître de l'eau (un dragon d'eau s'enroule autour de lui puis jaillit), et trésorier de Konoha (son objectif « Comptabilité ») : une pluie de ryō dorés remplit le trésor du village… et ses poches. Final : « Un jour… chef du clan Hyûga ».
 8. Carte de fin : recommencer, **revoir le rêve** (ou un chapitre : kenjutsu, Suiton, ryō, « Un jour… ») ou **relire la fiche** par le menu.
 
-### Le menu « Sélection de la catégorie »
+### Le menu « Sélection de la catégorie » (d'après le Canva)
 
-Inspiré des menus des jeux Naruto Storm (et d'une candidature vidéo de ce style) : Hoko adulte en 3D, en contre-plongée dans son aura de chakra, sous un ciel d'orage ; à droite la plaque « Hoko Senju » (千手 ホコ, natures Suiton et Kiminari) ; à gauche le grand mot au pinceau lumineux (Personnage, Apparence, Personnalité, Ambitions, Histoire, Nindo, Chronologie) entre deux flèches-flammes ; en bas le bandeau de parchemin. Derrière le mot, un grand kanji en filigrane (人, 姿, 心, 志, 史, 忍道, 暦) ; de temps en temps, un éclair et le tonnerre au loin. Chaque catégorie donne une pose à Hoko ; **Confirmer** le fait disparaître dans un tourbillon de feuilles (shunshin) et ouvre le carnet à la bonne page. Flèches, clavier (↑ ↓ Entrée Échap), molette ou glissé au doigt. Accessible depuis l'accueil (« Sélection de la catégorie »), la carte de fin, ou `?at=menu`.
+Comme dans la candidature Canva : trois catégories, **Histoire** (lueur dorée), **Personnage** (verte) et **HRP** (rose), avec le grand mot au pinceau entre deux flèches-flammes, un kanji en filigrane (史, 人, 己) et le bandeau de parchemin (« Vivre l'histoire d'Akira Hyûga », « Personnalité et caractère d'une personne », « Informations personnelles »). Akira adulte en 3D, en contre-plongée dans son aura, sous un ciel d'orage ; à droite la plaque « Akira Hyûga » (日向 アキラ, « The vulgar child », styles Jûken et Gôken). **Confirmer** : clin d'œil, tourbillon de feuilles (shunshin), flash blanc, puis l'écran de la catégorie :
+
+- **Histoire** : sélection des chapitres (8 cases, « Chapitres finis 1/8 », les suivantes à venir) puis lecture du chapitre, image encadrée et texte en dessous.
+- **Personnage** : le **Caractère** révélé trait par trait sur trois colonnes (Reconnaissant, Développement, Vulgaire, puis Acharné, Relax, Impartial), puis les **Objectifs** à court, moyen et long terme en panneaux ; onglets Caractère / Objectifs en haut à droite.
+- **HRP** : nom et pastilles à gauche (Présentation, Disponibilités), carte de présentation, Akira en 3D à droite.
+- **Échap** (« Mettez en pause à tout moment ») : « Revenir à la sélection de la catégorie ? Oui / Non », ou « Lire cette page dans le carnet ».
+
+Le texte des écrans est lu dans les pages du carnet (`index.html`) : on ne l'écrit qu'une fois. Code : `public/js/scene/screens.js`. Flèches, clavier (↑ ↓ ← → Entrée Échap), molette ou glissé au doigt. Accessible depuis l'accueil (« Sélection de la catégorie »), la carte de fin, ou `?at=menu`.
 
 - Bouton son en haut à droite : volumes Musique / Ambiance / Effets, mémorisés.
 - Style des écrans inspiré des serveurs Naruto RP (lettrage pinceau, violet et magenta), rêve au rendu lisse façon Zenkai RP : ombrage doux, herbe qui ondule, profondeur de champ et halo lumineux. Konoha est construit en entier : rues en terre, maisons à étages en bois et enduit, balcons, auvents, enseignes, réservoirs d'eau ronds, poteaux électriques, arbres touffus, tour du Hokage, falaise boisée, villageois et oiseaux.
@@ -30,8 +40,8 @@ Inspiré des menus des jeux Naruto Storm (et d'une candidature vidéo de ce styl
   - `room.js` : la chambre (tatamis, porte, bibliothèque, futon, lanterne, fenêtre…)
   - `arms.js` : les bras et les mains
   - `main.js` : le scénario, étape par étape (facile à modifier)
-  - `dream.js`, `ninja.js` : le rêve et Hoko adulte (tenue de jōnin, clignements, respiration, cheveux au vent)
-  - `avatar.js` : Hoko adulte est un vrai modèle anime (`public/models/hoko.vrm`), recopiant les poses du squelette d'animation de `ninja.js`
+  - `dream.js`, `ninja.js` : le rêve et Akira adulte (tenue de jōnin, clignements, respiration, cheveux au vent)
+  - `avatar.js` : Akira adulte est un vrai modèle anime (`public/models/hoko.vrm`), recopiant les poses du squelette d'animation de `ninja.js`
   - `sdf.js`, `sculpt.js`, `head.js`, `head-worker.js` : tête sculptée de secours si le modèle ne se charge pas
   - `village.js`, `post.js` : Konoha (fusionné par matériau pour rester léger, villageois, oiseaux) et le post-traitement du rêve
   - `audio.js` : sons et musiques
@@ -44,7 +54,7 @@ Inspiré des menus des jeux Naruto Storm (et d'une candidature vidéo de ce styl
 - Qualité : automatique (palier « mobile » sur écran tactile), ou forcée avec `?quality=low`, `?quality=mobile` ou `?quality=high`.
 - Pour tester une étape : `?at=shelf`, `?at=second`, `?at=bed` ou `?at=dream`, et `?speed=3` pour accélérer.
 - Chapitres du rêve (liens de la carte de fin) : `?at=dream&chapitre=kenjutsu`, `suiton`, `ryo` ou `final`.
-- Menu « Sélection de la catégorie » (façon Naruto Storm) : `?at=menu`, ou « Relire la fiche de Hoko » sur la carte de fin.
+- Menu « Sélection de la catégorie » (façon Naruto Storm) : `?at=menu`, ou « Relire la fiche d'Akira » sur la carte de fin.
 
 ## Le second carnet
 
@@ -69,7 +79,7 @@ est dans `THEMES.second` (`public/js/scene/textures.js`).
 
 ## Modifier le contenu
 
-Tout le texte est dans `index.html`, dans `<main id="book-source">`.
+Tout le texte est dans `index.html`, dans `<main id="book-source">` (repris de la présentation Canva). Les écrans des catégories le relisent : traits du caractère dans `<dl class="qualities">` (kanji et couleur dans `data-kanji` / `data-tone`), objectifs dans les pages `page--goals` (`data-term` : court, moyen, long terme ; chaque `<h3>` devient un panneau), chapitres dans les pages `page--story`, HRP dans les pages `page--hrp`.
 Chaque `<section class="page">` correspond à une page, dans l'ordre.
 
 - Sur ordinateur, les pages vont par deux : 1 à gauche et 2 à droite, puis 3 et 4, etc.
@@ -92,5 +102,5 @@ Sans image, le cadre affiche « Portrait à venir ».
 | `public/img/` | Emblème de Konoha (SVG), favicon, portrait |
 | `public/js/scene/` | Scène 3D de la chambre |
 | `public/vendor/` | Three.js et son chargeur glTF (moteur 3D, licence MIT) |
-| `public/models/hoko.vrm` | Modèle de Hoko adulte : « HairSample_Male » du projet VRoid (pixiv), publié en CC0 ; allégé (textures WebP) et recoloré (yeux et cheveux bruns, gilet de jōnin peint, bleu nuit) |
+| `public/models/hoko.vrm` | Modèle d'Akira adulte : « HairSample_Male » du projet VRoid (pixiv), publié en CC0 ; allégé (textures WebP) et recoloré (yeux et cheveux bruns, gilet de jōnin peint, bleu nuit) |
 

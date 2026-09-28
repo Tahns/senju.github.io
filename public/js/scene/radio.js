@@ -87,7 +87,7 @@ export class Radio {
         if (this.player && this.player.setVolume) this.player.setVolume(Math.round(volume * 100));
     }
 
-    // Baisse progressivement le son jusqu'à l'arrêt (quand Hoko s'endort).
+    // Baisse progressivement le son jusqu'à l'arrêt (quand Akira s'endort).
     fadeOut(seconds) {
         if (!this.player || !this.playing) return;
         clearInterval(this.fadeTimer);

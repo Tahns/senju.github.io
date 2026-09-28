@@ -1,5 +1,5 @@
 /*
- * Hoko adulte : un vrai modèle anime (VRoid « HairSample_Male », CC0, allégé
+ * Akira adulte : un vrai modèle anime (VRoid « HairSample_Male », CC0, allégé
  * et recoloré : yeux et cheveux bruns, gilet de jōnin peint sur le haut),
  * équipé par ninja.js (bandeau, sabre, bourse, étui, bandes, sandales). Son squelette recopie à chaque image les rotations du squelette
  * d'animation de ninja.js (reciblage), donc toutes les poses du rêve marchent.
@@ -33,7 +33,7 @@ export function loadAvatar() {
             const done = (gltf) => { progress = 1; resolve(gltf); };
             loader.load(MODEL, done, (e) => { if (e.total) progress = e.loaded / e.total; }, () => {
                 fromText().then(done).catch((error) => {
-                    console.warn('Modèle de Hoko indisponible, repli sur la tête sculptée.', error);
+                    console.warn("Modèle d'Akira indisponible, repli sur la tête sculptée.", error);
                     resolve(null);
                 });
             });

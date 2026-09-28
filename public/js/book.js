@@ -1,5 +1,5 @@
 /*
- * Carnet de Hoko Senju — livre interactif.
+ * Carnet de Akira Hyûga — livre interactif.
  *
  * Le contenu vit dans index.html (<main id="book-source">, une <section class="page"> par page).
  * Ce script range ces pages dans des feuilles (recto / verso) et gère :

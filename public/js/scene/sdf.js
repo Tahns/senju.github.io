@@ -2,7 +2,7 @@
  * Sculpture par champs de distance : on décrit une forme en mélangeant
  * doucement des volumes simples (ellipsoïdes, cônes arrondis), puis on en tire
  * un maillage lisse (« surface nets »). C'est ainsi que sont faits la tête et
- * les cheveux de Hoko adulte : une seule surface, sans jointures.
+ * les cheveux d'Akira adulte : une seule surface, sans jointures.
  */
 export const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
 export const mix = (a, b, t) => a + (b - a) * t;

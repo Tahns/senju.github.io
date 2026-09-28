@@ -24,13 +24,17 @@ Téléphone en portrait (écran tactile simulé) : `VIEWPORT=390x780 node tools/
 ## Menu « Sélection de la catégorie »
 
 ```sh
-node tools/test/menu.js                 # confirme « Nindo » (deux fois ↑)
-node tools/test/menu.js "ArrowDown"     # confirme « Apparence »
+node tools/test/menu.js                        # confirme « Personnage »
+node tools/test/menu.js "ArrowDown,ArrowUp"    # confirme « Histoire »
+node tools/test/menu.js "ArrowUp"              # confirme « HRP »
 ```
 
-Ouvre le menu depuis l'accueil, fait le tour des 7 catégories en vérifiant
-le mot, le kanji en filigrane et les catégories voisines, puis confirme et
-vérifie que le carnet s'ouvre à la bonne page. Se termine par `menu ok`.
+Ouvre le menu depuis l'accueil, fait le tour des 3 catégories en vérifiant
+le mot, le kanji en filigrane et les catégories voisines, puis confirme :
+vérifie l'écran de la catégorie, le parcourt avec « Suivant » (`STEPS=10`
+pour aller plus loin, `SHOTS=prefixe` pour des captures), ouvre la pause et
+choisit « Lire cette page dans le carnet » : le carnet doit s'ouvrir à la
+bonne page. Se termine par `menu ok`.
 Site en ligne : `BASE=https://tahns.github.io/senju.github.io/ node tools/test/menu.js`
 (depuis une connexion normale ; derrière un proxy qui coupe les requêtes,
 comparer plutôt les fichiers en ligne aux fichiers locaux).

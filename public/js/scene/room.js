@@ -1,5 +1,5 @@
 /*
- * La chambre de Hoko au domaine Senju, construite entièrement en code.
+ * La chambre d'Akira au domaine Hyûga, construite entièrement en code.
  *
  * Repère (en mètres) : x de -2,5 (ouest) à 2,5 (est), z de -3 (nord) à 3 (sud),
  * y vers le haut. On entre par la porte coulissante du mur sud.
@@ -172,7 +172,7 @@ export function buildRoom(scene) {
         starGeo.attributes.color.needsUpdate = true;
     });
 
-    // Étoile filante (déclenchée par la scène quand Hoko regarde le ciel) : une
+    // Étoile filante (déclenchée par la scène quand Akira regarde le ciel) : une
     // traînée lumineuse qui file en diagonale et s'éteint.
     const meteorMat = new THREE.ShaderMaterial({
         uniforms: { uHead: { value: -1 } },

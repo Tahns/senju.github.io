@@ -1,5 +1,5 @@
 /*
- * Le rêve de Hoko (vu à la troisième personne) : adulte, jōnin de Konoha,
+ * Le rêve d'Akira (vu à la troisième personne) : adulte, jōnin de Konoha,
  * maître du sabre et du Suiton… et chef de la section économique, qui fait
  * prospérer le village tout en remplissant ses poches.
  */
@@ -322,7 +322,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         leafGeo.attributes.position.needsUpdate = true;
     });
 
-    /* ---------------- Hoko adulte ---------------- */
+    /* ---------------- Akira adulte ---------------- */
     const ninja = buildNinja(head, avatar);
     scene.add(ninja.root);
     const spineY = ninja.J.spine.position.y;
@@ -351,7 +351,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         return m;
     });
 
-    // Dragon d'eau : un tube qui s'enroule autour de Hoko, puis jaillit.
+    // Dragon d'eau : un tube qui s'enroule autour d'Akira, puis jaillit.
     const dragonPoints = [];
     for (let i = 0; i <= 64; i++) {
         const t = i / 64;
@@ -665,14 +665,14 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         fog: false
     });
     const rainbow = new THREE.Mesh(new THREE.RingGeometry(5.2, 6.1, 96, 1, 0, Math.PI), rainbowMat);
-    // Derrière Hoko, au-dessus du village (dans l'axe des plans suivants).
+    // Derrière Akira, au-dessus du village (dans l'axe des plans suivants).
     rainbow.position.set(-6, -6, -60);
     rainbow.scale.setScalar(6);
     rainbow.visible = false;
     scene.add(rainbow);
 
     // Aura de chakra (Suiton) : une flamme bleue translucide qui monte autour
-    // de Hoko pendant les mudras, et des étincelles qui s'élèvent.
+    // d'Akira pendant les mudras, et des étincelles qui s'élèvent.
     const auraMat = new THREE.ShaderMaterial({
         uniforms: { uTime: { value: 0 }, uPower: { value: 0 } },
         // La surface ondule (silhouette vivante, pas un tube rigide).
@@ -968,7 +968,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         ninja.pouch.scale.setScalar(1);
         sound.startDream();
 
-        // 0. Hoko tombe du ciel et se réceptionne sur le rocher, dans la poussière.
+        // 0. Akira tombe du ciel et se réceptionne sur le rocher, dans la poussière.
         const hipsY = ninja.J.hips.position.y;
         ninja.setValues(ninja.poseValues('fall'));
         ninja.root.position.y = 8;
@@ -987,8 +987,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         pose(tl, 'land', 0.12, ease.out);
         await tl.tween(0.14, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * k; }, ease.out);
         await tl.wait(0.7);
-        // 1. Hoko, adulte, se relève et domine le village.
-        say('Hoko Senju — jōnin de Konoha', 4.5, '千手');
+        // 1. Akira, adulte, se relève et domine le village.
+        say('Akira Hyûga — jōnin de Konoha', 4.5, '日向');
         tl.tween(0.9, (k) => { ninja.J.hips.position.y = hipsY - 0.35 * (1 - k); }, ease.inOut);
         pose(tl, 'crossed', 0.9);
         // Bras croisés : les mains se referment sur les bras (doigts rentrés).
@@ -1018,7 +1018,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         for (let i = 0; i < 3; i++) {
             if (i === 2) {
                 // Dernier coup : la lame se charge de foudre (Kiminari).
-                say('Kiminari : la lame chargée de foudre', 2.4, '雷');
+                say('La lame chargée de foudre', 2.4, '雷');
                 if (sound.crackle) sound.crackle(1.4);
                 raiton = 1;
             }
@@ -1093,10 +1093,10 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             .then(() => { rainbow.visible = false; });
         await pose(tl, 'stand', 0.4);
 
-        // 4. Chef de la section économique : une pluie de ryō.
+        // 4. Trésorier de Konoha (son ambition « Comptabilité ») : une pluie de ryō.
         onAct('ryo');
         await shot(tl, V(1.9, 1.75, 3.5), V(0, 1.15, 0.2), 2);
-        say('Chef de la section économique de Konoha', 4, '両');
+        say('Trésorier de Konoha', 4, '両');
         face(tl, 'angry', 0, 0.3);
         face(tl, 'joy', 0.7, 0.6);
         hud.hidden = false;
@@ -1142,7 +1142,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         tl.tween(1, (k) => { ninja.root.rotation.y = Math.PI * k; }, ease.inOut);
         if (ninja.avatar) ninja.avatar.grip('right', true);
         pose(tl, 'vow', 1);
-        say('Un jour…', 3.5, '火影');
+        say('Un jour… chef du clan Hyûga', 3.5, '当主');
         face(tl, 'joy', 0, 0.8);
         face(tl, 'fun', 0.4, 0.8);
         await shot(tl, V(-1.6, 1.2, 3.4), V(0.5, 2, -6), 3.5, ease.sine);
@@ -1157,7 +1157,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     snapCamera(V(0.5, 1.9, 7.5), V(0, 1.5, 0));
 
     // Téléphone en portrait : l'image est étroite, un plan pensé pour l'écran
-    // large coupe Hoko au bord. On tourne la caméra juste assez pour qu'il reste
+    // large coupe Akira au bord. On tourne la caméra juste assez pour qu'il reste
     // dans le cadre (sans toucher aux plans où il est déjà bien placé).
     const framePoint = V();
     const up = V(0, 1, 0);
@@ -1248,7 +1248,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         }
     }
 
-    // « Confirmer » : shunshin (瞬身) — Hoko disparaît dans un tourbillon de feuilles.
+    // « Confirmer » : shunshin (瞬身) — Akira disparaît dans un tourbillon de feuilles.
     const swirlCount = 90;
     const leafShape = new THREE.Shape();
     leafShape.moveTo(0, -0.06);
@@ -1282,7 +1282,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     }
 
     /* ---------------- Menu « Sélection de la catégorie » ---------------- */
-    // Écran façon jeux Naruto Storm : Hoko en contre-plongée dans son aura de
+    // Écran façon jeux Naruto Storm : Akira en contre-plongée dans son aura de
     // chakra, ciel d'orage ; chaque catégorie de la fiche lui donne une pose.
     const menu = { on: false, t: 0, target: null, sound: null, calm: false, push: false, pushT: 0 };
     updaters.push((dt) => {
@@ -1291,7 +1291,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             return;
         }
         menu.t += dt;
-        // Le corbeau passe toutes les 9 s, de droite à gauche, loin derrière Hoko.
+        // Le corbeau passe toutes les 9 s, de droite à gauche, loin derrière Akira.
         const ct = (menu.t % 9) / 9;
         crow.visible = ct < 0.6;
         // Trajectoire dans le haut du cadre (la caméra est basse et regarde un peu vers le haut).
@@ -1309,12 +1309,12 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             ninja.setValues(ninja.currentValues().map((f, i) => f.map((v, j) => v + (menu.target[i][j] - v) * a)));
         }
         auraMat.uniforms.uPower.value = Math.min(0.42, auraMat.uniforms.uPower.value + dt * 0.4);
-        // Caméra basse, qui dérive à peine ; Hoko à droite (texte à gauche), centré en portrait.
+        // Caméra basse, qui dérive à peine ; Akira à droite (texte à gauche), centré en portrait.
         const portrait = camera.aspect < 1;
         // Les 0,8 premières secondes, la caméra reste haute, puis descend.
         if (menu.t < 0.8) return;
         if (menu.push) {
-            // « Confirmer » : les feuilles tourbillonnent, Hoko s'y efface
+            // « Confirmer » : les feuilles tourbillonnent, Akira s'y efface
             // (shunshin) pendant que la caméra fonce vers son visage.
             menu.pushT += dt;
             updateSwirl(menu.pushT);
@@ -1365,7 +1365,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         waterMat.opacity = 0;
         setLook(stormLook, 1);
         auraMat.uniforms.uPower.value = 0;
-        // Entrée : la caméra part du ciel d'orage et plonge vers Hoko (l'amorti fait le reste).
+        // Entrée : la caméra part du ciel d'orage et plonge vers Akira (l'amorti fait le reste).
         snapCamera(V(0.2, 6.5, 4.2), V(-0.4, 4.5, -6));
         // Pas de poteaux d'entraînement au premier plan du menu.
         posts.forEach((p) => { p.base.visible = p.topPart.visible = p.cut.visible = false; });
@@ -1388,6 +1388,14 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         setMenu,
         menuPose,
         menuConfirm() { menu.push = true; menu.pushT = 0; },
+        // Après le shunshin : Akira réapparaît derrière l'écran de la catégorie.
+        menuReturn() {
+            menu.push = false;
+            updateSwirl(0);
+            ninja.root.visible = true;
+            ninja.express('wink', 0);
+            ninja.express('joy', 0);
+        },
         // Pour les tests : déclenche le prochain éclair du menu tout de suite.
         strikeNow() { strike.next = 0; },
         // Pour les tests : position du corbeau à l'écran (-1..1).
@@ -1403,7 +1411,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         setRainbow(v) { rainbow.visible = v > 0; rainbowMat.uniforms.uOpacity.value = v; },
         play,
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
-        // Rendu avec profondeur de champ : la mise au point suit Hoko.
+        // Rendu avec profondeur de champ : la mise au point suit Akira.
         render() {
             keepInFrame();
             if (!post) {

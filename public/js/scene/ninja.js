@@ -1,5 +1,5 @@
 /*
- * Hoko adulte, jōnin de Konoha, pour le rêve (vu à la troisième personne).
+ * Akira adulte, jōnin de Konoha, pour le rêve (vu à la troisième personne).
  * Personnage stylisé, fait de formes simples, avec des articulations nommées
  * que l'on anime en passant d'une pose à l'autre.
  */

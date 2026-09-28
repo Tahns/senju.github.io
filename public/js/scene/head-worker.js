@@ -1,4 +1,4 @@
-// Sculpte la tête de Hoko hors du fil principal, puis renvoie les tableaux.
+// Sculpte la tête d'Akira hors du fil principal, puis renvoie les tableaux.
 import { sculptHead } from './sculpt.js';
 
 const r = sculptHead();
