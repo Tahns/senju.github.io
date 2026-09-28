@@ -506,3 +506,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   contre le plat, pouce sur la tranche ; la main au repos part d'une torsion
   neutre. Rêve vérifié : l'interpolation d'Euler des poses suit le chemin
   direct, pas de retournement des mains du modèle.
+- **Vidéo à partager refaite** (`docs/media/reve.webm`, 31 s) : écran titre,
+  menu (Histoire, HRP, clin d'œil et shunshin), puis Byakugan, rafale des 64
+  paumes, Kûshô, Kaiten façon anime, pluie de ryō et final, avec le modèle
+  aux nouvelles proportions.
