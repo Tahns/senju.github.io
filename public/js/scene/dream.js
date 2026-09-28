@@ -1141,7 +1141,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             const aim = Math.atan2(P.x - ninja.root.position.x, P.z - ninja.root.position.z);
             if (i === 1) {
                 say('Hakke Kûshô : la paume du vide', 3, '空掌');
-                shot(tl, V(0.9, 1.45, 3.5), V(1.1, 1.0, 0.1), 1.2);
+                shot(tl, V(0.35, 1.45, -1.9), V(1.0, 1.0, 0.35), 1.2);
             }
             if (last) {
                 tl.tween(0.5, (k) => { auraMat.uniforms.uPower.value = 0.7 * k; }, ease.out);
