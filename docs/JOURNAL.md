@@ -475,3 +475,12 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   ventre et bas du haut resserrés de 30 %, manches affinées (×0,88), jambes du
   pantalon élargies (×1,2, progressivement depuis l'aine). Le haut et le
   pantalon partagent les mêmes sommets : chaque vêtement ne déforme que les siens.
+- **Mains qui se retournaient** (chambre) : la butée de torsion du poignet
+  (±95°) sautait d'un bord à l'autre quand l'orientation voulue passait par
+  180° (retournement d'environ 170° en une image, en prenant et en rangeant
+  les livres, au couvercle de la boîte à musique). La torsion suit maintenant
+  le tour le plus proche de l'image précédente ; la prise du livre (paume sur
+  le dos, impossible pour la main gauche) devient une prise par le haut, paume
+  contre le plat, pouce sur la tranche ; la main au repos part d'une torsion
+  neutre. Rêve vérifié : l'interpolation d'Euler des poses suit le chemin
+  direct, pas de retournement des mains du modèle.
