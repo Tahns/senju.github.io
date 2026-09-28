@@ -21,6 +21,18 @@ exemple `"5,10,15"`.
 
 Téléphone en portrait (écran tactile simulé) : `VIEWPORT=390x780 node tools/test/flow.js …`.
 
+## Menu « Sélection de la catégorie »
+
+```sh
+node tools/test/menu.js                 # confirme « Nindo » (deux fois ↑)
+node tools/test/menu.js "ArrowDown"     # confirme « Apparence »
+```
+
+Ouvre le menu depuis l'accueil, fait le tour des 7 catégories en vérifiant
+le mot, le kanji en filigrane et les catégories voisines, puis confirme et
+vérifie que le carnet s'ouvre à la bonne page. Se termine par `menu ok`.
+Pour déclencher un éclair du menu dans un test : `__scene.dream.strikeNow()`.
+
 ## Plans du rêve
 
 ```sh
