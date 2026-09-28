@@ -469,3 +469,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   La bourse est recalée contre la hanche, sous l'ourlet du haut ; la sacoche
   est masquée (le gilet peint a déjà sa poche). Rien d'autre à signaler :
   pas de peau à travers les vêtements, mains, cou, bandeau et sandales en place.
+- **Silhouette corrigée** : le haut du modèle (un sweat ample, poche kangourou)
+  gonflait le ventre et ses manches bouffantes rendaient les bras plus épais
+  que les jambes (pantalon très fin). Déformation au chargement : devant du
+  ventre et bas du haut resserrés de 30 %, manches affinées (×0,88), jambes du
+  pantalon élargies (×1,2, progressivement depuis l'aine). Le haut et le
+  pantalon partagent les mêmes sommets : chaque vêtement ne déforme que les siens.
