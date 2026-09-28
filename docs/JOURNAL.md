@@ -425,3 +425,14 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   menu et les écrans des catégories.
 - **Second carnet utile** : le registre des comptes du clan Hyûga, tenu par
   Akira (budget prévisionnel de ses objectifs, notes en marge, bilan).
+- **Voix off intégrée** (4 min 12) : fichier fourni optimisé — mono (les deux
+  canaux étaient identiques), volume ramené à -16 LUFS avec crêtes à -1,5 dB
+  (il saturait à -0,1 dB), bords coupés ; Opus 1,6 Mo + MP3 1,7 Mo de repli
+  (au lieu de 4,3 Mo), chargée seulement au clic. Barre de progression, la
+  musique et l'ambiance baissent pendant qu'elle parle, pause avec le jeu.
+- **Menus façon Canva** : écran titre noir (nom au pinceau, 日向 en badge bleu,
+  « Entrer ✕ » qui pulse, mentions en bas à gauche) ; menu avec bandes noires
+  « cinéma » et bandeau de parchemin droit bordé de brun ; symboles de
+  manette ✕ / ○ partout ; lecture des chapitres dans une fenêtre à barre
+  orange ● ■ ▲ avec emblème et fumée ; écran HRP comme le Canva (Akira à
+  gauche avec nom et pastilles, présentation à droite, caméra déplacée).

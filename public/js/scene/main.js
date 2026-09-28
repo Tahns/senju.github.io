@@ -794,7 +794,15 @@ async function start() {
     // Écran de la catégorie (façon Storm) ; « Oui » dans la pause ramène au menu.
     const screens = createScreens({
         sound,
+        // Voix off : la musique et l'ambiance s'effacent pendant qu'elle parle.
+        onVoice(speaking) {
+            radio.setVolume(sound.on ? volumes.music * (speaking ? 0.2 : 1) : 0);
+            sound.setVolumes({ ...volumes, music: volumes.music * (speaking ? 0.2 : 1), ambience: volumes.ambience * (speaking ? 0.35 : 1) });
+        },
+        muted: () => !sound.on,
+        onSide: (side) => dream.menuSide(side),
         onExit() {
+            dream.menuSide(1);
             menuEl.hidden = false;
             menuOpen = true;
             showCategory();

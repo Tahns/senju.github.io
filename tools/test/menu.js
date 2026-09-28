@@ -47,7 +47,7 @@ const BASE = process.env.BASE || 'http://localhost:8765/';
     // Quelques « Suivant » (sans quitter l'écran), avec captures si demandé.
     for (let s = 0; s < +(process.env.STEPS || 3); s++) {
       if (process.env.SHOTS) await p.screenshot({ path: `${process.env.SHOTS}-${s}.png` });
-      const label = await p.textContent('#ss-next span');
+      const label = await p.textContent('#ss-next span:not(.pad)');
       if (label === 'Terminer') break;
       await p.click('#ss-next');
       await p.waitForTimeout(700);
