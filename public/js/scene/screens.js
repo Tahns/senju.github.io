@@ -73,6 +73,58 @@ function panelsOf(section) {
     return out;
 }
 
+/* ---------------- Voix off ---------------- */
+// Un seul lecteur pour la voix off (Opus si le navigateur le lit, sinon MP3),
+// gardé d'un affichage à l'autre ; la musique baisse pendant qu'elle parle.
+const voiceHooks = { change() {}, muted: () => false };
+let voiceAudio = null;
+let voiceResume = false;
+function voiceSrc(path) {
+    const opus = path.replace(/\.mp3$/, '.webm');
+    return opus !== path && document.createElement('audio').canPlayType('audio/webm; codecs="opus"') ? opus : path;
+}
+const clock = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+function updateVoiceUI() {
+    const box = document.querySelector('.ss-reader__voice');
+    if (!box || !voiceAudio) return;
+    const d = voiceAudio.duration || 0;
+    const t = voiceAudio.currentTime || 0;
+    box.querySelector('.ss-reader__listen').textContent = voiceAudio.paused ? (t > 0 && t < d ? 'Reprendre' : 'Écouter') : 'Pause';
+    box.querySelector('.ss-reader__bar span').style.width = d ? `${(t / d) * 100}%` : '0';
+    box.querySelector('.ss-reader__time').textContent = d ? `${clock(t)} / ${clock(d)}` : '';
+}
+function ensureVoice(path) {
+    if (!voiceAudio || voiceAudio.dataset.path !== path) {
+        if (voiceAudio) voiceAudio.pause();
+        voiceAudio = document.createElement('audio');
+        voiceAudio.preload = 'metadata';
+        voiceAudio.dataset.path = path;
+        voiceAudio.src = voiceSrc(path);
+        voiceAudio.addEventListener('timeupdate', updateVoiceUI);
+        voiceAudio.addEventListener('play', () => { voiceHooks.change(true); updateVoiceUI(); });
+        voiceAudio.addEventListener('pause', () => { voiceHooks.change(false); updateVoiceUI(); });
+        voiceAudio.addEventListener('ended', () => { voiceAudio.currentTime = 0; updateVoiceUI(); });
+    }
+    const a = voiceAudio;
+    return a.readyState >= 1 ? Promise.resolve(a) : new Promise((resolve, reject) => {
+        a.addEventListener('loadedmetadata', () => resolve(a), { once: true });
+        a.addEventListener('error', reject, { once: true });
+    });
+}
+function toggleVoice() {
+    if (!voiceAudio) return;
+    if (voiceAudio.paused) {
+        voiceAudio.muted = voiceHooks.muted();
+        voiceAudio.play().catch(() => {});
+    } else voiceAudio.pause();
+}
+function stopVoice() {
+    voiceResume = false;
+    if (!voiceAudio) return;
+    voiceAudio.pause();
+    voiceAudio.currentTime = 0;
+}
+
 /* ---------------- Contenu de chaque catégorie ---------------- */
 // Chaque écran est une suite d'étapes (« Suivant ») ; `render(step)` remplit le corps.
 
@@ -144,6 +196,8 @@ function hrp() {
     return {
         key: 'hrp',
         title: 'Présentation HRP',
+        // Comme dans le Canva : le personnage à gauche, la présentation à droite.
+        side: -1,
         steps: hp.length,
         layout: 'side',
         render(step, body, go) {
@@ -159,7 +213,9 @@ function hrp() {
                 pills.append(b);
             });
             const card = el('div', 'ss-card');
-            card.append(el('p', 'ss-card__kicker', 'Présentation HRP'));
+            const head2 = el('p', 'ss-card__head');
+            head2.append(el('span', '', 'Présentation'), el('span', '', 'HRP'));
+            card.append(head2);
             panelsOf(hp[step]).forEach((pn) => {
                 card.append(el('h3', 'ss-card__title', pn.querySelector('h3').textContent));
                 Array.from(pn.children).slice(1).forEach((n) => card.append(n));
@@ -178,8 +234,6 @@ function histoire() {
         // Voix off du chapitre (data-voice sur la page du carnet), si le fichier existe.
         voice: s.dataset.voice || ''
     }));
-    let voice = null;
-    const stopVoice = () => { if (voice) { voice.pause(); voice = null; } };
     const state = { chapter: 0, reading: false, para: 0 };
     let api = null;
     return {
@@ -222,6 +276,13 @@ function histoire() {
             if (state.reading) {
                 const view = el('div', 'ss-reader');
                 const frame = el('div', 'ss-reader__frame');
+                // Cadre façon fenêtre de lecture du Canva : barre orange ● ■ ▲ et emblème.
+                const chrome = el('div', 'ss-reader__chrome', '● ■ ▲');
+                chrome.setAttribute('aria-hidden', 'true');
+                const badge = el('span', 'ss-reader__badge', '日');
+                badge.setAttribute('aria-hidden', 'true');
+                view.append(badge);
+                frame.append(chrome);
                 if (c.art) frame.append(c.art.cloneNode(true));
                 frame.append(el('p', 'ss-reader__label', `${c.label} · ${c.title}`));
                 const text = el('div', 'ss-reader__text');
@@ -230,25 +291,19 @@ function histoire() {
                 back.type = 'button';
                 back.addEventListener('click', () => { state.reading = false; stopVoice(); api(true); });
                 view.append(frame, text, back);
-                // « Écouter » (comme dans le Canva) : la voix off du chapitre, si elle a été ajoutée.
+                // « Écouter » (comme dans le Canva) : la voix off du chapitre, avec sa progression.
                 if (c.voice) {
+                    const box = el('div', 'ss-reader__voice');
+                    box.hidden = true;
                     const listen = el('button', 'ss-reader__listen', 'Écouter');
                     listen.type = 'button';
-                    listen.hidden = true;
-                    const probe = new Audio();
-                    probe.preload = 'metadata';
-                    probe.addEventListener('loadedmetadata', () => { listen.hidden = false; }, { once: true });
-                    probe.src = c.voice;
-                    listen.addEventListener('click', () => {
-                        if (voice && !voice.paused) { stopVoice(); listen.textContent = 'Écouter'; return; }
-                        stopVoice();
-                        voice = probe;
-                        voice.currentTime = 0;
-                        voice.play().catch(() => {});
-                        listen.textContent = 'Arrêter';
-                        voice.addEventListener('ended', () => { listen.textContent = 'Écouter'; }, { once: true });
-                    });
-                    view.append(listen);
+                    listen.addEventListener('click', toggleVoice);
+                    const bar = el('span', 'ss-reader__bar');
+                    bar.setAttribute('aria-hidden', 'true');
+                    bar.append(el('span'));
+                    box.append(listen, bar, el('span', 'ss-reader__time'));
+                    view.append(box);
+                    ensureVoice(c.voice).then(() => { box.hidden = false; updateVoiceUI(); }).catch(() => {});
                 }
                 body.append(view);
                 return;
@@ -294,7 +349,9 @@ const BUILDERS = { histoire, personnage, hrp };
 
 /* ---------------- L'écran ---------------- */
 
-export function createScreens({ sound, onExit, onBook }) {
+export function createScreens({ sound, onExit, onBook, onVoice = () => {}, muted = () => false, onSide = () => {} }) {
+    voiceHooks.change = onVoice;
+    voiceHooks.muted = muted;
     const root = el('div', 'storm-screen scene-only');
     root.id = 'storm-screen';
     root.hidden = true;
@@ -313,8 +370,8 @@ export function createScreens({ sound, onExit, onBook }) {
         </nav>
         <div class="ss-body" id="ss-body" aria-live="polite"></div>
         <div class="ss-actions">
-            <button class="storm-menu__action" id="ss-pause" type="button"><kbd>Échap</kbd> Pause</button>
-            <button class="storm-menu__action storm-menu__action--confirm" id="ss-next" type="button"><kbd>Entrée</kbd> <span>Suivant</span></button>
+            <button class="storm-menu__action" id="ss-pause" type="button" title="Échap"><span class="pad pad--circle" aria-hidden="true"></span> Pause</button>
+            <button class="storm-menu__action storm-menu__action--confirm" id="ss-next" type="button" title="Entrée"><span class="pad pad--cross" aria-hidden="true"></span> <span>Suivant</span></button>
         </div>
         <div class="ss-dialog" id="ss-dialog" role="alertdialog" aria-labelledby="ss-dialog-q" hidden>
             <div class="ss-dialog__box">
@@ -389,7 +446,7 @@ export function createScreens({ sound, onExit, onBook }) {
         title.textContent = screen.titles ? screen.titles[step] : screen.title;
         count.textContent = screen.steps > 1 ? `○ ${step + 1} / ${screen.steps}` : '';
         const last = step >= screen.steps - 1;
-        nextBtn.querySelector('span').textContent = screen.actionLabel || (last ? 'Terminer' : 'Suivant');
+        nextBtn.querySelector('span:not(.pad)').textContent = screen.actionLabel || (last ? 'Terminer' : 'Suivant');
         tabs.hidden = !screen.tabs;
         if (screen.tabs) root.dataset.tabs = '';
         else delete root.dataset.tabs;
@@ -404,6 +461,7 @@ export function createScreens({ sound, onExit, onBook }) {
     function open(key, page) {
         screen = BUILDERS[key]();
         if (screen.reset) screen.reset();
+        onSide(screen.side || 1);
         step = 0;
         bookPage = page;
         root.setAttribute('aria-label', screen.title);
@@ -453,6 +511,9 @@ export function createScreens({ sound, onExit, onBook }) {
     }
 
     function pause(on) {
+        // La voix off se met en pause avec le jeu, et reprend si on répond « Non ».
+        if (on && voiceAudio && !voiceAudio.paused) { voiceResume = true; voiceAudio.pause(); }
+        else if (!on && voiceResume) { voiceResume = false; toggleVoice(); }
         dialog.hidden = !on;
         sound.select();
         (on ? $('ss-no') : nextBtn).focus();

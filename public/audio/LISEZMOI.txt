@@ -1,3 +1,3 @@
 Voix off des chapitres (bouton « Écouter » de l’écran Histoire).
-Dépose ici histoire-1.mp3 : la voix off du chapitre 1, exportée depuis le Canva.
-Sans fichier, le bouton reste caché.
+histoire-1.webm (Opus) et histoire-1.mp3 (repli) : voix off fournie, optimisée
+(mono, -16 LUFS, bords coupés). Le site choisit le format lisible par le navigateur.

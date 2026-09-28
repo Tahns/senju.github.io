@@ -3577,9 +3577,8 @@ html.menu-open .scene-skip {
 
 .ss-reader__back {
     position: absolute;
-    left: 50%;
-    bottom: -7vh;
-    translate: calc(-100% - 5.5em) 0;
+    left: 0;
+    top: -5.5vh;
     padding: .2em 0;
     font: inherit;
     font-size: clamp(14px, 1.4vw, 18px);
@@ -3676,7 +3675,9 @@ html.menu-open .scene-skip {
     .ss-body--histoire:not(:has(.ss-reader)) { grid-template-columns: 1fr; align-content: start; }
     .ss-chapters__title { margin-bottom: .5em !important; }
     .ss-chapters__grid { gap: 8px; }
-    .ss-reader__back { bottom: -6vh; }
+    .ss-reader__back { top: -5vh; }
+    .ss-reader__voice { bottom: -6vh; }
+    .ss-reader__time { display: none; }
     .ss-actions { left: 0; right: 0; justify-content: center; bottom: 3vh; }
     .ss-actions kbd { display: none; }
 }
@@ -3723,17 +3724,26 @@ html.menu-open .scene-skip {
 }
 
 /* « Écouter » : la voix off du chapitre, comme le bouton du Canva. */
-.ss-reader__listen {
+.ss-reader__voice {
     position: absolute;
     left: 50%;
-    bottom: -7vh;
+    bottom: -7.4vh;
+    display: flex;
+    align-items: center;
+    gap: .7em;
     translate: -50% 0;
+    font-size: clamp(13px, 1.3vw, 17px);
+}
+
+.ss-reader__voice[hidden] { display: none; }
+
+.ss-reader__listen {
     display: inline-flex;
     align-items: center;
     gap: .45em;
+    min-width: 6.5em;
     padding: .2em 0;
     font: inherit;
-    font-size: clamp(14px, 1.4vw, 18px);
     color: #fff;
     background: none;
     border: 0;
@@ -3754,7 +3764,25 @@ html.menu-open .scene-skip {
 
 .ss-reader__listen:hover,
 .ss-reader__listen:focus-visible { color: var(--ss-green); }
-.ss-reader__listen[hidden] { display: none; }
+
+.ss-reader__bar {
+    position: relative;
+    width: clamp(80px, 14vw, 200px);
+    height: 4px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, .25);
+    border-radius: 2px;
+}
+
+.ss-reader__bar span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0;
+    background: var(--ss-green);
+    box-shadow: 0 0 6px var(--ss-glow);
+}
+
+.ss-reader__time { min-width: 6.5em; font-family: var(--font-body); font-variant-numeric: tabular-nums; opacity: .75; }
 
 @media (prefers-reduced-motion: reduce) {
     .ss-reader__frame svg { animation: none; }
@@ -3841,3 +3869,268 @@ html.menu-open .radio {
 
 .ledger-notes li { margin-bottom: .7em; transform: rotate(-1deg); }
 .ledger-notes li:nth-child(2n) { transform: rotate(.8deg); margin-left: .6em; }
+
+/* ==========================================================================
+   Style de la candidature Canva
+   ========================================================================== */
+
+/* Symboles de manette (✕ confirmer, ○ retour), comme dans le Canva. */
+.pad {
+    display: inline-grid;
+    place-items: center;
+    width: 1.35em;
+    height: 1.35em;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .12);
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .8);
+}
+
+.pad::before {
+    font-family: Arial, sans-serif;
+    font-size: .75em;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.pad--cross::before { content: "✕"; color: #9fc4ff; }
+.pad--circle::before { content: ""; width: .6em; height: .6em; border: 2px solid #ff8a9a; border-radius: 50%; }
+
+/* Écran titre : fond noir, grand nom au pinceau, « Entrer ✕ » qui pulse, mentions en bas à gauche. */
+.scene-card--title {
+    background:
+        radial-gradient(ellipse 30% 40% at 78% 38%, rgba(255, 120, 20, .28), transparent 70%),
+        radial-gradient(ellipse 60% 55% at 45% 50%, rgba(255, 255, 255, .06), transparent 70%),
+        #030303;
+}
+
+.scene-card--title .scene-card__title {
+    font-size: clamp(56px, 12vw, 120px);
+    color: #fff;
+    text-shadow:
+        .03em .03em 0 #1a1a1a, -.03em -.03em 0 #1a1a1a, .03em -.03em 0 #1a1a1a, -.03em .03em 0 #1a1a1a,
+        .06em .07em 0 rgba(255, 110, 20, .85), 0 0 .4em rgba(255, 140, 40, .45);
+}
+
+.scene-card--title .scene-card__title::before { display: none; }
+
+.scene-card--title .scene-card__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .6em;
+    margin-top: -.4em;
+    font-size: clamp(14px, 1.6vw, 18px);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: #cfd9ff;
+}
+
+.scene-card--title .scene-card__tag span {
+    padding: .05em .35em;
+    font-family: var(--font-kanji);
+    font-size: 1.5em;
+    letter-spacing: 0;
+    color: #fff;
+    background: #1f6fe0;
+    border-radius: 4px;
+    box-shadow: 0 0 12px rgba(31, 111, 224, .6);
+}
+
+.scene-card--title .scene-button {
+    display: inline-flex;
+    align-items: center;
+    gap: .5em;
+    color: #fff;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    font-size: clamp(20px, 2.4vw, 28px);
+    text-shadow: 0 0 10px rgba(120, 170, 255, .6);
+}
+
+.scene-card--title .scene-button:not(:disabled)::after {
+    content: "✕";
+    display: grid;
+    place-items: center;
+    width: 1.3em;
+    height: 1.3em;
+    font-family: Arial, sans-serif;
+    font-size: .7em;
+    color: #9fc4ff;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .85);
+}
+
+.scene-card--title .scene-button:not(:disabled) { animation: title-press 1.6s ease-in-out infinite; }
+
+@keyframes title-press {
+    50% { opacity: .55; }
+}
+
+/* Menu : bandes noires en haut et en bas (plein écran « cinéma » du Canva). */
+.storm-menu::before,
+.storm-menu::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 8vh;
+    background: #000;
+    pointer-events: none;
+}
+
+.storm-menu::before { top: 0; }
+.storm-menu::after { bottom: 0; }
+
+.storm-menu__actions {
+    z-index: 1;
+    bottom: 2vh;
+}
+
+/* Bandeau de parchemin droit, bordé de brun (comme le Canva). */
+.storm-menu__banner {
+    bottom: 12vh;
+    padding: .5em 5vw;
+    color: #2a1a0c;
+    background: linear-gradient(180deg, #f3e2b0, #e7cf92);
+    clip-path: none;
+    border-top: 3px solid #8a5a22;
+    border-bottom: 3px solid #8a5a22;
+    box-shadow: 0 -2px 0 #c89a4c inset, 0 2px 0 #c89a4c inset, 0 4px 14px rgba(0, 0, 0, .5);
+}
+
+.storm-menu.is-entering .storm-menu__banner { animation-name: storm-in; }
+
+/* Lecture d'un chapitre : fenêtre à barre orange, emblème en haut à gauche, fumée dans les coins. */
+.ss-reader__frame {
+    padding-top: 2.4em;
+    border: 3px solid #1a1a1a;
+    border-radius: 10px;
+}
+
+.ss-reader__chrome {
+    position: absolute;
+    inset: 0 0 auto 0;
+    padding: .25em .8em;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: .3em;
+    text-align: left;
+    color: #5a3b12;
+    background: linear-gradient(180deg, #ffd35a, #f0a93a);
+    border-bottom: 3px solid #e2506a;
+}
+
+.ss-reader__frame { position: relative; }
+
+.ss-reader__badge {
+    position: absolute;
+    left: -1vw;
+    top: -2.5vh;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: clamp(44px, 5vw, 64px);
+    height: clamp(44px, 5vw, 64px);
+    font-family: var(--font-kanji);
+    font-size: clamp(22px, 2.6vw, 32px);
+    color: #b3261b;
+    background: radial-gradient(circle, #fff27a, #ffc21a 70%);
+    border-radius: 50%;
+    box-shadow: 0 0 18px rgba(255, 200, 40, .6);
+}
+
+.ss-body--histoire::before,
+.ss-body--histoire::after {
+    content: "";
+    position: absolute;
+    bottom: -12vh;
+    width: 30vw;
+    height: 22vh;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 30% 70%, rgba(255, 255, 255, .22), transparent 45%),
+        radial-gradient(circle at 60% 60%, rgba(255, 255, 255, .18), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, .2), transparent 42%);
+    filter: blur(6px);
+}
+
+.ss-body--histoire::before { left: -4vw; }
+.ss-body--histoire::after { right: -4vw; transform: scaleX(-1); }
+
+/* HRP : personnage à gauche (nom et pastilles en bas à gauche), présentation à droite. */
+.ss-body--hrp.ss-layout--side {
+    inset: 12vh 4vw 12vh;
+    width: auto;
+    display: block;
+}
+
+.ss-body--hrp .ss-hero {
+    position: absolute;
+    left: 0;
+    top: 22%;
+}
+
+.ss-body--hrp .ss-pills {
+    position: absolute;
+    left: 0;
+    bottom: 6%;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.ss-body--hrp .ss-pill { min-width: 15em; text-align: center; }
+
+.ss-body--hrp .ss-card {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: min(42vw, 560px);
+    padding: 0 1.4em 1.2em;
+    color: #fff;
+    text-align: center;
+    background: rgba(90, 100, 80, .82);
+    border: 3px solid #2e4a52;
+    border-radius: 12px;
+}
+
+.ss-card__head {
+    display: grid;
+    margin: 0 -1.4em .8em;
+    padding: .4em;
+    font-family: var(--zk-font);
+    font-size: clamp(16px, 1.6vw, 22px);
+    line-height: 1.1;
+    color: #ff6b7d;
+    background: #1f3a40;
+    border-radius: 9px 9px 0 0;
+}
+
+.ss-body--hrp .ss-card__title { color: #ffd35a; text-decoration: underline; font-size: clamp(14px, 1.3vw, 18px); }
+.ss-body--hrp .ss-card p,
+.ss-body--hrp .ss-card .ss-list { color: #fff; }
+.ss-body--hrp .ss-card .ss-list { text-align: left; }
+.ss-body--hrp .ss-card .ss-panel__em { color: #ffd35a; }
+
+@media (max-aspect-ratio: 1/1) {
+    .storm-menu::before,
+    .storm-menu::after { height: 5vh; }
+    .ss-body--hrp.ss-layout--side { inset: 16vh 16px 14vh; overflow-y: auto; }
+    .ss-body--hrp .ss-hero,
+    .ss-body--hrp .ss-pills,
+    .ss-body--hrp .ss-card { position: static; width: auto; margin-bottom: 1.2vh; }
+    .ss-body--hrp .ss-pills { flex-direction: row; }
+    .ss-body--hrp .ss-pill { min-width: 0; }
+    .ss-reader__badge { left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scene-card--title .scene-button { animation: none !important; }
+}
+
+/* Le bouton son reste au-dessus des bandes noires du menu et des écrans. */
+html.menu-open .scene-sound,
+html.menu-open .sound-panel {
+    z-index: 17;
+}

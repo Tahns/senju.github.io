@@ -1412,7 +1412,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     /* ---------------- Menu « Sélection de la catégorie » ---------------- */
     // Écran façon jeux Naruto Storm : Akira en contre-plongée dans son aura de
     // chakra, ciel d'orage ; chaque catégorie de la fiche lui donne une pose.
-    const menu = { on: false, t: 0, target: null, sound: null, calm: false, push: false, pushT: 0 };
+    const menu = { on: false, t: 0, target: null, sound: null, calm: false, push: false, pushT: 0, side: 1 };
     updaters.push((dt) => {
         if (!menu.on) {
             crow.visible = false;
@@ -1458,8 +1458,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             lookGoal.set(0, 1.62, 0);
             return;
         }
-        camGoal.set((portrait ? 0.3 : 0.6) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.sin(menu.t * 0.4) * 0.03, portrait ? 3.1 : 2.4);
-        lookGoal.set(portrait ? 0 : -1.05, portrait ? 1.3 : 1.42, 0);
+        // side = -1 : Akira passe à gauche de l'image (écran HRP, comme dans le Canva).
+        camGoal.set((portrait ? 0.3 : 0.6 * menu.side) + Math.sin(menu.t * 0.3) * 0.08, 0.6 + Math.sin(menu.t * 0.4) * 0.03, portrait ? 3.1 : 2.4);
+        lookGoal.set(portrait ? 0 : -1.05 * menu.side, portrait ? 1.3 : 1.42, 0);
     });
     function setMenu(on, sound = null) {
         menu.on = on;
@@ -1480,6 +1481,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         }
         menu.t = 0;
         menu.push = false;
+        menu.side = 1;
         ninja.root.position.set(0, 0, 0);
         ninja.root.rotation.y = 0;
         if (ninja.katana.parent !== ninja.katana.userData.sheathed.parent) ninja.sheathe();
@@ -1516,6 +1518,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         setMenu,
         menuPose,
         menuConfirm() { menu.push = true; menu.pushT = 0; },
+        menuSide(side) { menu.side = side; },
         // Après le shunshin : Akira réapparaît derrière l'écran de la catégorie.
         menuReturn() {
             menu.push = false;
