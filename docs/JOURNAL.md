@@ -514,3 +514,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   qu'une fois) ; plus de requête vers le portrait absent (erreur 404) ; porte
   ouverte du bout des doigts dans la poignée, paume de côté (le poignet
   devait plier à 116°) ; ~12 Ko de CSS et le code des écrans retirés supprimés.
+- **Boîte à musique** : c'était un bloc plein avec le mécanisme posé dessus ;
+  le cylindre dépassait de ~4 cm et traversait le couvercle fermé. Coffret
+  creux (fond et quatre parois), mécanisme à l'intérieur, sous le couvercle.
