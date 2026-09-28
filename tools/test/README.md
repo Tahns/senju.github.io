@@ -31,6 +31,9 @@ node tools/test/menu.js "ArrowDown"     # confirme « Apparence »
 Ouvre le menu depuis l'accueil, fait le tour des 7 catégories en vérifiant
 le mot, le kanji en filigrane et les catégories voisines, puis confirme et
 vérifie que le carnet s'ouvre à la bonne page. Se termine par `menu ok`.
+Site en ligne : `BASE=https://tahns.github.io/senju.github.io/ node tools/test/menu.js`
+(depuis une connexion normale ; derrière un proxy qui coupe les requêtes,
+comparer plutôt les fichiers en ligne aux fichiers locaux).
 Pour déclencher un éclair du menu dans un test : `__scene.dream.strikeNow()`.
 
 ## Plans du rêve
