@@ -1,96 +1,107 @@
-# SWOT — Carnet de Hoko Senju
+# SWOT : Akira Hyûga, Naissance Hyûga
 
-Revue complète du projet au 25 septembre (soir), après le passage de Hoko
-adulte sur un vrai modèle anime ; mise à jour le 28 septembre. Les faiblesses sont classées par visibilité :
-on corrige d'abord ce qu'un visiteur remarque en premier.
+Revue complète au 28 septembre, après le transfert de la candidature Canva
+(« Hyûga par PrinceOFD ») sur le site. Les faiblesses sont classées par
+visibilité : on corrige d'abord ce qu'un visiteur remarque en premier.
 
 ## Forces
 
-- **Concept unique** : la fiche RP se vit comme un court film interactif
-  (chambre, boîte à musique, carnet qu'on feuillette, rêve à la troisième
-  personne) au lieu d'une page statique.
-- **Hoko adulte crédible** : vrai modèle anime de jeu (VRoid, CC0) en tenue de
-  jōnin (gilet olive à poches, col montant, bandeau de Konoha, sabre), cou
-  épaissi, peau chaude, animé par toutes les poses du rêve (vrais bras
-  croisés), clignements, expressions, poing fermé sur le sabre.
-- **Rêve spectaculaire** : entrée en iris de lumière, Hoko qui tombe du ciel,
-  plan héroïque sur son visage, Konoha complet (maisons à étages, tour du
-  Hokage, falaise boisée, villageois, oiseaux), herbe animée, coups de sabre
-  amples avec traînée et foudre (Kiminari), aura de chakra en flammes, dragon
-  d'eau avec une tête qui s'envole, arc-en-ciel, pluie de ryō, coucher de
-  soleil final ; caméra amortie, sans à-coups ; ambiance sonore de jour
-  (oiseaux, vent) ; chapitres pour revoir un passage.
-- **Menu « Sélection de la catégorie » façon Naruto Storm** (d'après la
-  candidature vidéo de référence) : Hoko en contre-plongée dans son aura, une
-  pose par catégorie, grand mot au pinceau avec kanji en filigrane et roue des
-  catégories voisines, plaque « Hoko Senju » avec ses natures de chakra,
-  corbeau, éclairs et tonnerre sous le ciel d'orage, shunshin en confirmant ;
-  accessible depuis l'accueil, la carte de fin et la 4ᵉ de couverture ;
-  test automatique (`tools/test/menu.js`).
-- **Pensé aussi pour le téléphone** : cadrage qui garde Hoko dans l'image en
-  portrait, compteur et carnet adaptés, palier de qualité mobile.
-- **Détails soignés** : kanji au pinceau pour chaque chapitre du rêve, étoile
-  filante avant de s'endormir, mécanisme de la boîte à musique, sceaux des
-  carnets, vignettes à l'encre (épée de la lignée, fins de chapitre, Konoha),
-  copeaux sous le sabre.
-- **Vidéo à partager** : 40 s (menu de sélection avec éclair, clin d'œil et shunshin, puis temps forts du rêve), enregistrée image par image.
-- **Carnet soigné** : couverture en cuir, pages qui se courbent sous le doigt,
-  sons de papier, sommaire, chronologie, fermeture du livre.
-- **Robustesse** : repli sur le carnet sans WebGL ou si le processeur graphique
-  lâche, tête de secours si le modèle ne se charge pas, qualité adaptative et
-  palier mobile, fichiers versionnés contre le cache.
-- **Léger à héberger** : aucun outil de build, GitHub Pages suffit ; ~5,5 Mo
-  au total dont 4,3 Mo pour le modèle, chargé en arrière-plan.
-- **Libre de droits** : tout est dessiné en code, le modèle est en CC0.
+- **Le Canva en entier, en mieux** : histoire, caractère (6 traits), objectifs
+  à court, moyen et long terme, présentation HRP. Le texte n'est écrit qu'une
+  fois, dans le carnet (`index.html`) : les écrans du menu le relisent.
+- **Le style du Canva reproduit** :
+  - écran titre noir (« Entrer ✕ ») ;
+  - sélection de la catégorie à trois entrées (Histoire, Personnage, HRP), avec
+    bandes noires, bandeau de parchemin et symboles de manette ✕ / ○ ;
+  - écrans de catégorie : sélection des chapitres, caractère révélé trait par
+    trait, objectifs en panneaux, HRP avec le personnage à gauche ;
+  - pause « Revenir à la sélection de la catégorie ? Oui / Non » ;
+  - transitions (bandeau, glissé-zoom, zoom depuis la carte du chapitre).
+- **L'histoire lue à voix haute** : le premier carnet suit la voix off mot
+  après mot. Chaque mot a son instant, calculé sur l'audio (activité de la
+  voix, fins de phrases calées sur les pauses). Les pages tournent seules et la
+  musique baisse pendant la voix. L'écran Histoire suit aussi la voix.
+- **Voix off optimisée** : mono, -16 LUFS, Opus 1,6 Mo (MP3 de repli), chargée
+  seulement au clic.
+- **Mise en scène 3D unique** : chambre vue à la première personne, deux
+  carnets pris dans la bibliothèque (l'histoire, puis la fiche), puis un rêve
+  façon Hyûga :
+  - Byakugan (yeux pâles qui s'illuminent) ;
+  - Jûken : garde basse, rafale des 64 paumes, Hakke Kûshô ;
+  - Hakkeshō Kaiten ;
+  - pluie de ryō du trésorier (son objectif « Comptabilité ») ;
+  - « Un jour… chef du clan Hyûga ».
+- **Menu vivant** : Akira en 3D dans son aura, une pose par catégorie, orage,
+  shunshin et clin d'œil en confirmant.
+- **Musique officielle** : bande originale de Naruto publiée par Aniplex sur
+  YouTube, « Sadness and Sorrow » dans la chambre et « Man of the World » dans
+  le menu. Replis en place (boîte à musique, ambiance d'orage).
+- **Corrections de rendu** : la peau ne traverse plus les vêtements, les pieds
+  restent au sol dans les gardes basses.
+- **Robustesse** :
+  - le carnet s'affiche seul si WebGL manque ou si la carte graphique lâche ;
+  - qualité adaptative dès ~30 images/s, 3D allégée derrière les écrans ;
+  - fichiers versionnés contre le cache.
+- **Tests automatiques** dans `tools/test/` : menu, voix off de l'écran,
+  carnet lu (précision au mot), parcours complet, poses sous plusieurs angles.
+- **Léger à héberger** : pas d'outil de build, GitHub Pages suffit ; tout est
+  dessiné en code, sauf le modèle 3D (CC0) et la voix.
 
 ## Faiblesses
 
 | # | Faiblesse | Visibilité | Piste |
 |---|-----------|-----------|-------|
-| F1 | ~~Tourbillon rouge du dos coupé en deux~~ | — | Corrigé : décalque 3D sur le dos |
-| F2 | ~~Reste de capuche~~ | — | Corrigé : capuche masquée, col montant olive du gilet |
-| F3 | ~~Visage toujours neutre~~ | — | Corrigé : détermination au sabre et au Suiton, joie sous les ryō, sourire final ; clignements réparés |
-| F4 | ~~Bras de la chambre d'un autre style~~ | — | Revu : même rendu lisse que la chambre, manches bleu nuit comme Hoko adulte ; pas de changement nécessaire |
-| F5 | Portrait de la fiche vide (« Portrait à venir ») + erreur 404 dans la console | Moyenne | Image du joueur (la fiche décrit Hoko à 12 ans : un portrait du modèle adulte ne conviendrait pas) |
-| F6 | ~~L'aperçu Claude n'affiche pas le modèle~~ | — | Corrigé : repli sur une copie base64 du modèle |
-| F7 | Jamais testé sur un vrai téléphone ni une vraie carte graphique (seulement un rendu logiciel) | Moyenne (risque) | Test par le propriétaire ; réglages `?quality=` en secours |
-| F8 | ~~Rêve non décrit pour les lecteurs d'écran~~ | — | Corrigé : résumé de la scène lié à la carte d'accueil ; sous-titres annoncés (aria-live) |
-| F9 | ~~Tests automatiques hors du dépôt~~ | — | Corrigé : `tools/test/` (parcours complet, plans du rêve) |
+| F1 | Akira n'a pas le physique d'un Hyûga : cheveux bruns courts (modèle VRoid générique). Seuls les yeux du Byakugan sont faits. | Haute | Modèle VRoid dédié : longs cheveux sombres, tenue du clan |
+| F2 | Jamais vérifié sur un vrai appareil pendant ces changements : fluidité, son, lecteurs YouTube, voix Opus sur Safari. Tout a été testé en rendu logiciel, sans son. | Haute (risque) | Tour complet sur ordinateur et téléphone par le propriétaire |
+| F3 | Sans la 3D (vieux navigateur, lien `#page-N`), seule la fiche s'affiche : ni carnet de l'histoire ni voix off. | Moyenne | Bouton « Histoire (voix off) » dans la barre du carnet seul, qui charge le second carnet |
+| F4 | Images du Canva non reprises (captures de l'anime, pour les droits) : traits illustrés par des kanji, portrait « à venir » (et une erreur 404 dans la console). | Moyenne | Illustrations du joueur (portrait, tenues Chûnin / Enfant) |
+| F5 | Un seul chapitre écrit sur 8 : la grille des chapitres est surtout faite de cases « À venir ». | Moyenne | Écrire les chapitres suivants (le carnet et l'écran les prennent automatiquement) |
+| F6 | Suivi du texte encore approximatif au milieu des longues phrases sans pause (instants calculés sur l'énergie de la voix, pas par reconnaissance vocale). | Faible à moyenne | Recalage manuel d'un passage signalé, ou transcription horodatée si un outil devient accessible |
+| F7 | Vidéo à partager (`docs/media/reve.webm`) et image d'aperçu (`og.jpg`) montrent encore l'ancienne version (Hoko, ancien menu). | Moyenne (partage) | Réenregistrer avec `tools/test/record-menu.js` et `record-dream.js` |
+| F8 | Restes du rêve de Hoko : code du dragon d'eau et du sabre inutilisé ; plan du Kûshô avec le bord du décor au loin. | Faible | Nettoyage du code, décor complété derrière le rocher |
+| F9 | Sur un appareil très lent, le zoom vers la lecture d'un chapitre peut sembler figé une fraction de seconde. | Faible | Zoom plus court, ou désactivé en qualité basse |
+| F10 | Poids au premier chargement : ~4 Mo de modèle + ~0,7 Mo de three.js (la voix n'est chargée qu'au clic). | Faible | Modèle allégé (textures, maillage) |
 
 ## Opportunités
 
-- **Expressions et gestes** : regard déterminé pendant le kenjutsu, sourire sous
-  les ryō, clin d'œil final ; micro-mouvements des doigts.
-- **Cheveux et vêtements vivants** : les os « secondaires » du modèle (mèches,
-  cordons) peuvent onduler au vent.
-- **Plus de scènes dans le rêve** : combat contre un adversaire, conseil au
-  bureau du Hokage, remise de la veste de jōnin.
-- **Hoko enfant** dans la chambre (miroir, reflet dans la fenêtre) avec un
-  modèle VRoid plus jeune.
-- **Chapitres** sur la carte de fin (déjà : « Revoir le rêve ») ; mode photo.
-- **Portrait de la fiche** généré depuis le modèle 3D, dans le style du carnet.
-- **Partage** : l'image d'aperçu montre le nouveau Hoko ; une vidéo des temps
-  forts du rêve est prête à partager (`docs/media/reve.webm`).
+- **Un vrai Akira** : un modèle VRoid Hyûga (cheveux longs, Byakugan, tenue du
+  clan) serait le gain le plus visible de tout le site.
+- **Le rêve de son histoire** : le récit se termine sur le dojo qu'il veut bâtir
+  pour rallier les maîtres du taijutsu et les Hyûga. Une scène finale au dojo
+  relierait l'histoire, le rêve et les objectifs.
+- **Byakugan plus marqué** : veines autour des yeux à l'activation, vision à
+  360° (effet de caméra).
+- **Voix off ailleurs** : le Canva avait « Écouter » ; le caractère et les
+  objectifs pourraient être lus aussi. Le système mot à mot est prêt pour tout
+  texte avec son audio.
+- **Chapitres qui se débloquent** : « Chapitres finis 1/8 » se remplit tout seul
+  à chaque chapitre écrit ; la carte du chapitre peut recevoir une image.
+- **Partage** : nouvelle vidéo (menu façon Canva, carnet qui suit la voix, Jûken)
+  et nouvelle image d'aperçu pour les liens (Discord, réseaux).
 
 ## Menaces
 
-- **Appareils faibles** : modèle animé + post-traitement + milliers de feuilles
-  sur mobile d'entrée de gamme (paliers et `degrade()` en place, chevelure
-  fusionnée : ~440 appels de dessin par image au lieu de ~550 ; à vérifier en vrai).
-- **Réseau lent** : 4,3 Mo de modèle ; s'il n'est pas arrivé au moment du rêve,
-  le rêve attend (la chambre dure ~2 min, donc rarement bloquant).
-- **Services tiers** : lecteur YouTube, Google Fonts (replis en place).
-- **Navigateurs** : WebP et workers modules requis (Safari 15+), WebGL2.
+- **Contenus tiers** : les vidéos YouTube de la bande originale peuvent être
+  retirées ou bloquées selon le pays (replis en place). L'univers Naruto reste
+  une œuvre protégée, utilisée ici en création de fan.
+- **Données personnelles publiques** : la partie HRP (âge, métier,
+  disponibilités, heures de jeu) est en ligne, visible de tous, et le dépôt est
+  public.
+- **Appareils faibles** : modèle animé, post-traitement et herbe sur mobile
+  d'entrée de gamme (paliers de qualité en place, à confirmer en vrai).
+- **Navigateurs** : WebGL2 requis pour la scène ; lecture de l'Opus variable sur
+  les anciens Safari (repli MP3 choisi automatiquement).
 - **Mises à jour** : oublier `python3 tools/version.py` après une modification
   peut servir un mélange d'anciens et de nouveaux fichiers pendant ~10 min.
-- **Attentes de style** : le rendu dépend du goût (Zenkai RP / Naruto Storm) ;
-  chaque retour peut remettre en cause un choix de style.
+- **Attentes de style** : chaque retour peut remettre en cause un choix. Le
+  Canva sert de référence : à garder comme arbitre.
 
 ## Plan (ordre de passage)
 
-1. F1 — tourbillon du dos en décalque 3D.
-2. F2 — capuche entièrement repliée.
-3. F3 — expressions pendant les actes du rêve.
-4. F4 — bras de la chambre au style du modèle.
-5. F5 — portrait de la fiche (si pas d'image fournie).
-6. F6/F9 — aperçu Claude avec le modèle, tests dans le dépôt.
+1. F2 : tour complet sur un vrai ordinateur et un vrai téléphone (son, YouTube,
+   voix, fluidité), puis corrections.
+2. F1 : modèle Hyûga (cheveux longs, tenue).
+3. F7 : nouvelle vidéo et nouvelle image d'aperçu.
+4. F3 : carnet de l'histoire accessible sans la 3D.
+5. F4, F5 : illustrations et chapitres fournis par le joueur.
+6. F8, F9, F10 : nettoyage, zoom, poids.
