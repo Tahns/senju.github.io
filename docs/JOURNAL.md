@@ -496,3 +496,4 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   quand on veut ; masqué dans les menus, les cartes et pendant la lecture.
 - **Musique** : « Shirohae (The Rain Stops) » (bande originale de Naruto
   Shippûden), choisie par le joueur, dans la chambre et le menu.
+- **Voix off calée sur la vraie parole** : le texte décrochait dès le 2ᵉ paragraphe (instants estimés, jusqu'à 4,8 s d'avance) ; `data-t`/`data-w` remesurés par reconnaissance vocale (Whisper small ONNX, transformers.js dans Node), alignés mot à mot sur le texte (615/628 mots reconnus, les autres interpolés), débuts de mots recalés sur la fin des silences ; `book.js` : mots en cache, une seule boucle, recalage aussi sur `timeupdate` ; `voice-book.js` vérifie 40 s de lecture continue.
