@@ -12,10 +12,10 @@ façon jeux Naruto Storm.
 Avant le carnet, une petite scène en 3D, vue à la première personne :
 
 1. Akira arrive dans le couloir et fait glisser la porte (shoji) de sa chambre.
-2. Il va au coffre près de l'entrée et remonte une boîte à musique en laque : la musique « SD NIGHT » de VEN1 démarre (lecteur YouTube officiel, dans un coin). Si YouTube ne se charge pas, la boîte joue « Sakura Sakura ».
+2. Il va au coffre près de l'entrée et remonte une boîte à musique en laque : la musique « Sadness and Sorrow » (bande originale de Naruto, publication officielle Aniplex) démarre dans le lecteur YouTube officiel, dans un coin. Si YouTube ne se charge pas, la boîte joue « Sakura Sakura ».
 3. Il se dirige vers la bibliothèque : l'index gauche fait basculer son carnet, la main gauche le prend par le dos (les bras ne se croisent jamais) et il l'ouvre.
 4. Le visiteur lit le carnet, puis clique sur **Ranger** : Akira remet le livre en place et le redresse du bout du doigt.
-5. Il prend un deuxième carnet (vierge), le feuillette, le range.
+5. Il prend un deuxième carnet, le registre des comptes du clan, le feuillette, le range.
 6. Il s'allonge sur son futon, regarde les étoiles par la fenêtre ouverte, la boîte à musique ralentit, ses yeux se ferment…
 7. **Le rêve** (à la troisième personne) : Akira adulte, jōnin de Konoha, sur un rocher d'entraînement au-dessus du village. Il active son **Byakugan** (les yeux s'illuminent), brise trois poteaux à distance d'une onde de paume (**Jûken**, le dernier coup « Jûken et Gôken réunis », au ralenti), tourne sur lui-même dans le dôme de chakra du **Hakkeshō Kaiten**, puis devient **trésorier de Konoha** (son objectif « Comptabilité ») : une pluie de ryō dorés remplit le trésor du village… et ses poches. Final : « Un jour… chef du clan Hyûga ».
 8. Carte de fin : recommencer, **revoir le rêve** (ou un chapitre : Jûken, Kaiten, trésorier, « Un jour… ») ou **relire la fiche** par le menu.
@@ -56,12 +56,14 @@ Le texte des écrans est lu dans les pages du carnet (`index.html`) : on ne l'é
 - Chapitres du rêve (liens de la carte de fin) : `?at=dream&chapitre=juken`, `kaiten`, `ryo` ou `final` (les anciens liens `kenjutsu` et `suiton` restent valables).
 - Menu « Sélection de la catégorie » (façon Naruto Storm) : `?at=menu`, ou « Relire la fiche d'Akira » sur la carte de fin.
 
-## Le second carnet
+## Le second carnet : le registre du clan
 
-C'est un carnet vierge (couverture indigo, pages réglées sans texte), dans `index.html` :
-`<section class="book-source" data-book="second">`. Pour l'écrire plus tard, remplace les pages
-vierges par des `<section class="page">` comme dans le premier carnet. Le titre de sa couverture 3D
-est dans `THEMES.second` (`public/js/scene/textures.js`).
+Le deuxième carnet (couverture indigo, sceau 両) est **le registre des comptes du clan Hyûga**, tenu par
+Akira depuis ses 14 ans (son ambition « Comptabilité » dans le Canva). Il chiffre ses objectifs,
+à court, moyen et long terme, en budget prévisionnel (montants inventés, en ryō), avec des notes en
+marge et un bilan : de quoi comprendre pourquoi il rêve ensuite du trésor de Konoha. Il est dans
+`index.html` : `<section class="book-source" data-book="second">` (tableaux `table.ledger`). Le titre
+de sa couverture 3D est dans `THEMES.second` (`public/js/scene/textures.js`).
 
 ## Ce que fait le site
 

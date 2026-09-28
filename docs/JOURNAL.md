@@ -404,3 +404,24 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   **Hakkeshō Kaiten** : il tourne sur lui-même dans un dôme de chakra à
   bandes tournoyantes, qui éclate. Chapitres de la carte de fin : Jûken,
   Kaiten, Trésorier, Un jour… (anciens liens redirigés).
+- **Vêtements** : la peau des bras et du torse traversait les manches dès
+  qu'Akira levait les bras. Toute la peau cachée sous le haut et le pantalon
+  est retirée du maillage (on garde mains, cou, tête et pieds).
+- **Jûken rechorégraphié** : garde basse des Hyûga (pieds au sol, bassin
+  abaissé, paumes tournées vers l'avant), pas glissé jusqu'au poteau, rafale
+  des 64 paumes (« 2 paumes… 4… 8… 64 ! », buste qui tourne, l'autre main à la
+  hanche, éclats d'impact) filmée de trois-quarts, poteau pulvérisé par les
+  deux paumes, puis deux Hakke Kûshô à distance ; le Kaiten a des jambes
+  corrigées. Outil de test `tools/test/pose-shots.js` (une pose sous plusieurs angles).
+- **Transitions façon Canva** : bandeau diagonal qui balaie l'écran, glissé-zoom
+  à chaque changement de page, zoom depuis la carte du chapitre vers la lecture
+  (et retour), lent zoom sur l'illustration ; bouton « Écouter » pour la voix
+  off du chapitre (`public/audio/histoire-1.mp3`, à déposer).
+- **Latences** : qualité adaptative plus réactive (dès ~30 images/s, résolution
+  jusqu'à 0,75) ; derrière un écran de catégorie, la 3D n'est redessinée
+  qu'une image sur trois.
+- **Musique** : bande originale officielle de Naruto (publications Aniplex sur
+  YouTube) — « Sadness and Sorrow » dans la chambre, « Man of the World » dans le
+  menu et les écrans des catégories.
+- **Second carnet utile** : le registre des comptes du clan Hyûga, tenu par
+  Akira (budget prévisionnel de ses objectifs, notes en marge, bilan).

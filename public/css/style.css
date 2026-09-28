@@ -3577,8 +3577,9 @@ html.menu-open .scene-skip {
 
 .ss-reader__back {
     position: absolute;
-    left: 0;
+    left: 50%;
     bottom: -7vh;
+    translate: calc(-100% - 5.5em) 0;
     padding: .2em 0;
     font: inherit;
     font-size: clamp(14px, 1.4vw, 18px);
@@ -3699,3 +3700,144 @@ html.menu-open .scene-skip {
     text-align: left;
     color: rgba(255, 255, 255, .6);
 }
+
+/* Transition des écrans : bandeau diagonal qui balaie (hors champ au repos). */
+.ss-wipe {
+    position: absolute;
+    top: -10%;
+    bottom: -10%;
+    left: -20%;
+    width: 140%;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(255, 217, 138, .0) 30%, rgba(255, 217, 138, .55) 44%, #fff3cf 50%, rgba(182, 255, 210, .5) 56%, transparent 70%);
+    transform: translateX(-130%) skewX(-18deg);
+}
+
+/* Lecture d'un chapitre : l'illustration zoome lentement (effet Ken Burns du Canva). */
+.ss-reader__frame { overflow: hidden; }
+.ss-reader__frame svg { animation: ss-kenburns 14s ease-in-out infinite alternate; }
+
+@keyframes ss-kenburns {
+    to { transform: scale(1.12) translate(-2%, -3%); }
+}
+
+/* « Écouter » : la voix off du chapitre, comme le bouton du Canva. */
+.ss-reader__listen {
+    position: absolute;
+    left: 50%;
+    bottom: -7vh;
+    translate: -50% 0;
+    display: inline-flex;
+    align-items: center;
+    gap: .45em;
+    padding: .2em 0;
+    font: inherit;
+    font-size: clamp(14px, 1.4vw, 18px);
+    color: #fff;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.ss-reader__listen::before {
+    content: "✕";
+    display: grid;
+    place-items: center;
+    width: 1.4em;
+    height: 1.4em;
+    font-size: .8em;
+    color: #1b2a26;
+    background: #e8f5ef;
+    border-radius: 50%;
+}
+
+.ss-reader__listen:hover,
+.ss-reader__listen:focus-visible { color: var(--ss-green); }
+.ss-reader__listen[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    .ss-reader__frame svg { animation: none; }
+}
+
+/* Musique du menu : le petit lecteur YouTube reste visible au-dessus du menu et des écrans. */
+html.menu-open .radio {
+    z-index: 16;
+    transform-origin: left bottom;
+    scale: .8;
+}
+
+@media (max-aspect-ratio: 1/1) {
+    html.menu-open .radio {
+        top: 64px;
+        bottom: auto;
+        transform-origin: left top;
+        scale: .6;
+    }
+}
+
+/* ==========================================================================
+   Registre des comptes du clan (second carnet)
+   ========================================================================== */
+.page--ledger {
+    background-image: repeating-linear-gradient(180deg, transparent 0 1.55em, rgba(58, 74, 140, .12) 1.55em calc(1.55em + 1px));
+}
+
+.ledger-intro { margin: 0 0 .8em; line-height: 1.5; }
+.ledger-note { margin: 0 0 1em; font-style: italic; color: var(--ink-soft); }
+
+.ledger {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+}
+
+.ledger th,
+.ledger td {
+    padding: .45em .3em;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(58, 74, 140, .25);
+}
+
+.ledger th:last-child,
+.ledger td:last-child {
+    width: 6.5em;
+    text-align: right;
+    white-space: nowrap;
+    border-left: 2px solid rgba(179, 38, 27, .45);
+}
+
+.ledger thead th {
+    font-family: var(--font-title);
+    font-size: .78em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #3a4a8c;
+    border-bottom: 2px solid #3a4a8c;
+}
+
+.ledger td small { display: block; font-size: .82em; font-style: italic; color: var(--ink-soft); }
+
+.ledger tfoot th {
+    padding-top: .6em;
+    font-family: var(--font-title);
+    color: var(--crimson);
+    border-top: 3px double #3a4a8c;
+    border-bottom: 0;
+}
+
+.ledger--sum { margin-bottom: 1.2em; font-size: 1.1em; }
+
+.ledger-notes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-script);
+    font-size: 1.45em;
+    line-height: 1.3;
+    color: #3a4a8c;
+}
+
+.ledger-notes li { margin-bottom: .7em; transform: rotate(-1deg); }
+.ledger-notes li:nth-child(2n) { transform: rotate(.8deg); margin-left: .6em; }

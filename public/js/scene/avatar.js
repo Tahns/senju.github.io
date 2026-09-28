@@ -161,10 +161,37 @@ function tuckSkin(model, depth = 0.01) {
     });
 }
 
+// Malgré tout, dès que les bras se lèvent (paumes, Kaiten), la peau des bras
+// et des épaules traversait les manches. Toute la peau couverte par le haut et
+// le pantalon est donc retirée du maillage : on ne garde que les triangles qui
+// touchent une partie visible (mains, cou, tête, pieds).
+const VISIBLE = /Hand|Thumb|Index|Middle|Ring|Little|Neck|Head|Foot|Toe/;
+function hideCoveredSkin(model) {
+    model.traverse((o) => {
+        if (!o.isSkinnedMesh || !/Body_00_SKIN/.test(o.material.name || '') || !o.geometry.index) return;
+        const visible = o.skeleton.bones.map((b) => VISIBLE.test(b.name));
+        const idx = o.geometry.attributes.skinIndex;
+        const wt = o.geometry.attributes.skinWeight;
+        const shown = new Uint8Array(idx.count);
+        for (let i = 0; i < idx.count; i++) {
+            let w = 0;
+            for (let k = 0; k < 4; k++) if (visible[idx.getComponent(i, k)]) w += wt.getComponent(i, k);
+            shown[i] = w > 0.3 ? 1 : 0;
+        }
+        const src = o.geometry.index.array;
+        const keep = [];
+        for (let t = 0; t < src.length; t += 3) {
+            if (shown[src[t]] || shown[src[t + 1]] || shown[src[t + 2]]) keep.push(src[t], src[t + 1], src[t + 2]);
+        }
+        o.geometry.setIndex(keep);
+    });
+}
+
 function restyle(model) {
     mergeHair(model);
     thickenNeck(model);
     tuckSkin(model);
+    hideCoveredSkin(model);
     // Le haut porte déjà le gilet de jōnin peint dans sa texture ; le bas passe au bleu nuit.
     const tints = { Bottoms: '#8f9ad8' };
     // Peau un peu plus chaude (le blanc VRoid paraissait délavé sous le soleil).

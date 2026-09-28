@@ -1,9 +1,17 @@
 /*
- * Musique de la chambre : « SD NIGHT » de VEN1, jouée par le lecteur officiel
- * YouTube (petit lecteur visible dans un coin, comme YouTube l'exige).
- * Si YouTube ne se charge pas, la scène garde la mélodie de la boîte à musique.
+ * Musique : bande originale de Naruto, versions officielles publiées sur
+ * YouTube par Aniplex, jouées par le lecteur officiel (petit lecteur visible
+ * dans un coin, comme YouTube l'exige).
+ * - chambre, la nuit : « Sadness and Sorrow » (Naruto Original Soundtrack) ;
+ * - menu et écrans des catégories : « Man of the World » (Naruto Shippuden OST).
+ * Si YouTube ne se charge pas, la chambre garde la boîte à musique et le menu
+ * son ambiance d'orage.
  */
-const VIDEO = '6vNq-TcCRjo';
+export const TRACKS = {
+    room: { id: '_kr7pv2fin8', title: 'Sadness and Sorrow', by: 'Naruto OST' },
+    menu: { id: 'Zk65UCMPiug', title: 'Man of the World', by: 'Naruto Shippuden OST' }
+};
+const VIDEO = TRACKS.room.id;
 
 export class Radio {
     constructor() {
@@ -13,6 +21,7 @@ export class Radio {
         this.volume = 0.6;
         this.playing = false;
         this.fadeTimer = 0;
+        this.current = TRACKS.room;
     }
 
     // Charge l'API YouTube et prépare le lecteur (sans jouer).
@@ -35,6 +44,11 @@ export class Radio {
                             },
                             onStateChange: (e) => {
                                 this.playing = e.data === window.YT.PlayerState.PLAYING;
+                                // En boucle, quel que soit le morceau chargé.
+                                if (e.data === window.YT.PlayerState.ENDED) {
+                                    this.player.seekTo(0);
+                                    this.player.playVideo();
+                                }
                             },
                             onError: () => reject(new Error('Vidéo indisponible'))
                         }
@@ -61,17 +75,28 @@ export class Radio {
         return this.ready;
     }
 
-    // Lance la musique ; renvoie true si elle joue vraiment au bout de quelques secondes.
-    async play() {
+    // Lance un morceau (« room » ou « menu ») ; renvoie true s'il joue vraiment
+    // au bout de quelques secondes.
+    async play(name = 'room') {
         try {
             await this.load();
         } catch (e) {
             return false;
         }
+        const track = TRACKS[name] || TRACKS.room;
+        clearInterval(this.fadeTimer);
+        this.card.querySelector('b').textContent = track.title;
+        this.card.querySelector('small').textContent = track.by;
         this.card.hidden = false;
         requestAnimationFrame(() => this.card.classList.add('is-on'));
         this.player.setVolume(Math.round(this.volume * 100));
-        this.player.playVideo();
+        if (track !== this.current) {
+            this.current = track;
+            this.playing = false;
+            this.player.loadVideoById(track.id);
+        } else {
+            this.player.playVideo();
+        }
         for (let i = 0; i < 20; i++) {
             await new Promise((r) => setTimeout(r, 200));
             if (this.playing) return true;

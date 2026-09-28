@@ -214,9 +214,9 @@ async function start() {
         window.Carnet.setSound(!sound.on);
     });
 
-    // Musique de la chambre : SD NIGHT (YouTube), ou la boîte à musique en secours.
+    // Musique de la chambre : « Sadness and Sorrow » (YouTube), ou la boîte à musique en secours.
     function startRoomMusic() {
-        radio.play().then((ok) => {
+        radio.play('room').then((ok) => {
             if (!ok) sound.startMusic();
         });
     }
@@ -769,6 +769,8 @@ async function start() {
         renderer.shadowMap.needsUpdate = true;
         sound.startDream();
         sound.setStorm(true);
+        // Musique du menu, comme dans les jeux Storm (l'orage reste en fond).
+        radio.play('menu');
         menuBack.hidden = false;
         menuEl.classList.add('is-entering');
         menuEl.hidden = false;
@@ -783,6 +785,7 @@ async function start() {
     function closeMenu() {
         menuOpen = false;
         menuEl.hidden = true;
+        radio.fadeOut(1.2);
         dream.setMenu(false);
         sound.stopDream(1.2);
         dreaming = false;
@@ -916,7 +919,7 @@ async function start() {
             await putBack('hoko');
         }
         if (at !== 'bed') {
-            say('Et celui-ci ?', 2.5);
+            say('Et le registre du clan…', 2.5);
             await takeBook('second');
             await read('second');
             await putBack('second');
@@ -940,29 +943,40 @@ async function start() {
     let shadowEvery = low ? 8 : 1;
     renderer.shadowMap.autoUpdate = false;
     renderer.shadowMap.needsUpdate = true;
+    // Qualité adaptative : dès que la scène passe sous ~30 images/s de façon
+    // durable, on allège par paliers (ombres moins souvent, puis résolution,
+    // puis flou et halo du rêve), pour garder une animation fluide.
+    let degraded = false;
     function adapt(dt) {
         frames++;
-        if (dt > 0.045) slowFrames++;
+        if (dt > 0.034) slowFrames++;
         if (frames % 90 === 0) {
-            if (slowFrames > 45 && shadowEvery < 8) {
-                shadowEvery *= 2;
-                if (pixelRatio > 1) {
-                    pixelRatio = Math.max(1, pixelRatio - 0.5);
+            if (slowFrames > 30) {
+                if (shadowEvery < 8) shadowEvery *= 2;
+                else if (pixelRatio > 0.75) {
+                    pixelRatio = Math.max(0.75, pixelRatio - 0.25);
                     renderer.setPixelRatio(pixelRatio);
                     resize();
+                } else if (dreaming && !degraded) {
+                    degraded = true;
+                    dream.degrade();
                 }
-            } else if (slowFrames > 45 && dreaming) {
-                // Toujours trop lent : le rêve se passe du flou et du halo.
-                dream.degrade();
             }
             slowFrames = 0;
         }
         if (frames % shadowEvery === 0) renderer.shadowMap.needsUpdate = true;
     }
+    // Derrière un écran de catégorie presque opaque, la 3D n'est redessinée
+    // qu'une image sur trois (elle reste animée, mais coûte trois fois moins).
+    const stormScreen = () => document.getElementById('storm-screen');
+    function hiddenBehindScreen() {
+        const s = stormScreen();
+        return Boolean(s && !s.hidden && s.dataset.layout === 'full');
+    }
     function renderScene(dt, draw = true) {
         if (dreaming) {
             dream.update(dt, time);
-            if (draw) dream.render();
+            if (draw && (!hiddenBehindScreen() || frames % 3 === 0)) dream.render();
             return;
         }
         room.update(dt, time);
