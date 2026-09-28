@@ -52,6 +52,9 @@ node tools/test/record-dream.js video 960 540 24 "0.3-3.2,5.0-8.2,10.0-16.4,18.0
 cat video/f*.jpg | ffmpeg -f image2pipe -framerate 24 -c:v mjpeg -i - -c:v libvpx -b:v 1.6M -pix_fmt yuv420p reve.webm
 ```
 
+Menu (≈12 s) : `node tools/test/record-menu.js menu 960 540`, puis
+concaténer les images du menu et du rêve avant l'encodage.
+
 La scène avance d'un pas fixe (`__scene.step(dt, dessiner)`), donc la vidéo
 est fluide même si le rendu logiciel est lent ; hors des passages demandés,
 le rêve avance au même pas sans être dessiné. Les intervalles sont en
