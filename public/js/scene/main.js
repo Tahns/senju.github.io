@@ -721,8 +721,7 @@ async function start() {
     const menuBack = document.getElementById('storm-back');
     // Les trois catégories de la candidature Canva, chacune avec sa lueur.
     const MENU = [
-        { word: 'Histoire', kanji: '史', desc: "Vivre l'histoire d'Akira Hyûga", page: 3, screen: 'histoire', tone: 'gold', pose: 'seal', mood: 'angry' },
-        { word: 'Personnage', kanji: '人', desc: "Personnalité et caractère d'une personne", page: 4, screen: 'personnage', tone: 'green', pose: 'crossed', mood: 'fun' },
+        { word: 'Histoire', kanji: '史', desc: "Vivre l'histoire d'Akira Hyûga : sa chambre, son carnet lu à voix haute, sa fiche", page: 3, screen: 'story', tone: 'gold', pose: 'seal', mood: 'angry' },
         { word: 'HRP', kanji: '己', desc: 'Informations personnelles', page: 9, screen: 'hrp', tone: 'pink', pose: 'stand' }
     ];
     let menuIndex = 0;
@@ -801,8 +800,6 @@ async function start() {
     const screens = createScreens({
         sound,
         // Voix off : la musique et l'ambiance s'effacent pendant qu'elle parle.
-        onVoice: duckForVoice,
-        muted: () => !sound.on,
         onSide: (side) => dream.menuSide(side),
         onExit() {
             dream.menuSide(1);
@@ -833,8 +830,21 @@ async function start() {
         fade.style.background = '#fff';
         fade.style.opacity = 1;
         setTimeout(() => {
-            // Akira revient derrière l'écran de la catégorie, qui sort du flash blanc.
             menuEl.classList.remove('is-confirming');
+            // Histoire : la scène de la chambre et des carnets (une seule fois par
+            // visite ; ensuite on recharge la page directement sur l'histoire).
+            if (c.screen === 'story') {
+                if (storyPlayed) {
+                    location.href = location.pathname + '?at=story&autostart';
+                    return;
+                }
+                fade.style.transition = 'opacity .5s ease';
+                fade.style.background = '#000';
+                closeMenu();
+                playStory();
+                return;
+            }
+            // Akira revient derrière l'écran de la catégorie, qui sort du flash blanc.
             menuEl.hidden = true;
             dream.menuReturn();
             dream.menuPose(c.pose, c.mood);
@@ -895,22 +905,29 @@ async function start() {
         if (Math.abs(dy) > 40) stepMenu(dy < 0 ? 1 : -1);
     });
 
+    // Parcours : « Commencer » ouvre le menu ; « Histoire » lance la chambre et
+    // les deux carnets ; à la fin, le rêve est proposé en bonus.
+    let storyPlayed = false;
     async function play() {
         fade.style.opacity = 0;
-        allowSkip();
-        // ?at=shelf|second|bed : démarre plus loin (pour les tests).
+        // ?at=shelf|second|bed|story|dream : démarre directement plus loin (tests, liens).
         const at = params.get('at');
-        if (at === 'menu' || wantMenu) {
+        if (!at || at === 'menu' || wantMenu) {
             await openMenu('intro');
             return;
         }
         if (at === 'dream') {
-            await dreamSequence();
-            checkpoint();
-            endCard.hidden = false;
-            replayBtn.focus();
+            allowSkip();
+            await playBonusDream();
             return;
         }
+        await playStory(at === 'story' ? null : at);
+    }
+
+    async function playStory(at = null) {
+        storyPlayed = true;
+        fade.style.opacity = 0;
+        allowSkip();
         if (at) {
             room.door.position.x = 0.88;
             cam.pos.set(-1.62, EYE, -0.22);
@@ -918,7 +935,7 @@ async function start() {
             cam.pitch = -0.1;
             room.musicBox.lid.rotation.z = 1.75;
             room.musicBox.setPlaying(2.2);
-            if (at !== 'dream') startRoomMusic();
+            startRoomMusic();
         } else {
             await enter();
             await playMusic();
@@ -936,11 +953,28 @@ async function start() {
             await putBack('fiche');
         }
         await goToBed();
+        // Il s'endort : fin de l'histoire. Le rêve est un bonus, au choix.
+        checkpoint();
+        showEnd(false);
+    }
+
+    function showEnd(dreamed) {
+        endCard.classList.toggle('has-dreamed', dreamed);
+        endCard.hidden = false;
+        (dreamed ? replayBtn : bonusBtn).focus();
+    }
+
+    async function playBonusDream() {
+        endCard.hidden = true;
         await dreamSequence();
         checkpoint();
-        endCard.hidden = false;
-        replayBtn.focus();
+        showEnd(true);
     }
+    const bonusBtn = document.getElementById('scene-bonus');
+    bonusBtn.addEventListener('click', () => {
+        allowSkip();
+        playBonusDream();
+    });
 
     /* ---------------- Boucle de rendu ---------------- */
     // Qualité adaptative : si l'appareil peine, les ombres sont recalculées
@@ -1040,7 +1074,7 @@ async function start() {
     // Petite vue de la porte derrière la carte d'intro.
     fade.style.opacity = 0.35;
     startBtn.disabled = false;
-    startBtn.textContent = 'Entrer';
+    startBtn.textContent = 'Commencer';
     startBtn.addEventListener('click', () => {
         sound.unlock();
         radio.load();

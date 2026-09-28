@@ -1,5 +1,5 @@
 // Menu « Sélection de la catégorie » : ouvre le menu depuis l'accueil, fait le
-// tour des 3 catégories (mot, kanji, voisines), puis confirme la dernière
+// tour des 2 catégories (mot, kanji, voisines), puis confirme la dernière
 // demandée : vérifie l'écran de la catégorie (façon Storm), le parcourt avec
 // « Suivant », puis passe par la pause (« Lire cette page dans le carnet »)
 // et vérifie que le carnet s'ouvre à la bonne page.
@@ -7,7 +7,7 @@
 // Usage : node tools/test/menu.js [touches avant Confirmer, ex. "ArrowUp,ArrowUp"]
 // BASE=https://tahns.github.io/senju.github.io/ : teste le site en ligne.
 const { chromium } = require(process.env.PLAYWRIGHT || 'playwright');
-const EXPECT = [['Histoire', '史', 3], ['Personnage', '人', 4], ['HRP', '己', 9]];
+const EXPECT = [['Histoire', '史', 3], ['HRP', '己', 9]];
 const BASE = process.env.BASE || 'http://localhost:8765/';
 (async () => {
   const keys = (process.argv[2] || 'ArrowDown').split(',').filter(Boolean);
@@ -20,8 +20,8 @@ const BASE = process.env.BASE || 'http://localhost:8765/';
   await p.route('**/*', (r) => (r.request().url().startsWith(BASE) ? r.continue() : r.abort()));
   try {
     await p.goto(BASE + '?quality=low&t=' + Date.now(), { waitUntil: 'commit' });
-    await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Entrer', null, { timeout: 120000 });
-    await p.click('#scene-intro .scene-card__link--menu');
+    await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Commencer', null, { timeout: 120000 });
+    await p.click('#scene-start');
     await p.waitForFunction(() => !document.getElementById('storm-menu').hidden, null, { timeout: 180000 });
     const read = () => p.evaluate(() => ['storm-word', 'storm-kanji', 'storm-near-prev', 'storm-near-next'].map((id) => document.getElementById(id).textContent));
     let fails = 0;

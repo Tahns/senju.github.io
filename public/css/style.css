@@ -4189,3 +4189,15 @@ html.menu-open .sound-panel {
 @media (max-width: 520px) {
     .tool--switch__label { display: none; }
 }
+
+/* Carte de fin : les chapitres du rêve n'apparaissent qu'après le rêve bonus. */
+.scene-card--end:not(.has-dreamed) .scene-chapters { display: none; }
+.scene-card--end.has-dreamed .scene-end__lead,
+.scene-card--end.has-dreamed #scene-bonus { display: none; }
+.scene-card__link--plain {
+    padding: 0;
+    font: inherit;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}

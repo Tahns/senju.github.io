@@ -12,7 +12,7 @@ const [dir, W, H] = process.argv.slice(2);
   p.on('pageerror', e => console.log('PAGEERROR', e.message));
   await p.route('**/*', (r) => (r.request().url().startsWith('http://localhost') ? r.continue() : r.abort()));
   await p.goto('http://localhost:8765/?at=menu&quality=mobile', { waitUntil: 'commit' });
-  await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Entrer', null, { timeout: 90000 });
+  await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Commencer', null, { timeout: 90000 });
   let n = 0;
   // Écran titre (image fixe).
   await p.waitForTimeout(1500);

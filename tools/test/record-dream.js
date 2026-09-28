@@ -12,7 +12,7 @@ const wins = WIN.split(',').map(s => s.split('-').map(Number));
   p.on('pageerror', e => console.log('PAGEERROR', e.message));
   await p.route('**/*', (r) => (r.request().url().startsWith('http://localhost') ? r.continue() : r.abort()));
   await p.goto('http://localhost:8765/?at=dream' + (Q || ''), { waitUntil: 'commit' });
-  await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Entrer', null, { timeout: 90000 });
+  await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Commencer', null, { timeout: 90000 });
   await p.click('#scene-start');
   await p.waitForFunction(() => document.documentElement.classList.contains('dreaming'), null, { timeout: 120000, polling: 50 });
   await p.evaluate(() => { window.requestAnimationFrame = () => 0; const f = document.getElementById('scene-fade'); f.classList.remove('is-iris'); f.style.opacity = 0; });

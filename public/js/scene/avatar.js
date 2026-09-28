@@ -74,41 +74,40 @@ function mergeHair(model) {
 // Le cou du modèle VRoid est très fin (style « bishōnen ») : on écarte de
 // l'axe du cou les sommets qui suivent son os, en proportion de leur poids,
 // pour un cou de ninja adulte. Tête et épaules ne bougent pas.
-function thickenNeck(model, factor = 1.35) {
+function thickenNeck(model, factor = 1.15) {
     model.updateMatrixWorld(true);
     const bindInv = new THREE.Matrix4();
     const axis = new THREE.Vector3();
+    const headAt = new THREE.Vector3();
     const v = new THREE.Vector3();
     model.traverse((o) => {
         // Seulement la peau (le col du haut garde sa forme).
         if (!o.isSkinnedMesh || !/_SKIN/.test(o.material.name || '')) return;
-        const n = o.skeleton.bones.findIndex((b) => b.name === 'J_Bip_C_Neck');
-        if (n < 0) return;
-        // Position de l'os du cou dans l'espace de liaison du maillage.
+        const bones = o.skeleton.bones;
+        const n = bones.findIndex((b) => b.name === 'J_Bip_C_Neck');
+        const h = bones.findIndex((b) => b.name === 'J_Bip_C_Head');
+        if (n < 0 || h < 0) return;
+        // Os du cou et de la tête dans l'espace de liaison du maillage.
         axis.setFromMatrixPosition(bindInv.copy(o.skeleton.boneInverses[n]).invert()).applyMatrix4(o.bindMatrixInverse);
+        headAt.setFromMatrixPosition(bindInv.copy(o.skeleton.boneInverses[h]).invert()).applyMatrix4(o.bindMatrixInverse);
         const pos = o.geometry.attributes.position;
-        const idx = o.geometry.attributes.skinIndex;
-        const wt = o.geometry.attributes.skinWeight;
         let moved = 0;
         for (let i = 0; i < pos.count; i++) {
-            let w = 0;
-            for (let k = 0; k < 4; k++) if (idx.getComponent(i, k) === n) w += wt.getComponent(i, k);
-            if (w < 0.05) continue;
             v.fromBufferAttribute(pos, i);
-            // Seulement le fût du cou : rien au-delà de 9 cm de l'axe (épaules,
-            // haut de la poitrine, qui suivent aussi un peu l'os du cou).
+            // Région du fût du cou, par la position seulement (et non par les
+            // poids des os) : le visage et le corps, deux maillages cousus au
+            // cou, s'élargissent exactement pareil, sans marche à la couture.
             const r = Math.hypot(v.x - axis.x, v.z - axis.z);
-            const near = THREE.MathUtils.smoothstep(r, 0.09, 0.055) > 0 ? 1 - THREE.MathUtils.smoothstep(r, 0.055, 0.09) : 1;
-            // La base du cou (sous le col) reste en place : l'élargissement monte
-            // progressivement au-dessus, sans entonnoir ni peau qui perce le col.
-            const rise = THREE.MathUtils.smoothstep(v.y, axis.y + 0.01, axis.y + 0.05);
-            if (near <= 0 || rise <= 0) continue;
-            const s = 1 + (factor - 1) * w * near * rise;
+            const near = 1 - THREE.MathUtils.smoothstep(r, 0.05, 0.085);
+            const rise = THREE.MathUtils.smoothstep(v.y, axis.y, axis.y + 0.04);
+            const fall = 1 - THREE.MathUtils.smoothstep(v.y, headAt.y - 0.03, headAt.y + 0.01);
+            const k = near * rise * fall;
+            if (k <= 0) continue;
+            const s = 1 + (factor - 1) * k;
             pos.setXYZ(i, axis.x + (v.x - axis.x) * s, v.y, axis.z + (v.z - axis.z) * s);
             moved++;
         }
         if (moved) {
-            // Normales d'origine conservées (l'élargissement est radial et doux).
             pos.needsUpdate = true;
             o.geometry.computeBoundingSphere();
         }
@@ -169,14 +168,28 @@ const VISIBLE = /Hand|Thumb|Index|Middle|Ring|Little|Neck|Head|Foot|Toe/;
 function hideCoveredSkin(model) {
     model.traverse((o) => {
         if (!o.isSkinnedMesh || !/Body_00_SKIN/.test(o.material.name || '') || !o.geometry.index) return;
-        const visible = o.skeleton.bones.map((b) => VISIBLE.test(b.name));
+        const bones = o.skeleton.bones;
+        const visible = bones.map((b) => VISIBLE.test(b.name));
+        const neck = bones.findIndex((b) => b.name === 'J_Bip_C_Neck');
+        const m4 = new THREE.Matrix4();
+        const neckY = neck < 0 ? -Infinity : new THREE.Vector3().setFromMatrixPosition(m4.copy(o.skeleton.boneInverses[neck]).invert()).applyMatrix4(o.bindMatrixInverse).y;
         const idx = o.geometry.attributes.skinIndex;
         const wt = o.geometry.attributes.skinWeight;
+        const pos = o.geometry.attributes.position;
         const shown = new Uint8Array(idx.count);
         for (let i = 0; i < idx.count; i++) {
             let w = 0;
-            for (let k = 0; k < 4; k++) if (visible[idx.getComponent(i, k)]) w += wt.getComponent(i, k);
-            shown[i] = w > 0.3 ? 1 : 0;
+            let other = 0;
+            for (let k = 0; k < 4; k++) {
+                const b = idx.getComponent(i, k);
+                if (!visible[b]) continue;
+                w += wt.getComponent(i, k);
+                if (b !== neck) other += wt.getComponent(i, k);
+            }
+            // Peau du cou sous sa base (haut des épaules, sous le col) : cachée,
+            // sinon elle débordait du col comme une plaque.
+            const underCollar = other < 0.3 && pos.getY(i) < neckY + 0.012;
+            shown[i] = w > 0.3 && !underCollar ? 1 : 0;
         }
         const src = o.geometry.index.array;
         const keep = [];
@@ -334,8 +347,38 @@ function restyle(model) {
 
 // Positions des os au repos (modèle tourné face à +Z), pour caler le squelette
 // d'animation sur les proportions du modèle.
+// Proportions : le modèle VRoid avait le haut du bras plus court que
+// l'avant-bras, la cuisse plus courte que le tibia, des épaules étroites et une
+// grosse tête (5,9 têtes de haut). On déplace les os (le maillage suit par
+// le skinning) avant de mesurer le squelette.
+function adjustProportions(model) {
+    if (model.userData.proportioned) return;
+    model.userData.proportioned = true;
+    const scale = (name, f) => { const b = model.getObjectByName(name); if (b) b.position.multiplyScalar(f); };
+    const foot = model.getObjectByName('J_Bip_L_Foot');
+    const hips = model.getObjectByName('J_Bip_C_Hips');
+    model.updateMatrixWorld(true);
+    const footBefore = foot ? foot.getWorldPosition(new THREE.Vector3()).y : 0;
+    ['L', 'R'].forEach((s) => {
+        scale(`J_Bip_${s}_UpperArm`, 1.3);  // épaules un peu plus larges
+        scale(`J_Bip_${s}_LowerArm`, 1.18); // haut du bras : 22 → 26 cm
+        scale(`J_Bip_${s}_Hand`, 0.98);     // avant-bras : 25 → 24,5 cm
+        scale(`J_Bip_${s}_LowerLeg`, 1.12); // cuisse : 39 → 43 cm
+        scale(`J_Bip_${s}_Foot`, 0.95);     // tibia : 46 → 43 cm
+    });
+    const head = model.getObjectByName('J_Bip_C_Head');
+    if (head) head.scale.setScalar(0.93); // tête un peu plus petite (~6,4 têtes)
+    model.updateMatrixWorld(true);
+    // Jambes plus longues : le bassin remonte d'autant, les pieds restent au sol.
+    if (foot && hips) {
+        hips.position.y += footBefore - foot.getWorldPosition(new THREE.Vector3()).y;
+        model.updateMatrixWorld(true);
+    }
+}
+
 export function measureAvatar(gltf) {
     const model = gltf.scene;
+    adjustProportions(model);
     model.rotation.y = Math.PI;
     model.updateMatrixWorld(true);
     const at = (name) => {

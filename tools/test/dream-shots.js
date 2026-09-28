@@ -11,7 +11,7 @@ const port = process.argv[6] || '8765';
   // Hors-ligne : on coupe les ressources externes (polices, YouTube) qui peuvent bloquer.
   await p.route('**/*', (r) => (r.request().url().startsWith('http://localhost') ? r.continue() : r.abort()));
   await p.goto(`http://localhost:${port}/?at=dream&speed=0.8` + q, { waitUntil: 'commit' });
-  await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Entrer', null, { timeout: 90000 });
+  await p.waitForFunction(() => document.getElementById('scene-start').textContent === 'Commencer', null, { timeout: 90000 });
   await p.click('#scene-start');
   await p.waitForFunction(() => window.__scene.dream && document.documentElement.classList.contains('dreaming'), null, { timeout: 120000 });
   await p.evaluate(() => { window.__scene.timeline.update = () => {}; window.requestAnimationFrame = () => 0; });
