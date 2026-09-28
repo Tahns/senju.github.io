@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Permanent+Marker&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap&text=%E3%81%84%E3%81%8A%E3%81%95%E3%81%99%E3%81%AA%E3%81%AE%E3%81%BF%E3%82%84%E3%82%A2%E3%82%AD%E3%82%B3%E3%83%9B%E3%83%A1%E3%83%A9%E3%83%B3%E3%83%BC%E4%B8%A1%E4%B8%BB%E4%BA%BA%E5%85%AC%E5%85%B7%E5%88%B6%E5%89%9B%E5%89%A3%E5%8A%AA%E5%8D%83%E5%8E%B3%E5%8F%B2%E5%90%91%E5%96%84%E5%9B%9E%E5%9B%A3%E5%A4%A2%E5%A4%A9%E5%A7%BF%E5%AD%90%E5%AE%BF%E5%B0%8E%E5%B1%8B%E5%B7%B1%E5%BD%93%E5%BD%B1%E5%BF%83%E5%BF%8D%E5%BF%97%E6%81%A9%E6%82%AA%E6%83%85%E6%84%8F%E6%88%91%E6%89%8B%E6%8B%B3%E6%97%A5%E6%9A%A6%E6%9C%AC%E6%9F%94%E6%A5%B5%E6%A5%BD%E6%AF%92%E6%B0%B4%E7%81%AB%E7%8B%AC%E7%99%BD%E7%9C%9F%E7%9C%BC%E7%9E%AC%E7%9F%A5%E8%8C%B6%E8%96%AC%E8%A1%8C%E8%A1%93%E8%BA%AB%E9%81%81%E9%81%93%E9%9B%B7">
-    <link rel="stylesheet" href="public/css/style.css?v=3b8b0776">
+    <link rel="stylesheet" href="public/css/style.css?v=95152014">
 </head>
 
 <body>
@@ -124,7 +124,8 @@
         </section>
 
         <!-- 3 · Histoire -->
-        <section class="page page--story" data-toc="Histoire">
+        <!-- Voix off du chapitre : dépose le fichier audio dans public/audio/histoire-1.mp3 (bouton « Écouter »). -->
+        <section class="page page--story" data-toc="Histoire" data-voice="public/audio/histoire-1.mp3">
             <header class="page__head">
                 <p class="chapter">Chapitre 1</p>
                 <h2>Une famille hiérarchique et un changement d'appuis</h2>
@@ -305,37 +306,140 @@
     </main>
 
     <!--
-        Deuxième carnet : un carnet vierge, encore à écrire.
-        Pour y mettre du contenu, remplace les pages vierges par des
-        <section class="page"> comme dans le premier carnet
-        (toujours un nombre pair de pages entre les deux couvertures).
+        Deuxième carnet : le registre des comptes du clan Hyûga, tenu par Akira
+        (son ambition « Comptabilité »). Budget prévisionnel de ses objectifs.
+        Toujours un nombre pair de pages entre les deux couvertures.
     -->
     <section class="source book-source" data-book="second" hidden>
 
         <section class="page page--cover" data-toc="Couverture">
             <div class="cover cover--indigo">
                 <div class="cover__frame">
+                    <p class="cover__kicker">Clan Hyûga · Comptes</p>
                     <svg class="cover__emblem" aria-hidden="true"><use href="#konoha" /></svg>
-                    <h1 class="cover__title cover__title--solo">Carnet</h1>
-                    <p class="cover__seal" aria-hidden="true">忍道</p>
+                    <h1 class="cover__title cover__title--solo">Registre</h1>
+                    <p class="cover__subtitle">tenu par Akira</p>
+                    <p class="cover__seal" aria-hidden="true">両</p>
                 </div>
-                <p class="cover__hint js-only">Ouvrir le carnet <span aria-hidden="true">⟶</span></p>
+                <p class="cover__hint js-only">Ouvrir le registre <span aria-hidden="true">⟶</span></p>
             </div>
         </section>
 
-        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
-        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
-        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
-        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
-        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
-        <section class="page page--blank" data-toc="Page vierge"><div class="lines" aria-hidden="true"></div></section>
+        <!-- 1 · Page de garde -->
+        <section class="page page--ledger" data-toc="Le registre">
+            <header class="page__head">
+                <p class="chapter">Clan Hyûga</p>
+                <h2>Registre des comptes</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <p class="ledger-intro">Tenu par Akira Hyûga depuis ses 14 ans. Sa passion pour les chiffres l'a conduit à gérer les finances de son propre clan&nbsp;: une manière d'échapper à la solitude causée par l'absence de ses parents.</p>
+            <p class="ledger-intro">Ce registre chiffre ses projets pour le clan et pour Konoha, du plus proche au plus lointain. Un jour, ce sont les comptes du village qu'il tiendra.</p>
+            <p class="ledger-note">Montants prévisionnels, en ryō.</p>
+            <svg class="vignette vignette--chapter" viewBox="0 0 300 90" aria-hidden="true">
+                <path d="M70 14 H190 V80 H70 Z M70 36 H190" />
+                <path d="M90 14 V80 M110 14 V80 M130 14 V80 M150 14 V80 M170 14 V80" />
+                <path d="M86 24 h8 M106 28 h8 M126 22 h8 M146 26 h8 M166 24 h8 M86 48 h8 M106 58 h8 M126 52 h8 M146 64 h8 M166 50 h8" stroke-width="5" />
+                <ellipse cx="236" cy="76" rx="22" ry="5" /><ellipse cx="236" cy="66" rx="22" ry="5" /><ellipse cx="236" cy="56" rx="22" ry="5" />
+                <path d="M214 56 V76 M258 56 V76 M230 56 h12" />
+                <path class="vignette__ground" d="M40 86 C120 84 200 88 280 85" />
+            </svg>
+        </section>
+
+        <!-- 2 · Court terme -->
+        <section class="page page--ledger" data-toc="Court terme">
+            <header class="page__head">
+                <p class="chapter">Budget · Court terme</p>
+                <h2>Cohésion du clan</h2>
+            </header>
+            <table class="ledger">
+                <thead><tr><th>Poste</th><th>Coût</th></tr></thead>
+                <tbody>
+                    <tr><td>Repas de clan hebdomadaire <small>52 repas dans l'année</small></td><td>26 000</td></tr>
+                    <tr><td>Défis entre membres du clan <small>lots et arbitres</small></td><td>6 000</td></tr>
+                    <tr><td>Rencontres avec la branche secondaire</td><td>3 000</td></tr>
+                    <tr><td>Présents au clan Senju et au clan Nara</td><td>8 000</td></tr>
+                    <tr><td>Recherches sur le sceau avec les Uzumaki</td><td>12 000</td></tr>
+                </tbody>
+                <tfoot><tr><th>Total</th><th>55 000</th></tr></tfoot>
+            </table>
+        </section>
+
+        <!-- 3 · Moyen terme -->
+        <section class="page page--ledger" data-toc="Moyen terme">
+            <header class="page__head">
+                <p class="chapter">Budget · Moyen terme</p>
+                <h2>Influence et taijutsu</h2>
+            </header>
+            <table class="ledger">
+                <thead><tr><th>Poste</th><th>Coût</th></tr></thead>
+                <tbody>
+                    <tr><td>Festival du clan Hyûga <small>ouvert à tout le village</small></td><td>40 000</td></tr>
+                    <tr><td>Tournoi de taijutsu et classement <small>chaque saison</small></td><td>15 000</td></tr>
+                    <tr><td>Lentilles qui dissimulent le Byakugan <small>matériaux, branche scientifique</small></td><td>30 000</td></tr>
+                    <tr><td>Gadgets ninjas <small>part des matériaux</small></td><td>10 000</td></tr>
+                    <tr><td>Dojo de taijutsu <small>location, tatamis, makiwara</small></td><td>120 000</td></tr>
+                </tbody>
+                <tfoot><tr><th>Total</th><th>215 000</th></tr></tfoot>
+            </table>
+        </section>
+
+        <!-- 4 · Long terme -->
+        <section class="page page--ledger" data-toc="Long terme">
+            <header class="page__head">
+                <p class="chapter">Budget · Long terme</p>
+                <h2>Le chef et le stratège</h2>
+            </header>
+            <table class="ledger">
+                <thead><tr><th>Poste</th><th>Coût</th></tr></thead>
+                <tbody>
+                    <tr><td>Un orateur pour parler en son nom</td><td>18 000</td></tr>
+                    <tr><td>Équipes de quatre <small>entraînement et équipement</small></td><td>60 000</td></tr>
+                    <tr><td>Balise de permutation <small>recherche</small></td><td>45 000</td></tr>
+                    <tr><td>Étude du genjutsu</td><td>9 000</td></tr>
+                </tbody>
+                <tfoot><tr><th>Total</th><th>132 000</th></tr></tfoot>
+            </table>
+        </section>
+
+        <!-- 5 · Notes -->
+        <section class="page page--ledger" data-toc="Notes">
+            <header class="page__head">
+                <p class="chapter">En marge</p>
+                <h2>Notes</h2>
+            </header>
+            <ul class="ledger-notes">
+                <li>Modérer mes mots devant le Conseil. Les chiffres parlent mieux que moi.</li>
+                <li>Médecin ou combattant&nbsp;? Chiffrer les deux voies avant de choisir.</li>
+                <li>Trouver un partenaire. Ne coûte rien, rapporte beaucoup.</li>
+                <li>Major de la promotion&nbsp;: objectif gratuit, à tenir.</li>
+            </ul>
+        </section>
+
+        <!-- 6 · Bilan -->
+        <section class="page page--ledger" data-toc="Bilan">
+            <header class="page__head">
+                <p class="chapter">Bilan</p>
+                <h2>Solde prévisionnel</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
+            </header>
+            <table class="ledger ledger--sum">
+                <tbody>
+                    <tr><td>Court terme</td><td>55 000</td></tr>
+                    <tr><td>Moyen terme</td><td>215 000</td></tr>
+                    <tr><td>Long terme</td><td>132 000</td></tr>
+                </tbody>
+                <tfoot><tr><th>À réunir</th><th>402 000 ryō</th></tr></tfoot>
+            </table>
+            <p class="ledger-intro">De quoi rêver du trésor de Konoha.</p>
+            <p class="signature">Akira Hyûga</p>
+        </section>
 
         <section class="page page--back" data-toc="Fin">
             <div class="cover cover--back cover--indigo">
                 <div class="cover__frame">
                     <svg class="cover__emblem cover__emblem--small" aria-hidden="true"><use href="#konoha" /></svg>
                     <p class="cover__again js-only"><a href="#page-0" class="no-scene"><span aria-hidden="true">⟲</span> Revenir à la couverture</a><a href="#ranger" class="scene-only"><span aria-hidden="true">⤶</span> Ranger le livre</a><a href="#menu" class="menu-link" hidden><span aria-hidden="true">✦</span> Sélection de la catégorie</a></p>
-                    <p class="cover__seal" aria-hidden="true">忍道</p>
+                    <p class="cover__seal" aria-hidden="true">両</p>
                 </div>
             </div>
         </section>
@@ -424,7 +528,7 @@
         <button type="button" id="sound-mute" class="sound-panel__mute">Couper tout le son</button>
     </div>
     <aside class="radio scene-only" id="radio" aria-label="Musique en cours" hidden>
-        <p class="radio__title"><span aria-hidden="true">♪</span> <b>SD NIGHT</b> <small>VEN1</small></p>
+        <p class="radio__title"><span aria-hidden="true">♪</span> <b>Sadness and Sorrow</b> <small>Naruto OST</small></p>
         <div class="radio__player"><div id="radio-player"></div></div>
     </aside>
     <button class="scene-skip scene-only" id="scene-skip" type="button" hidden>Passer <span aria-hidden="true">⏭</span></button>
@@ -468,7 +572,7 @@
     <p class="sr-only" id="announcer" aria-live="polite"></p>
 
     <script src="public/js/book.js?v=615cf9d9"></script>
-    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=db883315", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=b08c7110", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=518ee508", "./public/js/scene/head.js": "./public/js/scene/head.js?v=b91baeb1", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=6c455fc7", "./public/js/scene/post.js": "./public/js/scene/post.js?v=332bcc41", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=3aac9881", "./public/js/scene/room.js": "./public/js/scene/room.js?v=53f0b44f", "./public/js/scene/screens.js": "./public/js/scene/screens.js?v=235a9e40", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=f16f6061", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=b2bf91ed", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=f035ebb1", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=535bacc1", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
+    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=db883315", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=8b078d1c", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=8ac69c85", "./public/js/scene/head.js": "./public/js/scene/head.js?v=b91baeb1", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=2650e73b", "./public/js/scene/post.js": "./public/js/scene/post.js?v=332bcc41", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c3b7ad90", "./public/js/scene/room.js": "./public/js/scene/room.js?v=53f0b44f", "./public/js/scene/screens.js": "./public/js/scene/screens.js?v=485995ef", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=f16f6061", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=b2bf91ed", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=f09db468", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=535bacc1", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
     <!-- Si le navigateur gère les modules, la scène se charge ; sinon, ou en cas d'erreur, le carnet s'affiche seul. -->
     <script type="module">window.SceneLoading = true;</script>
     <script>
@@ -491,7 +595,7 @@
             }).catch(function () {});
         })();
     </script>
-    <script type="module" src="public/js/scene/main.js?v=3f4c1ba5" onerror="window.Carnet && window.Carnet.standalone()"></script>
+    <script type="module" src="public/js/scene/main.js?v=6ab251e7" onerror="window.Carnet && window.Carnet.standalone()"></script>
 </body>
 
 </html>

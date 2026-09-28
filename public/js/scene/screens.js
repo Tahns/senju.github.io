@@ -101,6 +101,8 @@ function personnage() {
         titles,
         tabs: true,
         tab: (step) => (step < nTraits ? 'caractere' : 'objectifs'),
+        // Un nouvel « écran » tous les trois traits, puis à chaque terme d'objectifs.
+        page: (step) => (step < nTraits ? Math.floor(step / 3) : step),
         tabStep: { caractere: 0, objectifs: nTraits },
         steps: titles.length,
         layout: 'full',
@@ -172,8 +174,12 @@ function histoire() {
         label: clean(s.querySelector('.chapter')?.textContent || `Chapitre ${i + 1}`),
         title: clean(s.querySelector('h2')?.textContent || ''),
         paras: Array.from(s.querySelectorAll('.prose p:not(.to-be-continued)'), (n) => clean(n.textContent)),
-        art: s.querySelector('.vignette')?.cloneNode(true) || null
+        art: s.querySelector('.vignette')?.cloneNode(true) || null,
+        // Voix off du chapitre (data-voice sur la page du carnet), si le fichier existe.
+        voice: s.dataset.voice || ''
     }));
+    let voice = null;
+    const stopVoice = () => { if (voice) { voice.pause(); voice = null; } };
     const state = { chapter: 0, reading: false, para: 0 };
     let api = null;
     return {
@@ -186,7 +192,10 @@ function histoire() {
             const c = chapters[state.chapter];
             return state.para < c.paras.length - 1 || state.chapter < chapters.length - 1 ? 'Suivant' : 'Terminer';
         },
-        reset() { state.chapter = 0; state.reading = false; state.para = 0; },
+        reset() { state.chapter = 0; state.reading = false; state.para = 0; stopVoice(); },
+        leave: stopVoice,
+        // Transitions : la page change quand on entre dans un chapitre ou qu'on en sort.
+        page: () => (state.reading ? 'read' : 'grid'),
         // Flèches et « Suivant » : sélection des chapitres, puis lecture paragraphe par paragraphe.
         next() {
             if (!state.reading) { state.reading = true; state.para = 0; return true; }
@@ -219,8 +228,28 @@ function histoire() {
                 text.append(el('p', 'is-new', c.paras[state.para]), el('p', 'ss-reader__count', `${state.para + 1} / ${c.paras.length}`));
                 const back = el('button', 'ss-reader__back', '⟵ Chapitres');
                 back.type = 'button';
-                back.addEventListener('click', () => { state.reading = false; api(true); });
+                back.addEventListener('click', () => { state.reading = false; stopVoice(); api(true); });
                 view.append(frame, text, back);
+                // « Écouter » (comme dans le Canva) : la voix off du chapitre, si elle a été ajoutée.
+                if (c.voice) {
+                    const listen = el('button', 'ss-reader__listen', 'Écouter');
+                    listen.type = 'button';
+                    listen.hidden = true;
+                    const probe = new Audio();
+                    probe.preload = 'metadata';
+                    probe.addEventListener('loadedmetadata', () => { listen.hidden = false; }, { once: true });
+                    probe.src = c.voice;
+                    listen.addEventListener('click', () => {
+                        if (voice && !voice.paused) { stopVoice(); listen.textContent = 'Écouter'; return; }
+                        stopVoice();
+                        voice = probe;
+                        voice.currentTime = 0;
+                        voice.play().catch(() => {});
+                        listen.textContent = 'Arrêter';
+                        voice.addEventListener('ended', () => { listen.textContent = 'Écouter'; }, { once: true });
+                    });
+                    view.append(listen);
+                }
                 body.append(view);
                 return;
             }
@@ -308,16 +337,55 @@ export function createScreens({ sound, onExit, onBook }) {
 
     let screen = null;
     let step = 0;
+    let lastPage = null;
+    // Bandeau qui balaie l'écran en diagonale (transition des jeux Storm).
+    const band = el('div', 'ss-wipe');
+    band.setAttribute('aria-hidden', 'true');
+    root.append(band);
+    function wipe() {
+        if (calm()) return;
+        band.animate([{ transform: 'translateX(-130%) skewX(-18deg)' }, { transform: 'translateX(130%) skewX(-18deg)' }], { duration: 520, easing: 'cubic-bezier(.5, 0, .3, 1)' });
+    }
     let bookPage = 0;
 
-    function draw(fx = false) {
+    // Transitions façon Canva : glissé-zoom quand l'écran change de page, et
+    // zoom depuis la carte du chapitre (ou retour vers elle). Animations Web
+    // en transformations seules : si elles tardent, le contenu reste visible.
+    const calm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function zoomFrom(node, rect) {
+        const to = node.getBoundingClientRect();
+        if (!rect || !to.width || calm()) return;
+        const dx = rect.left + rect.width / 2 - (to.left + to.width / 2);
+        const dy = rect.top + rect.height / 2 - (to.top + to.height / 2);
+        node.animate([
+            { transform: `translate(${dx}px, ${dy}px) scale(${rect.width / to.width}, ${rect.height / to.height})` },
+            { transform: 'none' }
+        ], { duration: 520, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+    }
+    function draw(fx = false, dir = 0) {
+        const page = screen.page ? screen.page(step) : step;
+        const card = body.querySelector('.ss-chapter.is-active');
+        const cardRect = card && card.getBoundingClientRect();
+        const frame = body.querySelector('.ss-reader__frame');
+        const frameRect = frame && frame.getBoundingClientRect();
+        const turned = !fx && page !== lastPage;
+        lastPage = page;
         body.replaceChildren();
         body.className = 'ss-body ss-body--' + screen.key + ' ss-layout--' + screen.layout;
         root.dataset.layout = screen.layout;
-        screen.render(step, body, (s) => { if (s !== step) { step = s; sound.select(); draw(); } }, (click) => {
+        screen.render(step, body, (s) => { if (s !== step) { const d = s > step ? 1 : -1; step = s; sound.select(); draw(false, d); } }, (click) => {
             if (click) sound.select();
             draw();
         });
+        const newFrame = body.querySelector('.ss-reader__frame');
+        const newCard = body.querySelector('.ss-chapter.is-active');
+        if (cardRect && newFrame) zoomFrom(newFrame, cardRect);
+        else if (frameRect && newCard) zoomFrom(newCard, frameRect);
+        else if (turned && !calm()) {
+            const x = (dir || 1) * 5;
+            body.animate([{ transform: `translateX(${x}vw) scale(.97)` }, { transform: 'none' }], { duration: 420, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+            wipe();
+        }
         title.textContent = screen.titles ? screen.titles[step] : screen.title;
         count.textContent = screen.steps > 1 ? `○ ${step + 1} / ${screen.steps}` : '';
         const last = step >= screen.steps - 1;
@@ -343,11 +411,14 @@ export function createScreens({ sound, onExit, onBook }) {
         void root.offsetWidth;
         dialog.hidden = true;
         root.hidden = false;
+        lastPage = null;
         draw(true);
+        wipe();
         nextBtn.focus();
     }
 
     function close() {
+        if (screen && screen.leave) screen.leave();
         root.hidden = true;
         dialog.hidden = true;
         screen = null;
@@ -363,7 +434,7 @@ export function createScreens({ sound, onExit, onBook }) {
         if (step < screen.steps - 1) {
             step++;
             sound.select();
-            draw();
+            draw(false, 1);
             return;
         }
         exit();
@@ -377,7 +448,7 @@ export function createScreens({ sound, onExit, onBook }) {
         if (step > 0) {
             step--;
             sound.select();
-            draw();
+            draw(false, -1);
         }
     }
 
@@ -387,9 +458,13 @@ export function createScreens({ sound, onExit, onBook }) {
         (on ? $('ss-no') : nextBtn).focus();
     }
 
+    // Retour au menu : le bandeau balaie l'écran, puis le menu revient.
     function exit() {
-        close();
-        onExit();
+        wipe();
+        setTimeout(() => {
+            close();
+            onExit();
+        }, calm() ? 0 : 260);
     }
 
     nextBtn.addEventListener('click', next);
@@ -403,9 +478,11 @@ export function createScreens({ sound, onExit, onBook }) {
     tabs.addEventListener('click', (e) => {
         const b = e.target.closest('button[data-go]');
         if (!b || !screen.tabStep) return;
-        step = screen.tabStep[b.dataset.go];
+        const to = screen.tabStep[b.dataset.go];
+        const d = to > step ? 1 : -1;
+        step = to;
         sound.select();
-        draw();
+        draw(false, d);
     });
     // Cliquer à côté de la boîte de dialogue revient à dire « Non ».
     dialog.addEventListener('click', (e) => { if (e.target === dialog) pause(false); });

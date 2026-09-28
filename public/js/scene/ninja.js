@@ -461,8 +461,17 @@ export function buildNinja(sculpt, avatarGltf = null) {
         guard: { spine: [0.15, 0.35, 0], head: [0, -0.3, 0], shoulderL: [-1.25, 0, -0.15], elbowL: [-0.35, 0, 0], shoulderR: [-0.55, 0, 0.35], elbowR: [-1.55, 0, 0], hipL: [-0.55, 0, 0.25], kneeL: [0.85, 0, 0], hipR: [0.35, 0, -0.25], kneeR: [0.65, 0, 0] },
         palmR: { spine: [0.12, -0.55, 0], head: [0, 0.45, 0], shoulderR: [-1.55, 0, 0.1], elbowR: [-0.05, 0, 0], shoulderL: [-0.35, 0, -0.45], elbowL: [-1.4, 0, 0], hipL: [-0.65, 0, 0.2], kneeL: [0.85, 0, 0], hipR: [0.45, 0, -0.2], kneeR: [0.35, 0, 0] },
         palmL: { spine: [0.12, 0.55, 0], head: [0, -0.45, 0], shoulderL: [-1.55, 0, -0.1], elbowL: [-0.05, 0, 0], shoulderR: [-0.35, 0, 0.45], elbowR: [-1.4, 0, 0], hipR: [-0.65, 0, -0.2], kneeR: [0.85, 0, 0], hipL: [0.45, 0, 0.2], kneeL: [0.35, 0, 0] },
+        // Garde des Hyûga : basse et large, de profil, paume avant tendue, l'autre main près du plexus.
+        // (Jambes : bassin à abaisser d'environ 10 cm pour garder les deux pieds au sol.)
+        jukenStance: { spine: [0.12, 0.55, 0], head: [0, -0.5, 0], shoulderL: [-1.3, 0, -0.05], elbowL: [-0.3, 0, 0], shoulderR: [-0.75, 0, 0.55], elbowR: [-1.75, 0, 0], hipL: [-0.7, 0, 0.25], kneeL: [0.9, 0, 0], hipR: [0.45, 0, -0.3], kneeR: [0.1, 0, 0] },
+        // Rafale de paumes : le buste tourne, la paume part droit devant, l'autre revient à la hanche.
+        jabR: { spine: [0.2, -0.6, 0], head: [0, 0.5, 0], shoulderR: [-1.55, 0, 0.02], elbowR: [-0.06, 0, 0], shoulderL: [0.35, 0, -0.25], elbowL: [-1.9, 0, 0], hipL: [-0.7, 0, 0.25], kneeL: [0.9, 0, 0], hipR: [0.45, 0, -0.3], kneeR: [0.1, 0, 0] },
+        jabL: { spine: [0.2, 0.65, 0], head: [0, -0.55, 0], shoulderL: [-1.55, 0, -0.02], elbowL: [-0.06, 0, 0], shoulderR: [0.35, 0, 0.25], elbowR: [-1.9, 0, 0], hipL: [-0.7, 0, 0.25], kneeL: [0.9, 0, 0], hipR: [0.45, 0, -0.3], kneeR: [0.1, 0, 0] },
+        // Hakke Kûshô : les deux paumes projetées ensemble, en fente.
+        kushoWind: { spine: [0.05, 0.9, 0], head: [0, -0.8, 0], shoulderL: [-0.5, 0, -0.3], elbowL: [-1.5, 0, 0], shoulderR: [-0.35, 0, 0.3], elbowR: [-1.6, 0, 0], hipL: [-0.7, 0, 0.25], kneeL: [0.9, 0, 0], hipR: [0.45, 0, -0.3], kneeR: [0.1, 0, 0] },
+        kusho: { spine: [0.28, 0.05, 0], head: [-0.1, 0, 0], shoulderL: [-1.5, 0, 0.12], elbowL: [-0.05, 0, 0], shoulderR: [-1.5, 0, -0.12], elbowR: [-0.05, 0, 0], hipL: [-0.8, 0, 0.2], kneeL: [0.95, 0, 0], hipR: [0.55, 0, -0.2], kneeR: [0.1, 0, 0] },
         // Kaiten : bras ouverts, genoux fléchis, il tourne sur lui-même.
-        kaiten: { spine: [0.05, 0, 0], head: [0.05, 0, 0], shoulderL: [-0.25, 0, -1.25], shoulderR: [-0.25, 0, 1.25], elbowL: [-0.25, 0, 0], elbowR: [-0.25, 0, 0], hipL: [-0.35, 0, 0.28], kneeL: [0.55, 0, 0], hipR: [-0.35, 0, -0.28], kneeR: [0.55, 0, 0] },
+        kaiten: { spine: [0.05, 0, 0], head: [0.05, 0, 0], shoulderL: [-0.25, 0, -1.25], shoulderR: [-0.25, 0, 1.25], elbowL: [-0.25, 0, 0], elbowR: [-0.25, 0, 0], hipL: [-0.3, 0, -0.12], kneeL: [0.5, 0, 0], hipR: [-0.3, 0, 0.12], kneeR: [0.5, 0, 0] },
         flip: { spine: [0, 0.1, 0], head: [-0.25, 0.15, 0], shoulderR: [-1.0, 0, 0.3], elbowR: [-1.6, 0, 0], shoulderL: [0.05, 0, -0.18], elbowL: [-0.2, 0, 0], hipL: [0, 0, 0.08], hipR: [0, 0, -0.08] }
     };
     const NAMES = ['spine', 'head', 'shoulderL', 'shoulderR', 'elbowL', 'elbowR', 'hipL', 'hipR', 'kneeL', 'kneeR'];

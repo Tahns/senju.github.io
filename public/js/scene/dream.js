@@ -723,6 +723,21 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         scene.add(ring, flash);
         return { ring, flash };
     });
+    // Éclats d'impact de la rafale de paumes (petite réserve réutilisée).
+    const hits = [0, 1, 2, 3].map(() => {
+        const f = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot(), color: '#e4efff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+        scene.add(f);
+        return f;
+    });
+    let hitN = 0;
+    function hitFlash(timeline, at, size = 0.35) {
+        const f = hits[hitN++ % hits.length];
+        f.position.copy(at);
+        return timeline.tween(0.18, (k) => {
+            f.material.opacity = 0.95 * (1 - k);
+            f.scale.setScalar(size * (0.6 + k));
+        }, ease.out);
+    }
     function palmWave(timeline, index, from, to, big = false) {
         const { ring, flash } = palmWaves[index];
         const size = big ? 2.2 : 1;
@@ -1060,40 +1075,84 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await tl.wait(0.6);
         face(tl, 'fun', 0, 0.5);
 
-        // 2. Byakugan, puis le Jûken : trois frappes de paume à distance, trois poteaux brisés.
+        // 2. Byakugan, puis le Jûken : garde des Hyûga, pas en avant, rafale des
+        // 64 paumes sur le premier poteau, puis deux Hakke Kûshô à distance.
         onAct('juken');
         const byakugan = (k) => { if (ninja.avatar && ninja.avatar.byakugan) ninja.avatar.byakugan(k); };
         say('Byakugan', 2.2, '白眼');
         face(tl, 'angry', 0.6, 0.3);
         sound.whoosh();
         await tl.tween(0.5, byakugan, ease.out);
-        await tl.wait(0.9);
-        const side = shot(tl, V(-2.6, 1.55, 3.6), V(0.8, 1.1, 0.4), 2.6);
-        tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * k; });
+        await tl.wait(0.8);
+        // Paumes ouvertes, poignets cassés vers l'arrière : les paumes font face à la cible.
         if (ninja.avatar) { ninja.avatar.grip('right', 0); ninja.avatar.grip('left', 0); }
-        await pose(tl, 'guard', 0.6);
-        await side;
-        say('Jûken : le poing souple des Hyûga', 3.2, '柔拳');
-        const strikes = ['palmR', 'palmL', 'palmR'];
+        const wrists = (k) => { ninja.J.handR.rotation.x = -1.3 * k; ninja.J.handL.rotation.x = -1.3 * k; };
+        // Bassin abaissé pour la garde basse (les deux pieds restent au sol).
+        const crouch = (depth, seconds) => {
+            const from = ninja.J.hips.position.y;
+            return tl.tween(seconds, (k) => { ninja.J.hips.position.y = from + (hipsY - depth - from) * k; }, ease.inOut);
+        };
+        // Direction de chaque poteau vu d'Akira, et point d'arrivée du pas en avant.
+        const P0 = posts[0].base.position;
+        const face0 = Math.atan2(P0.x, P0.z) + 0.1;
+        const reach = V(P0.x, 0, P0.z).setLength(Math.hypot(P0.x, P0.z) - 0.72);
+        const stepShot = shot(tl, V(-1.3, 1.25, 3.3), V(0.45, 1.05, 0.75), 1.6);
+        tl.tween(0.4, (k) => { ninja.root.rotation.y = face0 * k; wrists(k); });
+        pose(tl, 'jukenStance', 0.5, ease.inOut);
+        await crouch(0.1, 0.5);
+        say('Jûken : le poing souple des Hyûga', 2.6, '柔拳');
+        await stepShot;
+        // Glissé en avant, sans quitter la garde.
+        sound.whoosh();
+        // La caméra passe de trois-quarts face : on voit les paumes alterner.
+        shot(tl, V(-0.15, 1.3, 3.1), V(0.7, 1.0, 0.8), 0.8);
+        await tl.tween(0.35, (k) => { ninja.root.position.set(reach.x * k, 0, reach.z * k); }, ease.inOut);
+        await tl.wait(0.45);
+        // Hakke Rokujûyon Shō : les frappes s'enchaînent de plus en plus vite ;
+        // le compteur double (2, 4, 8… 64 paumes).
+        say('Hakke Rokujûyon Shō', 3.2, '六十四掌');
         const palm = V();
+        const counts = { 1: 2, 2: 4, 4: 8, 7: 16, 10: 32, 14: 64 };
+        const N = 15;
+        for (let i = 0; i < N; i++) {
+            const right = i % 2 === 0;
+            const speed = 1 - (i / N) * 0.55;
+            await pose(tl, right ? 'jabR' : 'jabL', 0.09 * speed, ease.out);
+            (right ? ninja.J.handR : ninja.J.handL).getWorldPosition(palm);
+            hitFlash(tl, palm, 0.28 + i * 0.012);
+            sound.select();
+            if (counts[i]) say(`${counts[i]} paumes${counts[i] === 64 ? ' !' : '…'}`, 1.2, '八卦');
+            await tl.wait(0.04 * speed);
+        }
+        // Dernière frappe : les deux paumes ensemble, le poteau vole en éclats.
+        await pose(tl, 'kushoWind', 0.18, ease.inOut);
+        await pose(tl, 'kusho', 0.1, ease.out);
+        ninja.J.handR.getWorldPosition(palm);
+        hitFlash(tl, palm, 0.9);
+        sound.cut();
+        burst();
+        cutPost(tl, 0);
+        await tl.wait(0.5);
+        // Hakke Kûshô : une onde de paume à distance sur chacun des deux autres poteaux.
         const target = V();
-        for (let i = 0; i < 3; i++) {
+        for (let i = 1; i < 3; i++) {
             const last = i === 2;
-            if (last) {
-                // Dernier coup : Jûken et Gôken réunis (son objectif), la paume chargée à bloc.
-                say('Jûken et Gôken, enfin réunis', 2.6, '剛拳');
-                tl.tween(0.5, (k) => { auraMat.uniforms.uPower.value = 0.7 * k; }, ease.out);
-                handChakra = 0.9;
-                if (sound.crackle) sound.crackle(1.2);
-                await pose(tl, 'guard', 0.45, ease.inOut);
-                await tl.wait(0.35);
-                handChakra = 0;
-            } else {
-                await pose(tl, 'guard', 0.22, ease.inOut);
+            const P = posts[i].base.position;
+            const aim = Math.atan2(P.x - ninja.root.position.x, P.z - ninja.root.position.z);
+            if (i === 1) {
+                say('Hakke Kûshô : la paume du vide', 3, '空掌');
+                shot(tl, V(0.35, 1.45, -1.9), V(1.0, 1.0, 0.35), 1.2);
             }
+            if (last) {
+                tl.tween(0.5, (k) => { auraMat.uniforms.uPower.value = 0.7 * k; }, ease.out);
+                if (sound.crackle) sound.crackle(0.9);
+            }
+            tl.tween(0.3, (k) => { ninja.root.rotation.y += (aim - ninja.root.rotation.y) * k; }, ease.inOut);
+            await pose(tl, 'kushoWind', last ? 0.5 : 0.3, ease.inOut);
+            if (last) await tl.wait(0.25);
             sound.whoosh();
-            await pose(tl, strikes[i], 0.14, ease.out);
-            (strikes[i] === 'palmR' ? ninja.J.handR : ninja.J.handL).getWorldPosition(palm);
+            await pose(tl, 'kusho', 0.12, ease.out);
+            ninja.J.handR.getWorldPosition(palm);
             posts[i].topPart.getWorldPosition(target);
             target.y += 0.2;
             await palmWave(tl, i, palm, target, last);
@@ -1115,12 +1174,20 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
                 if (tl.scale === mine) tl.scale = normal;
                 tl.tween(0.6, (k) => { auraMat.uniforms.uPower.value = 0.7 * (1 - k); });
             } else {
-                await tl.wait(0.3);
+                await tl.wait(0.35);
             }
         }
-        tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * (1 - k); });
+        // Retour au centre du rocher, garde relâchée.
+        const back0 = ninja.root.position.clone();
+        const rot0j = ninja.root.rotation.y;
+        tl.tween(0.6, (k) => {
+            ninja.root.position.lerpVectors(back0, V(0, 0, 0), k);
+            ninja.root.rotation.y = rot0j * (1 - k);
+            wrists(1 - k);
+        }, ease.inOut);
+        crouch(0, 0.6);
         face(tl, 'angry', 0, 0.5);
-        await pose(tl, 'stand', 0.4);
+        await pose(tl, 'stand', 0.6);
 
         // 3. Hakkeshō Kaiten : il tourne sur lui-même dans un dôme de chakra, qui éclate.
         onAct('kaiten');
