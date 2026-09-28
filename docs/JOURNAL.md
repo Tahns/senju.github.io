@@ -358,3 +358,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   en plein jour (oiseaux qui chantent) sous un ciel d'orage. Désormais les
   oiseaux se taisent et le vent souffle plus fort et plus grave ; le
   tonnerre des éclairs complète l'ambiance.
+- **Test automatique du menu** (`tools/test/menu.js`) : fait le tour des
+  7 catégories (mot, kanji, voisines), confirme et vérifie que le carnet
+  s'ouvre à la bonne page.
