@@ -574,28 +574,65 @@ export function buildRoom(scene) {
     const lid = new THREE.Group();
     lid.position.set(-0.075, 0.08, 0);
     musicBox.add(lid);
-    const lidMesh = rounded(lid, 0.152, 0.02, 0.222, 0.006, lacquerPlain, 0.076, 0.01, 0);
+    // Le couvercle dépasse d'1 cm à l'avant : un rebord où glisser les doigts.
+    const lidMesh = rounded(lid, 0.16, 0.02, 0.222, 0.006, lacquerPlain, 0.08, 0.01, 0);
     lidMesh.material = [lacquerPlain, lacquerPlain, lacquer, lacquerPlain, lacquerPlain, lacquerPlain];
     const mirrorMat = new THREE.MeshStandardMaterial({ color: '#b8c0c8', roughness: 0.1, metalness: 1 });
     const lidMirror = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.18), mirrorMat);
     lidMirror.rotation.x = Math.PI / 2;
-    lidMirror.position.set(0.076, -0.0005, 0);
+    lidMirror.position.set(0.08, -0.0005, 0);
     lid.add(lidMirror);
     const key = new THREE.Group();
     key.position.set(-0.02, 0.035, -0.114);
     musicBox.add(key);
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.02, 8), brass);
+    // Tige, puis molette crantée qu'on pince entre le pouce et l'index (ronde :
+    // on la reprend de la même façon après chaque quart de tour).
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.0025, 0.0025, 0.016, 8), brass);
     shaft.rotation.x = Math.PI / 2;
-    shaft.position.z = -0.01;
+    shaft.position.z = -0.008;
     key.add(shaft);
-    box(key, 0.004, 0.034, 0.006, brass, 0, 0, -0.022).castShadow = false;
+    const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.0055, 0.0055, 0.014, 14), brass);
+    knob.rotation.x = Math.PI / 2;
+    knob.position.z = -0.023;
+    key.add(knob);
+    // Crans (visibles quand la molette tourne).
+    for (let i = 0; i < 7; i++) {
+        const a = (i / 7) * Math.PI * 2;
+        const rib = new THREE.Mesh(new THREE.BoxGeometry(0.0016, 0.0016, 0.013), brass);
+        rib.position.set(Math.cos(a) * 0.0055, Math.sin(a) * 0.0055, -0.023);
+        rib.rotation.z = a;
+        key.add(rib);
+    }
     // Points où se posent les doigts.
     const lidEdge = new THREE.Object3D();
-    lidEdge.position.set(0.152, 0.004, 0);
+    lidEdge.position.set(0.16, 0.004, 0);
     lid.add(lidEdge);
     const keyGrip = new THREE.Object3D();
-    keyGrip.position.set(0, 0, -0.024);
+    keyGrip.position.set(0, 0, -0.023);
     key.add(keyGrip);
+
+    // Formes de la boîte pour les doigts (distance signée, repère de chaque pièce) :
+    // le coffret, le couvercle (qui pivote) et la clé (tige et ailette).
+    const sdBox = (x, y, z, hx, hy, hz) => {
+        const qx = Math.abs(x) - hx, qy = Math.abs(y) - hy, qz = Math.abs(z) - hz;
+        return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0);
+    };
+    const musicBoxTouch = [
+        { object: musicBox, radius: 0.2, sd: (p) => sdBox(p.x, p.y - 0.04, p.z, 0.075, 0.04, 0.11) },
+        { object: lid, radius: 0.25, sd: (p) => sdBox(p.x - 0.08, p.y - 0.01, p.z, 0.08, 0.01, 0.111) },
+        {
+            // Tige et molette : deux cylindres le long de z.
+            object: key,
+            radius: 0.1,
+            sd: (p) => {
+                const cyl = (r, z0, h) => {
+                    const dr = Math.hypot(p.x, p.y) - r, dz = Math.abs(p.z - z0) - h;
+                    return Math.hypot(Math.max(dr, 0), Math.max(dz, 0)) + Math.min(Math.max(dr, dz), 0);
+                };
+                return Math.min(cyl(0.0025, -0.008, 0.008), cyl(0.0063, -0.023, 0.007));
+            }
+        }
+    ];
 
     /* ---------------- Futon ---------------- */
     const bedX = 1.88;
@@ -688,6 +725,7 @@ export function buildRoom(scene) {
 
     return {
         door,
+        musicBoxTouch,
         musicBox: { group: musicBox, lid, key, lidEdge, keyGrip, setPlaying(speed) { drumSpeed = speed; } },
         doorHandle,
         doorTouch,

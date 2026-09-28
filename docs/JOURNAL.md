@@ -530,3 +530,11 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   plus rien au-delà d'1 mm sur tout le parcours.
 - Couverture et dos du carnet de l'histoire : le sceau d'un seul kanji (史)
   affichait « undefined » ; il est maintenant centré.
+- Boîte à musique, vraies prises : le coffret, le couvercle et la clé ont une
+  forme que les doigts sentent (avant : majeur 26 mm dans le coffret en
+  remontant la clé ; maintenant 0). Akira s'approche à 30 cm (le bras
+  s'étirait à 80 cm). Couvercle : rebord d'1 cm, le majeur et l'annulaire le
+  soulèvent jusqu'à ~35°, puis il s'ouvre sur son élan. Clé : l'ailette plate
+  devient une molette crantée (ronde : on la reprend pareil à chaque quart de
+  tour), pincée du bout du pouce et de l'index (nouveau réglage `pinch` du
+  pouce), paume vers la boîte, dans l'axe de l'avant-bras.
