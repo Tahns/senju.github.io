@@ -1,16 +1,12 @@
 /*
- * Musique : bande originale de Naruto, versions officielles publiées sur
- * YouTube par Aniplex, jouées par le lecteur officiel (petit lecteur visible
- * dans un coin, comme YouTube l'exige).
- * - chambre, la nuit : « Sadness and Sorrow » (Naruto Original Soundtrack) ;
- * - menu et écrans des catégories : « Man of the World » (Naruto Shippuden OST).
- * Si YouTube ne se charge pas, la chambre garde la boîte à musique et le menu
- * son ambiance d'orage.
+ * Musique : « Shirohae (The Rain Stops) », bande originale de Naruto
+ * Shippûden (Yasuharu Takanashi), choisie par le joueur : calme et émouvante,
+ * dans la chambre comme dans le menu. Jouée par le lecteur officiel YouTube
+ * (petit lecteur visible dans un coin, comme YouTube l'exige). Si YouTube ne se
+ * charge pas, la chambre garde la boîte à musique et le menu l'orage.
  */
-export const TRACKS = {
-    room: { id: '_kr7pv2fin8', title: 'Sadness and Sorrow', by: 'Naruto OST' },
-    menu: { id: 'Zk65UCMPiug', title: 'Man of the World', by: 'Naruto Shippuden OST' }
-};
+const SHIROHAE = { id: 'yoRutY5tUGk', title: 'Shirohae', by: 'Naruto Shippûden OST' };
+export const TRACKS = { room: SHIROHAE, menu: SHIROHAE };
 const VIDEO = TRACKS.room.id;
 
 export class Radio {

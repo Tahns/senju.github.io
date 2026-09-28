@@ -4201,3 +4201,16 @@ html.menu-open .sound-panel {
     border: 0;
     cursor: pointer;
 }
+
+/* « Accélérer » activé : le bouton reste enfoncé, lueur dorée. */
+.scene-skip.is-on {
+    background: linear-gradient(135deg, #ffb347, #d9772b);
+    color: #2a1405;
+    box-shadow: 0 0 14px rgba(255, 180, 70, .6);
+}
+
+/* Cartes d'accueil et de fin : pas d'accélération. */
+html:has(#scene-intro:not([hidden]):not(.is-leaving)) .scene-skip,
+html:has(#scene-end:not([hidden])) .scene-skip {
+    display: none;
+}
