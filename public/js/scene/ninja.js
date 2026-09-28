@@ -354,7 +354,7 @@ export function buildNinja(sculpt, avatarGltf = null) {
         mesh(new THREE.SphereGeometry(0.009, 12, 8), M.vestDark, J.spine, sx * 0.19, 0.545, 0.05);
     });
     // Sacoche au bas du dos.
-    mesh(new RoundedBoxGeometry(0.17, 0.08, 0.07, 3, 0.025), M.vestDark, J.hips, 0, 0.07, -0.16);
+    const lowerBag = mesh(new RoundedBoxGeometry(0.17, 0.08, 0.07, 3, 0.025), M.vestDark, J.hips, 0, 0.07, -0.16);
     // Grand tourbillon rouge dans le dos.
     const backSwirl = mesh(new THREE.CircleGeometry(0.085, 40), M.swirl, J.spine, 0, 0.36, -0.172);
     backSwirl.rotation.y = Math.PI;
@@ -533,6 +533,12 @@ export function buildNinja(sculpt, avatarGltf = null) {
         // Le gilet est peint sur le vêtement du modèle : on ne garde que le fourreau, plaqué au dos.
         vest.children.forEach((o) => { if (o.isMesh) o.visible = false; });
         back.position.z = -0.135;
+        // Le modèle est plus mince que le corps procédural : la sacoche du bas
+        // du dos flottait derrière lui (le gilet peint a déjà sa poche) et la
+        // bourse pendait dans le vide. La bourse se cale contre la hanche,
+        // sous l'ourlet du haut.
+        lowerBag.visible = false;
+        pouch.position.set(Math.abs(m.leg.x) + 0.055, -0.13, -0.035);
         // Bandes et étui de cuisse ajustés à la jambe du modèle.
         J.hipR.children.forEach((o) => {
             if (!o.isMesh) return;
