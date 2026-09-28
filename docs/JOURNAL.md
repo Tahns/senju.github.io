@@ -365,3 +365,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   à l'encre y montre l'épée de sa lignée (« Récupérer l'épée de sa
   lignée ») posée sur son support — fourreau, garde, poignée tressée et
   cordon —, dans le même trait que la vignette de la Chronologie.
+- **Carnet, fins de chapitre illustrées** : chaque chapitre de l'histoire
+  qui s'arrêtait à mi-page se termine par une petite vignette à l'encre —
+  la forêt de Takumi (II), la feuille noyée dans l'eau du test de chakra
+  (III), un rouleau des récits du clan déroulé (IV).
