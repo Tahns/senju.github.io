@@ -66,7 +66,7 @@ Le texte des écrans est lu dans les pages du carnet (`index.html`) : on ne l'é
    Dans `index.html` : `<section class="book-source" data-book="histoire">`.
 2. **La fiche** (cuir rouge, sceau 日向), prise ensuite : présentation, résumé de l'histoire,
    caractère, objectifs et HRP. C'est aussi le carnet affiché sans la scène 3D et par les liens
-   `#page-N`. Dans `index.html` : `<main id="book-source" data-book="fiche">`.
+   `#page-N` ; un bouton « Histoire » y ouvre alors le carnet de l'histoire (avec la voix). Dans `index.html` : `<main id="book-source" data-book="fiche">`.
 
 Les titres des couvertures 3D sont dans `THEMES` (`public/js/scene/textures.js`).
 
@@ -109,5 +109,5 @@ Sans image, le cadre affiche « Portrait à venir ».
 | `public/img/` | Emblème de Konoha (SVG), favicon, portrait |
 | `public/js/scene/` | Scène 3D de la chambre |
 | `public/vendor/` | Three.js et son chargeur glTF (moteur 3D, licence MIT) |
-| `public/models/hoko.vrm` | Modèle d'Akira adulte : « HairSample_Male » du projet VRoid (pixiv), publié en CC0 ; allégé (textures WebP) et recoloré (yeux pâles du Byakugan, cheveux bruns, gilet de jōnin peint, bleu nuit) |
+| `public/models/hoko.vrm` | Modèle d'Akira adulte : « HairSample_Male » du projet VRoid (pixiv), publié en CC0 ; allégé (textures WebP) et recoloré (yeux pâles du Byakugan, cheveux presque noirs avec une longue mèche nouée dans le dos, gilet de jōnin peint, bleu nuit) |
 

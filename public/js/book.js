@@ -909,6 +909,7 @@
         buildTocMenu();
         build();
         setupVoice();
+        renderSwitch();
     }
 
     let onShelve = null;
@@ -1127,6 +1128,31 @@
 
     if (voiceBtn) voiceBtn.addEventListener('click', toggleVoice);
 
+    // Carnet seul (sans la scène) : un bouton passe de la fiche au carnet de
+    // l'histoire lu à voix haute, et inversement.
+    const switchBtn = document.getElementById('switch-book');
+    function renderSwitch() {
+        if (!switchBtn) return;
+        const other = sources.find((el) => el !== source);
+        switchBtn.hidden = !other;
+        if (!other) return;
+        const toStory = Boolean(other.dataset.voice);
+        switchBtn.querySelector('.tool--switch__icon').textContent = toStory ? '史' : '日';
+        switchBtn.querySelector('.tool--switch__label').textContent = toStory ? 'Histoire' : 'Fiche';
+        switchBtn.title = toStory ? "Ouvrir le carnet de l'histoire (lu à voix haute)" : 'Revenir à la fiche';
+        switchBtn.setAttribute('aria-label', switchBtn.title);
+    }
+    if (switchBtn) {
+        switchBtn.addEventListener('click', () => {
+            const other = sources.find((el) => el !== source);
+            if (!other) return;
+            load(other.dataset.book);
+            update(false);
+            renderSwitch();
+            announcer.textContent = titleOf(0);
+        });
+    }
+
     window.Carnet = {
         open,
         shelve,
@@ -1151,6 +1177,7 @@
     buildTocMenu();
     build();
     setupVoice();
+    renderSwitch();
     renderSound();
     bindEvents();
     if (sceneMode) {

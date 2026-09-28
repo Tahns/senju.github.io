@@ -78,3 +78,12 @@ node tools/test/voice-book.js captures # carnet de l'histoire : mots lus, page q
 
 Le petit serveur `python3 -m http.server` ne gère pas les requêtes partielles :
 le navigateur ne peut alors pas se déplacer dans l'audio (GitHub Pages, lui, les gère).
+node tools/test/standalone.js           # carnet seul (sans 3D) : fiche → « Histoire » → voix → « Fiche »
+
+## Poses
+
+```sh
+VIEWPORT=1200x630 GRIP=0.95 node tools/test/pose-shots.js crossed og '[[[-0.7,1.55,1.25],[-0.05,1.42,0]]]'
+```
+
+Capture une pose d'Akira sous les angles demandés (c'est ainsi qu'est faite `public/img/og.jpg`).

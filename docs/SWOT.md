@@ -51,15 +51,15 @@ visibilité : on corrige d'abord ce qu'un visiteur remarque en premier.
 
 | # | Faiblesse | Visibilité | Piste |
 |---|-----------|-----------|-------|
-| F1 | Akira n'a pas le physique d'un Hyûga : cheveux bruns courts (modèle VRoid générique). Seuls les yeux du Byakugan sont faits. | Haute | Modèle VRoid dédié : longs cheveux sombres, tenue du clan |
+| F1 | ~~Physique d'un Hyûga~~ : cheveux sombres et longue mèche nouée faits ; la coupe du devant reste celle du modèle VRoid. | Moyenne | Modèle VRoid dédié pour aller plus loin (frange, tenue du clan) |
 | F2 | Jamais vérifié sur un vrai appareil pendant ces changements : fluidité, son, lecteurs YouTube, voix Opus sur Safari. Tout a été testé en rendu logiciel, sans son. | Haute (risque) | Tour complet sur ordinateur et téléphone par le propriétaire |
-| F3 | Sans la 3D (vieux navigateur, lien `#page-N`), seule la fiche s'affiche : ni carnet de l'histoire ni voix off. | Moyenne | Bouton « Histoire (voix off) » dans la barre du carnet seul, qui charge le second carnet |
+| F3 | ~~Histoire inaccessible sans la 3D~~ | — | Corrigé : bouton « Histoire » / « Fiche » dans la barre du carnet seul |
 | F4 | Images du Canva non reprises (captures de l'anime, pour les droits) : traits illustrés par des kanji, portrait « à venir » (et une erreur 404 dans la console). | Moyenne | Illustrations du joueur (portrait, tenues Chûnin / Enfant) |
 | F5 | Un seul chapitre écrit sur 8 : la grille des chapitres est surtout faite de cases « À venir ». | Moyenne | Écrire les chapitres suivants (le carnet et l'écran les prennent automatiquement) |
 | F6 | Suivi du texte encore approximatif au milieu des longues phrases sans pause (instants calculés sur l'énergie de la voix, pas par reconnaissance vocale). | Faible à moyenne | Recalage manuel d'un passage signalé, ou transcription horodatée si un outil devient accessible |
-| F7 | Vidéo à partager (`docs/media/reve.webm`) et image d'aperçu (`og.jpg`) montrent encore l'ancienne version (Hoko, ancien menu). | Moyenne (partage) | Réenregistrer avec `tools/test/record-menu.js` et `record-dream.js` |
-| F8 | Restes du rêve de Hoko : code du dragon d'eau et du sabre inutilisé ; plan du Kûshô avec le bord du décor au loin. | Faible | Nettoyage du code, décor complété derrière le rocher |
-| F9 | Sur un appareil très lent, le zoom vers la lecture d'un chapitre peut sembler figé une fraction de seconde. | Faible | Zoom plus court, ou désactivé en qualité basse |
+| F7 | Vidéo à partager (`docs/media/reve.webm`) encore ancienne (l'image d'aperçu est refaite). | Moyenne (partage) | Réenregistrer avec `tools/test/record-menu.js` et `record-dream.js` |
+| F8 | ~~Restes du rêve de Hoko~~ | — | Corrigé : code retiré, Kûshô filmé vers le village |
+| F9 | Zoom vers la lecture raccourci ; à confirmer sur un appareil lent. | Faible | Désactiver en qualité basse si besoin |
 | F10 | Poids au premier chargement : ~4 Mo de modèle + ~0,7 Mo de three.js (la voix n'est chargée qu'au clic). | Faible | Modèle allégé (textures, maillage) |
 
 ## Opportunités

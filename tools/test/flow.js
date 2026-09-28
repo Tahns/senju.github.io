@@ -35,4 +35,4 @@ const { chromium } = require(process.env.PLAYWRIGHT || 'playwright');
     await p.waitForFunction(() => !document.documentElement.classList.contains('scene-thawing') && !document.documentElement.classList.contains('scene-frozen'), null, { timeout: 30000 });
   }
   await b.close();
-})().catch(e => console.log('ERR', e.message.slice(0, 200)));
+})().catch(e => { console.log('ERR', e.message.slice(0, 200)); process.exit(1); });
