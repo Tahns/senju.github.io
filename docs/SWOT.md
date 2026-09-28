@@ -57,7 +57,7 @@ visibilité : on corrige d'abord ce qu'un visiteur remarque en premier.
 | F4 | Images du Canva non reprises (captures de l'anime, pour les droits) : traits illustrés par des kanji, portrait « à venir » (et une erreur 404 dans la console). | Moyenne | Illustrations du joueur (portrait, tenues Chûnin / Enfant) |
 | F5 | Un seul chapitre écrit sur 8 : la grille des chapitres est surtout faite de cases « À venir ». | Moyenne | Écrire les chapitres suivants (le carnet et l'écran les prennent automatiquement) |
 | F6 | Suivi du texte encore approximatif au milieu des longues phrases sans pause (instants calculés sur l'énergie de la voix, pas par reconnaissance vocale). | Faible à moyenne | Recalage manuel d'un passage signalé, ou transcription horodatée si un outil devient accessible |
-| F7 | Vidéo à partager (`docs/media/reve.webm`) encore ancienne (l'image d'aperçu est refaite). | Moyenne (partage) | Réenregistrer avec `tools/test/record-menu.js` et `record-dream.js` |
+| F7 | ~~Vidéo et image d'aperçu anciennes~~ | — | Corrigé : toutes deux refaites |
 | F8 | ~~Restes du rêve de Hoko~~ | — | Corrigé : code retiré, Kûshô filmé vers le village |
 | F9 | Zoom vers la lecture raccourci ; à confirmer sur un appareil lent. | Faible | Désactiver en qualité basse si besoin |
 | F10 | Poids au premier chargement : ~4 Mo de modèle + ~0,7 Mo de three.js (la voix n'est chargée qu'au clic). | Faible | Modèle allégé (textures, maillage) |
