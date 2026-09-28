@@ -373,3 +373,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   d'œil et sourit à la caméra qui fonce vers lui, juste avant de
   disparaître dans son tourbillon de feuilles (expression « Blink_R » du
   modèle). SWOT mis à jour (menu, vignettes).
+- **Vidéo à partager refaite** (`docs/media/reve.webm`, 40 s) : le menu
+  avec toutes ses nouveautés (plaque, kanji, roue, éclair, clin d'œil,
+  shunshin), puis les temps forts du rêve. Enregistreur du menu ajouté au
+  dépôt (`tools/test/record-menu.js`).

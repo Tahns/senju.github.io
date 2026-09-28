@@ -33,7 +33,7 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
   filante avant de s'endormir, mécanisme de la boîte à musique, sceaux des
   carnets, vignettes à l'encre (épée de la lignée, fins de chapitre, Konoha),
   copeaux sous le sabre.
-- **Vidéo à partager** : 39 s (menu de sélection puis temps forts du rêve), enregistrée image par image.
+- **Vidéo à partager** : 40 s (menu de sélection avec éclair, clin d'œil et shunshin, puis temps forts du rêve), enregistrée image par image.
 - **Carnet soigné** : couverture en cuir, pages qui se courbent sous le doigt,
   sons de papier, sommaire, chronologie, fermeture du livre.
 - **Robustesse** : repli sur le carnet sans WebGL ou si le processeur graphique
