@@ -1,7 +1,7 @@
 # SWOT — Carnet de Hoko Senju
 
 Revue complète du projet au 25 septembre (soir), après le passage de Hoko
-adulte sur un vrai modèle anime ; mise à jour le 27 septembre. Les faiblesses sont classées par visibilité :
+adulte sur un vrai modèle anime ; mise à jour le 28 septembre. Les faiblesses sont classées par visibilité :
 on corrige d'abord ce qu'un visiteur remarque en premier.
 
 ## Forces
@@ -20,11 +20,19 @@ on corrige d'abord ce qu'un visiteur remarque en premier.
   d'eau avec une tête qui s'envole, arc-en-ciel, pluie de ryō, coucher de
   soleil final ; caméra amortie, sans à-coups ; ambiance sonore de jour
   (oiseaux, vent) ; chapitres pour revoir un passage.
+- **Menu « Sélection de la catégorie » façon Naruto Storm** (d'après la
+  candidature vidéo de référence) : Hoko en contre-plongée dans son aura, une
+  pose par catégorie, grand mot au pinceau avec kanji en filigrane et roue des
+  catégories voisines, plaque « Hoko Senju » avec ses natures de chakra,
+  corbeau, éclairs et tonnerre sous le ciel d'orage, shunshin en confirmant ;
+  accessible depuis l'accueil, la carte de fin et la 4ᵉ de couverture ;
+  test automatique (`tools/test/menu.js`).
 - **Pensé aussi pour le téléphone** : cadrage qui garde Hoko dans l'image en
   portrait, compteur et carnet adaptés, palier de qualité mobile.
 - **Détails soignés** : kanji au pinceau pour chaque chapitre du rêve, étoile
   filante avant de s'endormir, mécanisme de la boîte à musique, sceaux des
-  carnets, vignette à l'encre, copeaux sous le sabre.
+  carnets, vignettes à l'encre (épée de la lignée, fins de chapitre, Konoha),
+  copeaux sous le sabre.
 - **Vidéo à partager** : 39 s (menu de sélection puis temps forts du rêve), enregistrée image par image.
 - **Carnet soigné** : couverture en cuir, pages qui se courbent sous le doigt,
   sons de papier, sommaire, chronologie, fermeture du livre.

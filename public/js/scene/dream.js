@@ -1318,6 +1318,11 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             // (shunshin) pendant que la caméra fonce vers son visage.
             menu.pushT += dt;
             updateSwirl(menu.pushT);
+            // Un clin d'œil et un sourire à la caméra, juste avant de disparaître.
+            const wink = THREE.MathUtils.smoothstep(menu.pushT, 0.05, 0.2) * (1 - THREE.MathUtils.smoothstep(menu.pushT, 0.5, 0.6));
+            ninja.express('wink', wink);
+            ninja.express('joy', 0.6 * wink);
+            ninja.express('angry', 0);
             ninja.root.visible = menu.pushT < 0.55;
             if (!ninja.root.visible) handChakra = 0;
             auraMat.uniforms.uPower.value = Math.max(0, 0.42 - Math.max(0, menu.pushT - 0.4) * 2);
@@ -1337,6 +1342,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         skyBolt.visible = false;
         updateSwirl(0);
         ninja.root.visible = true;
+        ninja.express('wink', 0);
         if (!on) {
             handChakra = 0;
             posts.forEach((p) => { p.base.visible = p.topPart.visible = true; });
