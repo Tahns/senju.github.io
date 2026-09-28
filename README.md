@@ -17,8 +17,8 @@ Avant le carnet, une petite scène en 3D, vue à la première personne :
 4. Le visiteur lit le carnet, puis clique sur **Ranger** : Akira remet le livre en place et le redresse du bout du doigt.
 5. Il prend un deuxième carnet (vierge), le feuillette, le range.
 6. Il s'allonge sur son futon, regarde les étoiles par la fenêtre ouverte, la boîte à musique ralentit, ses yeux se ferment…
-7. **Le rêve** (à la troisième personne) : Akira adulte, jōnin de Konoha, sur un rocher d'entraînement au-dessus du village. Maître du sabre (croissants de lumière, poteaux tranchés), maître de l'eau (un dragon d'eau s'enroule autour de lui puis jaillit), et trésorier de Konoha (son objectif « Comptabilité ») : une pluie de ryō dorés remplit le trésor du village… et ses poches. Final : « Un jour… chef du clan Hyûga ».
-8. Carte de fin : recommencer, **revoir le rêve** (ou un chapitre : kenjutsu, Suiton, ryō, « Un jour… ») ou **relire la fiche** par le menu.
+7. **Le rêve** (à la troisième personne) : Akira adulte, jōnin de Konoha, sur un rocher d'entraînement au-dessus du village. Il active son **Byakugan** (les yeux s'illuminent), brise trois poteaux à distance d'une onde de paume (**Jûken**, le dernier coup « Jûken et Gôken réunis », au ralenti), tourne sur lui-même dans le dôme de chakra du **Hakkeshō Kaiten**, puis devient **trésorier de Konoha** (son objectif « Comptabilité ») : une pluie de ryō dorés remplit le trésor du village… et ses poches. Final : « Un jour… chef du clan Hyûga ».
+8. Carte de fin : recommencer, **revoir le rêve** (ou un chapitre : Jûken, Kaiten, trésorier, « Un jour… ») ou **relire la fiche** par le menu.
 
 ### Le menu « Sélection de la catégorie » (d'après le Canva)
 
@@ -53,7 +53,7 @@ Le texte des écrans est lu dans les pages du carnet (`index.html`) : on ne l'é
 - Après chaque modification des fichiers JS/CSS : `python3 tools/version.py` (numéros de version anti-cache dans index.html).
 - Qualité : automatique (palier « mobile » sur écran tactile), ou forcée avec `?quality=low`, `?quality=mobile` ou `?quality=high`.
 - Pour tester une étape : `?at=shelf`, `?at=second`, `?at=bed` ou `?at=dream`, et `?speed=3` pour accélérer.
-- Chapitres du rêve (liens de la carte de fin) : `?at=dream&chapitre=kenjutsu`, `suiton`, `ryo` ou `final`.
+- Chapitres du rêve (liens de la carte de fin) : `?at=dream&chapitre=juken`, `kaiten`, `ryo` ou `final` (les anciens liens `kenjutsu` et `suiton` restent valables).
 - Menu « Sélection de la catégorie » (façon Naruto Storm) : `?at=menu`, ou « Relire la fiche d'Akira » sur la carte de fin.
 
 ## Le second carnet
@@ -102,5 +102,5 @@ Sans image, le cadre affiche « Portrait à venir ».
 | `public/img/` | Emblème de Konoha (SVG), favicon, portrait |
 | `public/js/scene/` | Scène 3D de la chambre |
 | `public/vendor/` | Three.js et son chargeur glTF (moteur 3D, licence MIT) |
-| `public/models/hoko.vrm` | Modèle d'Akira adulte : « HairSample_Male » du projet VRoid (pixiv), publié en CC0 ; allégé (textures WebP) et recoloré (yeux et cheveux bruns, gilet de jōnin peint, bleu nuit) |
+| `public/models/hoko.vrm` | Modèle d'Akira adulte : « HairSample_Male » du projet VRoid (pixiv), publié en CC0 ; allégé (textures WebP) et recoloré (yeux pâles du Byakugan, cheveux bruns, gilet de jōnin peint, bleu nuit) |
 

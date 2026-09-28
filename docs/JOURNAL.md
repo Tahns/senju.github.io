@@ -396,3 +396,11 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   panneaux d'objectifs, présentation HRP — et la pause « Revenir à la
   sélection de la catégorie ? Oui / Non » (ou lire la page dans le carnet).
   Test du menu mis à jour.
+- **Rêve façon Hyûga** : Akira a les yeux pâles du Byakugan (iris sans
+  pupille, qui s'illuminent à l'activation) et se bat à mains nues (sabre et
+  fourreau rangés). Le kenjutsu devient le **Jûken** : garde basse, trois
+  frappes de paume à distance (onde de chakra en anneau et éclat blanc), le
+  dernier coup « Jûken et Gôken réunis » au ralenti. Le Suiton devient le
+  **Hakkeshō Kaiten** : il tourne sur lui-même dans un dôme de chakra à
+  bandes tournoyantes, qui éclate. Chapitres de la carte de fin : Jûken,
+  Kaiten, Trésorier, Un jour… (anciens liens redirigés).

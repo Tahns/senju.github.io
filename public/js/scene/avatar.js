@@ -1,6 +1,6 @@
 /*
  * Akira adulte : un vrai modèle anime (VRoid « HairSample_Male », CC0, allégé
- * et recoloré : yeux et cheveux bruns, gilet de jōnin peint sur le haut),
+ * et recoloré : yeux pâles du Byakugan, cheveux bruns, gilet de jōnin peint sur le haut),
  * équipé par ninja.js (bandeau, sabre, bourse, étui, bandes, sandales). Son squelette recopie à chaque image les rotations du squelette
  * d'animation de ninja.js (reciblage), donc toutes les poses du rêve marchent.
  */
@@ -201,6 +201,15 @@ function restyle(model) {
                 std.emissive.set(c);
             });
             if (name.includes('Shoes')) std.visible = false;
+            // Byakugan : l'iris des Hyûga, pâle et sans pupille, qui s'illumine à l'activation.
+            if (name.includes('EyeIris')) {
+                std.map = null;
+                std.emissiveMap = null;
+                std.color.set('#ece8f6');
+                std.emissive.set('#c9c0ff');
+                std.emissiveIntensity = 0.12;
+                (model.userData.iris ||= []).push(std);
+            }
             return std;
         };
         o.material = Array.isArray(o.material) ? o.material.map(convert) : convert(o.material);
@@ -360,6 +369,8 @@ export function bindAvatar(gltf, J, parent) {
         // Main droite (sabre) ou gauche : 0 = détendue, 1 = poing fermé.
         // closed : true (poing), false (main détendue) ou un degré de fermeture.
         grip(hand, closed) { curl(hand === 'right' ? 'L' : 'R', closed === true ? 1.25 : closed === false ? 0.35 : closed); },
+        // Byakugan activé (0 → 1) : les yeux s'illuminent.
+        byakugan(k) { (model.userData.iris || []).forEach((m) => { m.emissiveIntensity = 0.12 + k * 1.4; }); },
         head: pairs.find((p) => p.joint === J.head).bone,
         sync() {
             parent.updateMatrixWorld(true);

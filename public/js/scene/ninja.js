@@ -362,6 +362,8 @@ export function buildNinja(sculpt, avatarGltf = null) {
     const back = joint(J.spine, 0, 0.3, -0.18);
     back.rotation.z = -0.75;
     mesh(new THREE.CylinderGeometry(0.022, 0.018, 0.8, 16), M.black, back);
+    // Akira se bat à mains nues (Jûken) : le sabre et son fourreau restent rangés.
+    back.visible = false;
 
     /* ---------------- Tête (sculptée d'un bloc) et chevelure ---------------- */
     J.neck = joint(J.spine, 0, 0.6, 0);
@@ -455,6 +457,12 @@ export function buildNinja(sculpt, avatarGltf = null) {
         land: { spine: [0.45, 0, 0], head: [-0.4, 0, 0], hipL: [-1.4, 0, 0.15], kneeL: [1.95, 0, 0], hipR: [-0.15, 0, -0.12], kneeR: [1.4, 0, 0], shoulderR: [-0.55, 0, 0.3], elbowR: [-0.25, 0, 0], shoulderL: [0.55, 0, -0.55], elbowL: [-0.4, 0, 0] },
         // Poing levé vers la tour du Hokage (au loin, derrière lui).
         vow: { spine: [-0.05, 0, 0], head: [-0.15, 0, 0], shoulderR: [-2.9, 0, 0.15], elbowR: [-0.2, 0, 0], shoulderL: [0.05, 0, -0.2], elbowL: [-0.3, 0, 0], hipL: [0, 0, 0.1], hipR: [0, 0, -0.1] },
+        // Jûken (poing souple des Hyûga) : garde basse, paume en avant, puis frappes de paume.
+        guard: { spine: [0.15, 0.35, 0], head: [0, -0.3, 0], shoulderL: [-1.25, 0, -0.15], elbowL: [-0.35, 0, 0], shoulderR: [-0.55, 0, 0.35], elbowR: [-1.55, 0, 0], hipL: [-0.55, 0, 0.25], kneeL: [0.85, 0, 0], hipR: [0.35, 0, -0.25], kneeR: [0.65, 0, 0] },
+        palmR: { spine: [0.12, -0.55, 0], head: [0, 0.45, 0], shoulderR: [-1.55, 0, 0.1], elbowR: [-0.05, 0, 0], shoulderL: [-0.35, 0, -0.45], elbowL: [-1.4, 0, 0], hipL: [-0.65, 0, 0.2], kneeL: [0.85, 0, 0], hipR: [0.45, 0, -0.2], kneeR: [0.35, 0, 0] },
+        palmL: { spine: [0.12, 0.55, 0], head: [0, -0.45, 0], shoulderL: [-1.55, 0, -0.1], elbowL: [-0.05, 0, 0], shoulderR: [-0.35, 0, 0.45], elbowR: [-1.4, 0, 0], hipR: [-0.65, 0, -0.2], kneeR: [0.85, 0, 0], hipL: [0.45, 0, 0.2], kneeL: [0.35, 0, 0] },
+        // Kaiten : bras ouverts, genoux fléchis, il tourne sur lui-même.
+        kaiten: { spine: [0.05, 0, 0], head: [0.05, 0, 0], shoulderL: [-0.25, 0, -1.25], shoulderR: [-0.25, 0, 1.25], elbowL: [-0.25, 0, 0], elbowR: [-0.25, 0, 0], hipL: [-0.35, 0, 0.28], kneeL: [0.55, 0, 0], hipR: [-0.35, 0, -0.28], kneeR: [0.55, 0, 0] },
         flip: { spine: [0, 0.1, 0], head: [-0.25, 0.15, 0], shoulderR: [-1.0, 0, 0.3], elbowR: [-1.6, 0, 0], shoulderL: [0.05, 0, -0.18], elbowL: [-0.2, 0, 0], hipL: [0, 0, 0.08], hipR: [0, 0, -0.08] }
     };
     const NAMES = ['spine', 'head', 'shoulderL', 'shoulderR', 'elbowL', 'elbowR', 'hipL', 'hipR', 'kneeL', 'kneeR'];

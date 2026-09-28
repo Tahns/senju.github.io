@@ -711,6 +711,65 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     aura.position.y = 1.1;
     aura.visible = false;
     scene.add(aura);
+
+    // Hakke Kûshô (paume du vide) : une onde de chakra en anneau part de la
+    // paume et file jusqu'au poteau, avec un éclat blanc.
+    const palmWaves = [0, 1, 2].map(() => {
+        const ring = new THREE.Mesh(
+            new THREE.RingGeometry(0.1, 0.17, 48),
+            new THREE.MeshBasicMaterial({ color: '#d8e8ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })
+        );
+        const flash = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot(), color: '#eef4ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+        scene.add(ring, flash);
+        return { ring, flash };
+    });
+    function palmWave(timeline, index, from, to, big = false) {
+        const { ring, flash } = palmWaves[index];
+        const size = big ? 2.2 : 1;
+        flash.position.copy(from);
+        timeline.tween(0.35, (k) => {
+            flash.material.opacity = (1 - k) * 0.9;
+            flash.scale.setScalar((0.3 + k * 0.9) * size);
+        }, ease.out);
+        return timeline.tween(big ? 0.4 : 0.28, (k) => {
+            ring.position.lerpVectors(from, to, k);
+            ring.lookAt(to);
+            ring.scale.setScalar((1 + k * 4) * size);
+            ring.material.opacity = 0.9 * (1 - k * k);
+        }, ease.out).then(() => { ring.material.opacity = 0; });
+    }
+
+    // Hakkeshō Kaiten (rotation céleste) : un dôme de chakra qui tourbillonne
+    // autour d'Akira pendant qu'il tourne sur lui-même, puis éclate.
+    const kaitenMat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uOpacity: { value: 0 } },
+        vertexShader: `varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+            void main(){
+                vUv = uv;
+                vec4 mv = modelViewMatrix * vec4(position, 1.0);
+                vN = normalize(normalMatrix * normal); vV = -mv.xyz;
+                gl_Position = projectionMatrix * mv;
+            }`,
+        // Bandes en spirale qui tournent vite, plus denses sur les bords (contre-jour).
+        fragmentShader: `uniform float uTime; uniform float uOpacity; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+            void main(){
+                float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 1.6);
+                float band = sin(vUv.x * 62.83 * 3.0 - uTime * 26.0 + vUv.y * 9.0);
+                float streak = smoothstep(0.2, 1.0, band) * 0.8 + smoothstep(0.85, 1.0, sin(vUv.x * 62.83 * 7.0 - uTime * 40.0 + vUv.y * 20.0)) * 0.5;
+                float ground = smoothstep(0.0, 0.25, 1.0 - vUv.y);
+                float a = (0.12 + rim * 0.9) * (0.35 + streak) * mix(0.6, 1.0, ground) * uOpacity;
+                vec3 col = mix(vec3(0.55, 0.75, 1.0), vec3(0.95, 0.97, 1.0), streak);
+                gl_FragColor = vec4(col * 1.5, a);
+            }`,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide
+    });
+    const kaiten = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 24, 0, Math.PI * 2, 0, Math.PI / 2), kaitenMat);
+    kaiten.visible = false;
+    scene.add(kaiten);
+    updaters.push((dt, time) => { kaitenMat.uniforms.uTime.value = time; });
     const sparkCount = 90;
     const sparkPos = new Float32Array(sparkCount * 3);
     const sparkGeo = new THREE.BufferGeometry();
@@ -960,7 +1019,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         }, ease.in);
     }
 
-    // onAct(nom) : appelé au début de chaque chapitre (kenjutsu, suiton, ryo, final).
+    // onAct(nom) : appelé au début de chaque chapitre (juken, kaiten, ryo, final).
     async function play({ timeline, sound, say, hud, counters, onAct = () => {} }) {
         const tl = timeline;
         snapCamera(V(0.5, 1.9, 7.5), V(0, 1.5, 0));
@@ -1001,39 +1060,49 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await tl.wait(0.6);
         face(tl, 'fun', 0, 0.5);
 
-        // 2. Maître du kenjutsu : trois coups de sabre, trois poteaux tranchés.
-        onAct('kenjutsu');
+        // 2. Byakugan, puis le Jûken : trois frappes de paume à distance, trois poteaux brisés.
+        onAct('juken');
+        const byakugan = (k) => { if (ninja.avatar && ninja.avatar.byakugan) ninja.avatar.byakugan(k); };
+        say('Byakugan', 2.2, '白眼');
+        face(tl, 'angry', 0.6, 0.3);
+        sound.whoosh();
+        await tl.tween(0.5, byakugan, ease.out);
+        await tl.wait(0.9);
         const side = shot(tl, V(-2.6, 1.55, 3.6), V(0.8, 1.1, 0.4), 2.6);
         tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * k; });
-        // Il ne porte la main au sabre qu'une fois la caméra éloignée du gros plan.
-        await tl.wait(0.9);
-        await pose(tl, 'draw', 0.5);
+        if (ninja.avatar) { ninja.avatar.grip('right', 0); ninja.avatar.grip('left', 0); }
+        await pose(tl, 'guard', 0.6);
         await side;
-        if (ninja.avatar) ninja.avatar.grip('left', false);
-        ninja.drawKatana();
-        say('Maître du kenjutsu', 3.5, '剣術');
-        face(tl, 'angry', 0.75, 0.4);
-        // Trois grands coups : on arme (sabre loin derrière), puis on balaie tout l'arc.
-        const cuts = [['strikeA', [0.2, 0.9, 0.6], V(0.7, 1.15, 0.95), 'windA'], ['strikeB', [-0.3, 1.1, -0.4], V(1.1, 1.1, 0.35), 'windB'], ['strikeC', [1.2, 1.2, 0], V(1.25, 1.15, -0.2), 'windC']];
+        say('Jûken : le poing souple des Hyûga', 3.2, '柔拳');
+        const strikes = ['palmR', 'palmL', 'palmR'];
+        const palm = V();
+        const target = V();
         for (let i = 0; i < 3; i++) {
-            if (i === 2) {
-                // Dernier coup : la lame se charge de foudre (Kiminari).
-                say('La lame chargée de foudre', 2.4, '雷');
-                if (sound.crackle) sound.crackle(1.4);
-                raiton = 1;
+            const last = i === 2;
+            if (last) {
+                // Dernier coup : Jûken et Gôken réunis (son objectif), la paume chargée à bloc.
+                say('Jûken et Gôken, enfin réunis', 2.6, '剛拳');
+                tl.tween(0.5, (k) => { auraMat.uniforms.uPower.value = 0.7 * k; }, ease.out);
+                handChakra = 0.9;
+                if (sound.crackle) sound.crackle(1.2);
+                await pose(tl, 'guard', 0.45, ease.inOut);
+                await tl.wait(0.35);
+                handChakra = 0;
+            } else {
+                await pose(tl, 'guard', 0.22, ease.inOut);
             }
-            await pose(tl, cuts[i][3], i === 2 ? 0.5 : 0.24, ease.inOut);
-            // La foudre monte le long de la lame avant le coup final.
-            if (i === 2) await tl.wait(0.45);
             sound.whoosh();
-            await pose(tl, cuts[i][0], 0.16, ease.out);
-            slash(tl, i, cuts[i][1], cuts[i][2]);
+            await pose(tl, strikes[i], 0.14, ease.out);
+            (strikes[i] === 'palmR' ? ninja.J.handR : ninja.J.handL).getWorldPosition(palm);
+            posts[i].topPart.getWorldPosition(target);
+            target.y += 0.2;
+            await palmWave(tl, i, palm, target, last);
             sound.cut();
-            if (i === 2 && sound.thunder) sound.thunder();
+            if (last && sound.thunder) sound.thunder();
+            burst();
             cutPost(tl, i);
-            if (i === 2) {
-                // Dernier coup : ralenti, le temps d'admirer la coupe.
-                // (si « Passer » change la vitesse entre-temps, on ne la touche plus)
+            if (last) {
+                // Ralenti sur l'impact final.
                 const normal = tl.scale;
                 let mine = normal * 0.3;
                 tl.scale = mine;
@@ -1044,54 +1113,46 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
                     tl.scale = mine;
                 }, ease.inOut);
                 if (tl.scale === mine) tl.scale = normal;
+                tl.tween(0.6, (k) => { auraMat.uniforms.uPower.value = 0.7 * (1 - k); });
             } else {
-                await tl.wait(0.35);
+                await tl.wait(0.3);
             }
         }
-        await tl.tween(0.4, (k) => { raiton = 1 - k; });
-        raiton = 0;
-        await tl.wait(0.1);
-        await pose(tl, 'draw', 0.35);
-        ninja.sheathe();
         tl.tween(0.5, (k) => { ninja.root.rotation.y = 0.9 * (1 - k); });
         face(tl, 'angry', 0, 0.5);
         await pose(tl, 'stand', 0.4);
 
-        // 3. Maître du Suiton : mudras, puis un dragon d'eau.
-        onAct('suiton');
-        const low = shot(tl, V(0.2, 0.9, 4.6), V(0, 1.45, 0), 2);
-        await pose(tl, 'seal', 0.5);
-        tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = k; }, ease.out);
+        // 3. Hakkeshō Kaiten : il tourne sur lui-même dans un dôme de chakra, qui éclate.
+        onAct('kaiten');
+        const low = shot(tl, V(0.2, 0.9, 4.6), V(0, 1.2, 0), 2);
+        await pose(tl, 'kaiten', 0.5);
         await low;
-        say('Suiton : maître de l\'eau', 3.5, '水遁');
-        face(tl, 'angry', 0.5, 0.5);
-        sound.water(2.6);
-        if (sound.roar) tl.wait(1.2).then(() => sound.roar(1.6));
-        waterMat.opacity = 0.55;
-        const D = dragonMat.uniforms;
-        await tl.tween(2.4, (k) => { waterState.rise = k; D.uHead.value = spiralEnd * k; D.uTail.value = 0; }, ease.out);
-        await pose(tl, 'release', 0.25, ease.out);
+        say('Hakkeshō Kaiten', 3.5, '回天');
+        face(tl, 'angry', 0.5, 0.4);
+        kaiten.visible = true;
+        kaiten.scale.setScalar(0.4);
+        const rot0 = ninja.root.rotation.y;
+        for (let i = 0; i < 4; i++) tl.wait(i * 0.5).then(() => sound.whoosh());
+        // Le dôme grandit pendant que la rotation s'accélère.
+        await tl.tween(2.2, (k) => {
+            ninja.root.rotation.y = rot0 + Math.PI * 2 * 3.2 * k * k;
+            kaiten.scale.set(0.4 + 1.0 * Math.min(1, k * 1.6), 0.4 + 0.9 * Math.min(1, k * 1.6), 0.4 + 1.0 * Math.min(1, k * 1.6));
+            kaitenMat.uniforms.uOpacity.value = Math.min(1, k * 2);
+        }, ease.linear);
+        ninja.root.rotation.y = rot0;
         sound.splash();
-        // La caméra lève les yeux pour suivre le dragon qui s'envole.
-        shot(tl, V(0.5, 1.1, 5.4), V(0.6, 3.4, -2), 2.2);
-        await tl.tween(1.8, (k) => {
-            waterState.blast = k;
-            waterMat.opacity = 0.55 * (1 - k * k);
-            D.uHead.value = spiralEnd + (1.09 - spiralEnd) * k;
-            D.uTail.value = k * 1.05;
-        }, ease.in);
-        D.uHead.value = 0;
-        D.uTail.value = 0;
-        waterState.rise = 0;
-        waterState.blast = 0;
-        tl.tween(0.8, (k) => { auraMat.uniforms.uPower.value = 1 - k; }, ease.in);
-        // L'arc-en-ciel apparaît dans les embruns, puis s'efface.
-        rainbow.visible = true;
-        tl.tween(1, (k) => { rainbowMat.uniforms.uOpacity.value = k; }, ease.out)
-            .then(() => tl.wait(1.6))
-            .then(() => tl.tween(1.4, (k) => { rainbowMat.uniforms.uOpacity.value = 1 - k; }))
-            .then(() => { rainbow.visible = false; });
-        await pose(tl, 'stand', 0.4);
+        burst();
+        if (sound.thunder) sound.thunder();
+        // Il s'arrête net ; le dôme éclate vers l'extérieur.
+        pose(tl, 'guard', 0.3, ease.out);
+        await tl.tween(0.8, (k) => {
+            kaiten.scale.setScalar(1.4 + k * 2.2);
+            kaitenMat.uniforms.uOpacity.value = 1 - k;
+        }, ease.out);
+        kaiten.visible = false;
+        byakugan(0);
+        face(tl, 'angry', 0, 0.5);
+        await pose(tl, 'stand', 0.5);
 
         // 4. Trésorier de Konoha (son ambition « Comptabilité ») : une pluie de ryō.
         onAct('ryo');

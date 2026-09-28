@@ -662,10 +662,11 @@ async function start() {
         html.classList.remove('eyes-closing', 'eyes-heavy');
         html.classList.add('dreaming');
         renderer.shadowMap.needsUpdate = true;
-        // ?at=dream&chapitre=suiton : le rêve défile en silence, écran noir,
-        // jusqu'au chapitre demandé (liens de la carte de fin).
-        const chapter = params.get('chapitre');
-        let skipping = ['kenjutsu', 'suiton', 'ryo', 'final'].includes(chapter);
+        // ?at=dream&chapitre=kaiten : le rêve défile en silence, écran noir,
+        // jusqu'au chapitre demandé (liens de la carte de fin). Les anciens
+        // liens (kenjutsu, suiton) mènent aux actes qui les remplacent.
+        const chapter = { kenjutsu: 'juken', suiton: 'kaiten' }[params.get('chapitre')] || params.get('chapitre');
+        let skipping = ['juken', 'kaiten', 'ryo', 'final'].includes(chapter);
         if (skipping) {
             fade.style.transition = 'none';
             fade.style.opacity = 1;
