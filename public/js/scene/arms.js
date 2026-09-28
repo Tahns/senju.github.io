@@ -120,8 +120,10 @@ export class Arm {
         this.rig = rig;
         this.side = side;
         this.shoulder = new THREE.Vector3(0.17 * side, -0.27, 0.1);
-        // Position de repos : mains basses, hors du champ.
-        this.rest = { position: new THREE.Vector3(0.2 * side, -0.62, -0.12), quaternion: new THREE.Quaternion().setFromEuler(new THREE.Euler(1.2, 0, 0)) };
+        // Position de repos : mains basses, hors du champ, doigts dans l'axe de
+        // l'avant-bras et paume vers l'intérieur (torsion du poignet proche du
+        // neutre) : les gestes qui en partent tournent la main du bon côté.
+        this.rest = { position: new THREE.Vector3(0.2 * side, -0.62, -0.12), quaternion: handQuaternion(new THREE.Vector3(-side, -0.3, 0), new THREE.Vector3(-0.27 * side, -0.38, -0.88)) };
 
         this.target = new THREE.Object3D();
         this.target.position.copy(this.rest.position);
@@ -151,6 +153,7 @@ export class Arm {
         this._p = new THREE.Vector3();
         this._q = new THREE.Quaternion();
         this._s = new THREE.Vector3();
+        this._twist = 0; // dernière torsion du poignet (continuité)
     }
 
     // Déplace la cible sous un nouveau parent sans la faire bouger à l'écran.
@@ -242,9 +245,12 @@ export class Arm {
         if (twist.lengthSq() < 1e-8) twist.identity();
         else twist.normalize();
         const swing = rel.clone().multiply(twist.clone().invert());
+        // Angle pris sur le tour le plus proche de l'image précédente : sinon, quand
+        // la cible passe par 180°, la butée saute de +95° à -95° et la main se retourne.
         let twistAngle = 2 * Math.atan2(twist.z, twist.w);
-        twistAngle = Math.atan2(Math.sin(twistAngle), Math.cos(twistAngle));
+        twistAngle += 2 * Math.PI * Math.round((this._twist - twistAngle) / (2 * Math.PI));
         twistAngle = Math.max(-1.66, Math.min(1.66, twistAngle));
+        this._twist = twistAngle;
         twist = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), twistAngle);
         if (swing.w < 0) swing.set(-swing.x, -swing.y, -swing.z, -swing.w);
         const swingAngle = 2 * Math.acos(Math.min(1, swing.w));
