@@ -908,6 +908,7 @@
         page = 0;
         buildTocMenu();
         build();
+        setupVoice();
     }
 
     let onShelve = null;
@@ -940,6 +941,7 @@
     // Referme le carnet s'il est ouvert, puis le rend à la scène.
     function shelve() {
         if (!shown || shelving) return;
+        stopVoice();
         shelving = true;
         setTocOpen(false);
         const opened = flipped !== 0 && flipped !== leaves.length;
@@ -971,6 +973,153 @@
         renderSound();
     }
 
+    /* ------------------------------------------------------------------ */
+    /* Voix off (carnet de l'histoire)                                     */
+    /* ------------------------------------------------------------------ */
+    // Le carnet qui porte data-voice se lit à voix haute : le texte avance
+    // mot après mot avec la voix (au rythme de chaque paragraphe, entre ses
+    // repères data-t) et les pages se tournent seules.
+    const voiceBtn = document.getElementById('voice');
+    const voiceBar = document.getElementById('voice-bar');
+    const voiceTime = document.getElementById('voice-time');
+    const voice = { audio: null, paras: [], raf: 0, current: -1 };
+
+    function voiceSrc(path) {
+        const opus = path.replace(/\.mp3$/, '.webm');
+        return opus !== path && document.createElement('audio').canPlayType('audio/webm; codecs="opus"') ? opus : path;
+    }
+
+    // Découpe une fois chaque paragraphe minuté en mots (<span class="w">).
+    function wrapWords(p) {
+        if (p.dataset.wrapped) return;
+        p.dataset.wrapped = '1';
+        const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach((node) => {
+            const frag = document.createDocumentFragment();
+            node.textContent.split(/(\s+)/).forEach((part) => {
+                if (!part) return;
+                if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+                const w = document.createElement('span');
+                w.className = 'w';
+                w.textContent = part;
+                frag.appendChild(w);
+            });
+            node.parentNode.replaceChild(frag, node);
+        });
+    }
+
+    function setupVoice() {
+        stopVoice();
+        const path = source.dataset.voice;
+        voiceBtn.hidden = !path;
+        voice.paras = [];
+        voice.audio = null;
+        if (!path) return;
+        voice.paras = Array.from(source.querySelectorAll('p[data-t]'))
+            .concat(pages.flatMap((section) => Array.from(section.querySelectorAll('p[data-t]'))))
+            .filter((p, i, all) => all.indexOf(p) === i)
+            .sort((a, b) => a.dataset.t - b.dataset.t);
+        voice.paras.forEach(wrapWords);
+        voice.src = voiceSrc(path);
+        renderVoice();
+    }
+
+    function clock(t) {
+        return Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0');
+    }
+
+    function renderVoice() {
+        const a = voice.audio;
+        const playing = Boolean(a && !a.paused);
+        const t = a ? a.currentTime : 0;
+        const d = a && a.duration ? a.duration : 0;
+        voiceBtn.setAttribute('aria-pressed', String(playing));
+        voiceBtn.querySelector('.tool--voice__label').textContent = playing ? 'Pause' : (t > 0 ? 'Reprendre' : 'Écouter');
+        voiceBar.style.width = d ? (t / d) * 100 + '%' : '0';
+        voiceTime.textContent = d ? clock(t) + ' / ' + clock(d) : '';
+        book.classList.toggle('is-voiced', playing || t > 0);
+    }
+
+    // Colore les mots déjà lus ; le paragraphe en cours est mis en avant.
+    function followVoice() {
+        const a = voice.audio;
+        if (!a) return;
+        const t = a.currentTime;
+        const d = a.duration || Infinity;
+        let i = -1;
+        voice.paras.forEach((p, k) => { if (t >= Number(p.dataset.t)) i = k; });
+        voice.paras.forEach((p, k) => {
+            const start = Number(p.dataset.t);
+            const end = k + 1 < voice.paras.length ? Number(voice.paras[k + 1].dataset.t) : d;
+            const words = p.querySelectorAll('.w');
+            let read = 0;
+            if (k < i) read = words.length;
+            else if (k === i) {
+                // Progression dans le paragraphe, pondérée par la longueur des mots.
+                const f = Math.min(1, (t - start) / Math.max(0.5, end - start - 0.6));
+                const total = p.textContent.length;
+                let acc = 0;
+                words.forEach((w) => { if ((acc += w.textContent.length + 1) <= f * total + 1) read++; });
+            }
+            words.forEach((w, n) => {
+                w.classList.toggle('is-read', n < read);
+                w.classList.toggle('is-now', k === i && n === read - 1);
+            });
+            p.classList.toggle('is-reading', k === i);
+        });
+        // La page suit la voix.
+        if (i !== voice.current) {
+            voice.current = i;
+            const section = i >= 0 ? voice.paras[i].closest('.page') : null;
+            const index = section ? pages.indexOf(section) : -1;
+            if (index > 0 && !visiblePages().includes(index)) goToPage(index);
+        }
+        renderVoice();
+    }
+
+    function tickVoice() {
+        followVoice();
+        if (voice.audio && !voice.audio.paused) voice.raf = requestAnimationFrame(tickVoice);
+    }
+
+    function toggleVoice() {
+        if (!voice.src) return;
+        if (!voice.audio) {
+            voice.audio = new Audio(voice.src);
+            voice.audio.addEventListener('play', () => { announceVoice(true); tickVoice(); });
+            voice.audio.addEventListener('pause', () => { announceVoice(false); followVoice(); });
+            voice.audio.addEventListener('ended', () => { voice.audio.currentTime = 0; voice.current = -1; followVoice(); });
+            voice.audio.addEventListener('loadedmetadata', renderVoice);
+            window.__bookVoice = voice.audio; // pour les tests (tools/test/voice.js)
+        }
+        const a = voice.audio;
+        if (a.paused) {
+            // Carnet encore fermé : on l'ouvre sur la première page lue.
+            if (flipped === 0) goToPage(1);
+            a.play().catch(() => {});
+        } else a.pause();
+    }
+
+    // La scène baisse la musique pendant la voix off.
+    function announceVoice(speaking) {
+        document.dispatchEvent(new CustomEvent('senju-voice', { detail: speaking }));
+    }
+
+    function stopVoice() {
+        cancelAnimationFrame(voice.raf);
+        if (voice.audio) {
+            voice.audio.pause();
+            voice.audio.currentTime = 0;
+        }
+        voice.current = -1;
+        document.querySelectorAll('#book .w.is-read, #book .w.is-now').forEach((w) => w.classList.remove('is-read', 'is-now'));
+        book.classList.remove('is-voiced');
+    }
+
+    if (voiceBtn) voiceBtn.addEventListener('click', toggleVoice);
+
     window.Carnet = {
         open,
         shelve,
@@ -994,6 +1143,7 @@
     stage.dataset.book = source.dataset.book;
     buildTocMenu();
     build();
+    setupVoice();
     renderSound();
     bindEvents();
     if (sceneMode) {

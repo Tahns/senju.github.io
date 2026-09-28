@@ -28,7 +28,7 @@ const clean = (t) => t.replace(/\s+/g, ' ').trim();
 // sans doublon (le livre à double page en garde parfois une copie).
 function pages(selector) {
     const seen = new Set();
-    return Array.from(document.querySelectorAll(`[data-book="hoko"] ${selector}, #book ${selector}`)).filter((s) => {
+    return Array.from(document.querySelectorAll(`.book-source ${selector}, #book ${selector}`)).filter((s) => {
         const k = s.dataset.toc;
         if (seen.has(k)) return false;
         seen.add(k);
@@ -76,7 +76,7 @@ function panelsOf(section) {
 /* ---------------- Voix off ---------------- */
 // Un seul lecteur pour la voix off (Opus si le navigateur le lit, sinon MP3),
 // gardé d'un affichage à l'autre ; la musique baisse pendant qu'elle parle.
-const voiceHooks = { change() {}, muted: () => false };
+const voiceHooks = { change() {}, muted: () => false, time() {} };
 let voiceAudio = null;
 let voiceResume = false;
 function voiceSrc(path) {
@@ -100,7 +100,8 @@ function ensureVoice(path) {
         voiceAudio.preload = 'metadata';
         voiceAudio.dataset.path = path;
         voiceAudio.src = voiceSrc(path);
-        voiceAudio.addEventListener('timeupdate', updateVoiceUI);
+        window.__voice = voiceAudio; // pour les tests (tools/test/voice.js)
+        voiceAudio.addEventListener('timeupdate', () => { updateVoiceUI(); voiceHooks.time(voiceAudio.currentTime); });
         voiceAudio.addEventListener('play', () => { voiceHooks.change(true); updateVoiceUI(); });
         voiceAudio.addEventListener('pause', () => { voiceHooks.change(false); updateVoiceUI(); });
         voiceAudio.addEventListener('ended', () => { voiceAudio.currentTime = 0; updateVoiceUI(); });
@@ -226,16 +227,44 @@ function hrp() {
 }
 
 function histoire() {
-    const chapters = pages('.page--story').map((s, i) => ({
-        label: clean(s.querySelector('.chapter')?.textContent || `Chapitre ${i + 1}`),
-        title: clean(s.querySelector('h2')?.textContent || ''),
-        paras: Array.from(s.querySelectorAll('.prose p:not(.to-be-continued)'), (n) => clean(n.textContent)),
-        art: s.querySelector('.vignette')?.cloneNode(true) || null,
-        // Voix off du chapitre (data-voice sur la page du carnet), si le fichier existe.
-        voice: s.dataset.voice || ''
-    }));
+    // Un chapitre peut s'étendre sur plusieurs pages du carnet (même data-chapter).
+    const groups = [];
+    pages('.page--story').forEach((s) => {
+        const key = s.dataset.chapter || s.dataset.toc;
+        const g = groups.find((x) => x.key === key);
+        if (g) g.pages.push(s);
+        else groups.push({ key, pages: [s] });
+    });
+    const chapters = groups.map(({ pages: ps }, i) => {
+        const s = ps[0];
+        const paras = ps.flatMap((pg) => Array.from(pg.querySelectorAll('.prose p:not(.to-be-continued)')));
+        return {
+            label: clean(s.querySelector('.chapter')?.textContent || `Chapitre ${i + 1}`),
+            title: clean(s.querySelector('h2')?.textContent || ''),
+            summary: clean(s.querySelector('.chapo')?.textContent || ''),
+            paras: paras.map((n) => clean(n.textContent)),
+            // Instant (en secondes) où la voix off commence chaque paragraphe.
+            cues: paras.map((n) => (n.dataset.t === undefined ? null : Number(n.dataset.t))),
+            art: ps.map((pg) => pg.querySelector('.vignette')).find(Boolean)?.cloneNode(true) || null,
+            // Voix off du chapitre (data-voice sur la page du carnet), si le fichier existe.
+            voice: s.dataset.voice || ''
+        };
+    });
     const state = { chapter: 0, reading: false, para: 0 };
     let api = null;
+    // Changement de paragraphe à la main pendant la voix off : la voix suit.
+    const seekVoice = (c) => {
+        const at = c.cues[state.para];
+        if (voiceAudio && !voiceAudio.paused && at !== null && at !== undefined) voiceAudio.currentTime = at;
+    };
+    // Pendant la voix off, le paragraphe affiché suit la narration.
+    voiceHooks.time = (t) => {
+        const c = chapters[state.chapter];
+        if (!state.reading || !api || !c.cues.length || c.cues[0] === null) return;
+        let i = 0;
+        while (i + 1 < c.cues.length && c.cues[i + 1] !== null && t >= c.cues[i + 1]) i++;
+        if (i !== state.para) { state.para = i; api(); }
+    };
     return {
         key: 'histoire',
         title: "Histoire",
@@ -254,14 +283,14 @@ function histoire() {
         next() {
             if (!state.reading) { state.reading = true; state.para = 0; return true; }
             const c = chapters[state.chapter];
-            if (state.para < c.paras.length - 1) { state.para++; return true; }
+            if (state.para < c.paras.length - 1) { state.para++; seekVoice(c); return true; }
             if (state.chapter < chapters.length - 1) { state.chapter++; state.para = 0; return true; }
             state.reading = false;
             return true;
         },
         prev() {
             if (!state.reading) return false;
-            if (state.para > 0) { state.para--; return true; }
+            if (state.para > 0) { state.para--; seekVoice(chapters[state.chapter]); return true; }
             state.reading = false;
             return true;
         },
@@ -297,7 +326,12 @@ function histoire() {
                     box.hidden = true;
                     const listen = el('button', 'ss-reader__listen', 'Écouter');
                     listen.type = 'button';
-                    listen.addEventListener('click', toggleVoice);
+                    listen.addEventListener('click', () => {
+                        // Au premier lancement, la voix part du paragraphe affiché.
+                        const at = c.cues[state.para];
+                        if (voiceAudio && voiceAudio.paused && voiceAudio.currentTime === 0 && at) voiceAudio.currentTime = at;
+                        toggleVoice();
+                    });
                     const bar = el('span', 'ss-reader__bar');
                     bar.setAttribute('aria-hidden', 'true');
                     bar.append(el('span'));
@@ -310,6 +344,7 @@ function histoire() {
             }
             const side = el('div', 'ss-chapters__side');
             side.append(el('p', 'ss-chapters__label', c.label), el('p', 'ss-chapters__title', c.title));
+            if (c.summary) side.append(el('p', 'ss-chapters__summary', c.summary));
             const stats = el('ul', 'ss-chapters__stats');
             stats.append(el('li', '', `Chapitres finis ${chapters.length}/${CHAPTER_SLOTS}`));
             stats.append(el('li', 'is-next', 'Chapitre suivant : à venir'));

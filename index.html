@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Permanent+Marker&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap&text=%E3%81%84%E3%81%8A%E3%81%95%E3%81%99%E3%81%AA%E3%81%AE%E3%81%BF%E3%82%84%E3%82%A2%E3%82%AD%E3%82%B3%E3%83%9B%E3%83%A1%E3%83%A9%E3%83%B3%E3%83%BC%E4%B8%A1%E4%B8%BB%E4%BA%BA%E5%85%AC%E5%85%B7%E5%88%B6%E5%89%9B%E5%89%A3%E5%8A%AA%E5%8D%83%E5%8E%B3%E5%8F%B2%E5%90%91%E5%96%84%E5%9B%9E%E5%9B%A3%E5%A4%A2%E5%A4%A9%E5%A7%BF%E5%AD%90%E5%AE%BF%E5%B0%8E%E5%B1%8B%E5%B7%B1%E5%BD%93%E5%BD%B1%E5%BF%83%E5%BF%8D%E5%BF%97%E6%81%A9%E6%82%AA%E6%83%85%E6%84%8F%E6%88%91%E6%89%8B%E6%8B%B3%E6%97%A5%E6%9A%A6%E6%9C%AC%E6%9F%94%E6%A5%B5%E6%A5%BD%E6%AF%92%E6%B0%B4%E7%81%AB%E7%8B%AC%E7%99%BD%E7%9C%9F%E7%9C%BC%E7%9E%AC%E7%9F%A5%E8%8C%B6%E8%96%AC%E8%A1%8C%E8%A1%93%E8%BA%AB%E9%81%81%E9%81%93%E9%9B%B7">
-    <link rel="stylesheet" href="public/css/style.css?v=9eea2c78">
+    <link rel="stylesheet" href="public/css/style.css?v=5ee8f852">
 </head>
 
 <body>
@@ -59,7 +59,7 @@
         page 1 à gauche / page 2 à droite, page 3 / page 4, etc.
         Garde un nombre pair de pages entre la couverture et la 4e de couverture.
     -->
-    <main id="book-source" class="source book-source" data-book="hoko">
+    <main id="book-source" class="source book-source" data-book="fiche">
 
         <!-- Couverture -->
         <section class="page page--cover" data-toc="Couverture">
@@ -123,17 +123,16 @@
             </dl>
         </section>
 
-        <!-- 3 · Histoire -->
-        <!-- Voix off du chapitre : dépose le fichier audio dans public/audio/histoire-1.mp3 (bouton « Écouter »). -->
-        <section class="page page--story" data-toc="Histoire" data-voice="public/audio/histoire-1.mp3">
+        <!-- 3 · Histoire (résumé ; le récit complet et la voix off sont dans le carnet de l'histoire) -->
+        <section class="page page--story-summary" data-toc="Histoire">
             <header class="page__head">
                 <p class="chapter">Chapitre 1</p>
                 <h2>Une famille hiérarchique et un changement d'appuis</h2>
+                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
             </header>
-            <div class="prose">
-                <p class="lettrine">Akira Hyûga est né dans une famille et un domaine paisibles, mais quelques événements vont bouleverser la vie de ce jeune garçon. Pourtant, il semblait avoir une vie qui lui souriait. Le problème venait sûrement de là…</p>
-                <p class="to-be-continued">Chapitres écrits : 1 sur 8 · À suivre…</p>
-            </div>
+            <p class="chapo">Akira Hyûga est né dans une famille et un domaine paisibles, mais quelques événements vont bouleverser la vie de ce jeune garçon. Pourtant, il semblait avoir une vie qui lui souriait. Le problème venait sûrement de là…</p>
+            <p class="note"><strong>Le récit complet</strong> est dans le carnet de l'histoire, lu à voix haute&nbsp;: sa mère assassinée au marché, un père absent, la branche secondaire qui l'élève, le taijutsu, puis le rêve d'un dojo et d'un clan sans injustice.</p>
+            <p class="to-be-continued">Chapitres écrits : 1 sur 8 · À suivre…</p>
             <!-- Vignette à l'encre : la cour du domaine Hyûga, son grand arbre, deux silhouettes à l'entraînement. -->
             <svg class="vignette vignette--chapter" viewBox="0 0 300 110" aria-hidden="true">
                 <path d="M10 40 H110 M10 40 L24 30 H96 L110 40 M16 40 V80 M104 40 V80 M190 40 H290 M190 40 L204 30 H276 L290 40 M196 40 V80 M284 40 V80" />
@@ -306,140 +305,107 @@
     </main>
 
     <!--
-        Deuxième carnet : le registre des comptes du clan Hyûga, tenu par Akira
-        (son ambition « Comptabilité »). Budget prévisionnel de ses objectifs.
+        Premier carnet de la scène : l'histoire d'Akira, lue à voix haute.
+        Bouton « Écouter » dans la barre du carnet : la voix off (public/audio/)
+        fait avancer le texte, mot après mot, et tourne les pages.
+        data-t = instant (s) où la voix commence chaque paragraphe.
         Toujours un nombre pair de pages entre les deux couvertures.
     -->
-    <section class="source book-source" data-book="second" hidden>
+    <section class="source book-source" data-book="histoire" data-voice="public/audio/histoire-1.mp3" hidden>
 
         <section class="page page--cover" data-toc="Couverture">
             <div class="cover cover--indigo">
                 <div class="cover__frame">
-                    <p class="cover__kicker">Clan Hyûga · Comptes</p>
+                    <p class="cover__kicker">Naissance Hyûga</p>
                     <svg class="cover__emblem" aria-hidden="true"><use href="#konoha" /></svg>
-                    <h1 class="cover__title cover__title--solo">Registre</h1>
-                    <p class="cover__subtitle">tenu par Akira</p>
-                    <p class="cover__seal" aria-hidden="true">両</p>
+                    <h1 class="cover__title cover__title--solo">Histoire</h1>
+                    <p class="cover__subtitle">d'Akira Hyûga</p>
+                    <p class="cover__seal" aria-hidden="true">史</p>
                 </div>
-                <p class="cover__hint js-only">Ouvrir le registre <span aria-hidden="true">⟶</span></p>
+                <p class="cover__hint js-only">Ouvrir le carnet <span aria-hidden="true">⟶</span></p>
             </div>
         </section>
 
-        <!-- 1 · Page de garde -->
-        <section class="page page--ledger" data-toc="Le registre">
+        <!-- 1 · Page de titre -->
+        <section class="page page--story-title" data-toc="Chapitre 1">
             <header class="page__head">
-                <p class="chapter">Clan Hyûga</p>
-                <h2>Registre des comptes</h2>
+                <p class="chapter">Chapitre 1</p>
+                <h2>Une famille hiérarchique et un changement d'appuis</h2>
                 <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
             </header>
-            <p class="ledger-intro">Tenu par Akira Hyûga depuis ses 14 ans. Sa passion pour les chiffres l'a conduit à gérer les finances de son propre clan&nbsp;: une manière d'échapper à la solitude causée par l'absence de ses parents.</p>
-            <p class="ledger-intro">Ce registre chiffre ses projets pour le clan et pour Konoha, du plus proche au plus lointain. Un jour, ce sont les comptes du village qu'il tiendra.</p>
-            <p class="ledger-note">Montants prévisionnels, en ryō.</p>
-            <svg class="vignette vignette--chapter" viewBox="0 0 300 90" aria-hidden="true">
-                <path d="M70 14 H190 V80 H70 Z M70 36 H190" />
-                <path d="M90 14 V80 M110 14 V80 M130 14 V80 M150 14 V80 M170 14 V80" />
-                <path d="M86 24 h8 M106 28 h8 M126 22 h8 M146 26 h8 M166 24 h8 M86 48 h8 M106 58 h8 M126 52 h8 M146 64 h8 M166 50 h8" stroke-width="5" />
-                <ellipse cx="236" cy="76" rx="22" ry="5" /><ellipse cx="236" cy="66" rx="22" ry="5" /><ellipse cx="236" cy="56" rx="22" ry="5" />
-                <path d="M214 56 V76 M258 56 V76 M230 56 h12" />
-                <path class="vignette__ground" d="M40 86 C120 84 200 88 280 85" />
+            <p class="chapo">Akira Hyûga est né dans une famille et un domaine paisibles, mais quelques événements vont bouleverser la vie de ce jeune garçon. Pourtant, il semblait avoir une vie qui lui souriait. Le problème venait sûrement de là…</p>
+            <p class="listen-hint js-only"><span aria-hidden="true">✕</span> Appuie sur <b>Écouter</b>, en bas&nbsp;: la voix raconte, le texte avance avec elle et les pages se tournent seules.</p>
+            <!-- Vignette à l'encre : la cour du domaine Hyûga, son grand arbre, deux silhouettes à l'entraînement. -->
+            <svg class="vignette vignette--chapter" viewBox="0 0 300 110" aria-hidden="true">
+                <path d="M10 40 H110 M10 40 L24 30 H96 L110 40 M16 40 V80 M104 40 V80 M190 40 H290 M190 40 L204 30 H276 L290 40 M196 40 V80 M284 40 V80" />
+                <path d="M30 48 H50 V70 H30 Z M60 48 H80 V70 H60 Z M220 48 H240 V70 H220 Z M250 48 H270 V70 H250 Z" />
+                <path d="M150 96 C148 80 152 70 148 58 M152 96 C156 80 152 70 156 58" />
+                <path d="M126 58 C112 50 118 30 134 30 C136 14 164 12 168 28 C186 26 190 50 174 58 C164 64 136 64 126 58 Z" />
+                <path d="M96 96 v-16 m0 0 l-5 -8 m5 8 l6 -6 M96 80 m0 -10 a3 3 0 1 0 0.1 0" />
+                <path d="M206 96 v-16 m0 0 l5 -8 m-5 8 l-6 -6 M206 80 m0 -10 a3 3 0 1 0 0.1 0" />
+                <path class="vignette__ground" d="M6 98 C90 95 210 101 294 97" />
             </svg>
         </section>
 
-        <!-- 2 · Court terme -->
-        <section class="page page--ledger" data-toc="Court terme">
+        <!-- 2 · Chapitre 1 -->
+        <!-- 2 · Chapitre 1 -->
+        <!-- Voix off du chapitre : public/audio/histoire-1.webm (Opus) et .mp3 ; data-t = instant (s) où la voix commence chaque paragraphe. -->
+        <section class="page page--story" data-toc="Chapitre 1 (début)" data-chapter="1" data-voice="public/audio/histoire-1.mp3">
             <header class="page__head">
-                <p class="chapter">Budget · Court terme</p>
-                <h2>Cohésion du clan</h2>
+                <p class="chapter">Chapitre 1</p>
+                <h2>Une famille hiérarchique et un changement d'appuis</h2>
             </header>
-            <table class="ledger">
-                <thead><tr><th>Poste</th><th>Coût</th></tr></thead>
-                <tbody>
-                    <tr><td>Repas de clan hebdomadaire <small>52 repas dans l'année</small></td><td>26 000</td></tr>
-                    <tr><td>Défis entre membres du clan <small>lots et arbitres</small></td><td>6 000</td></tr>
-                    <tr><td>Rencontres avec la branche secondaire</td><td>3 000</td></tr>
-                    <tr><td>Présents au clan Senju et au clan Nara</td><td>8 000</td></tr>
-                    <tr><td>Recherches sur le sceau avec les Uzumaki</td><td>12 000</td></tr>
-                </tbody>
-                <tfoot><tr><th>Total</th><th>55 000</th></tr></tfoot>
-            </table>
+            <div class="prose">
+                <p class="lettrine" data-t="0.0">Le jeune Akira avait toujours été trop gâté par ses parents, étant membre de la branche principale de son clan. Tout lui tombait dans la bouche sans effort, comme si le monde entier était à ses pieds. Mais un jour, tout bascula.</p>
+                <p data-t="13.65">Sa mère fut assassinée en plein marché pour des causes inconnues, un événement brutal qui ébranla la famille. Son père, écrasé par le chagrin, sombra rapidement dans un deuil profond, oubliant presque l'existence d'Akira. Ce dernier, alors âgé de cinq ans, ne comprit pas la gravité de la situation et ne ressentit aucune tristesse à la disparition de sa mère. Cependant, en grandissant, quelque chose d'étrange émergea en lui. Une sensation de vide, comme si quelque chose clochait, sans qu'il ne puisse mettre de mots dessus.</p>
+                <p data-t="49.11">La branche secondaire du clan tenta tant bien que mal de prendre soin de lui. Ils veillaient à ce qu’il ne manque de rien, mais ce qu'Akira désirait par-dessus tout, c’était de l'affection. Malgré leur aide inébranlable, il lui manquait cette chaleur humaine qui ne se remplaçait pas. Avec le temps, un sentiment de reconnaissance finit par germer en lui envers cette partie du clan qui ne l’avait jamais abandonné.</p>
+            </div>
         </section>
 
-        <!-- 3 · Moyen terme -->
-        <section class="page page--ledger" data-toc="Moyen terme">
+        <!-- 3 · Chapitre 1 (suite) -->
+        <section class="page page--story" data-toc="Chapitre 1 (suite)" data-chapter="1">
             <header class="page__head">
-                <p class="chapter">Budget · Moyen terme</p>
-                <h2>Influence et taijutsu</h2>
+                <p class="chapter">Chapitre 1 · suite</p>
             </header>
-            <table class="ledger">
-                <thead><tr><th>Poste</th><th>Coût</th></tr></thead>
-                <tbody>
-                    <tr><td>Festival du clan Hyûga <small>ouvert à tout le village</small></td><td>40 000</td></tr>
-                    <tr><td>Tournoi de taijutsu et classement <small>chaque saison</small></td><td>15 000</td></tr>
-                    <tr><td>Lentilles qui dissimulent le Byakugan <small>matériaux, branche scientifique</small></td><td>30 000</td></tr>
-                    <tr><td>Gadgets ninjas <small>part des matériaux</small></td><td>10 000</td></tr>
-                    <tr><td>Dojo de taijutsu <small>location, tatamis, makiwara</small></td><td>120 000</td></tr>
-                </tbody>
-                <tfoot><tr><th>Total</th><th>215 000</th></tr></tfoot>
-            </table>
+            <div class="prose">
+                <p data-t="77.82">Pourtant, avec les autres, Akira se montrait bien différent. Lorsqu'on le vexait, il devenait incroyablement vulgaire, un comportement qui repoussait quiconque osait l'approcher. Mais cela, il n'en avait que faire. Soit on le comprenait, soit on le détestait. Pour Akira, les relations étaient toujours tout ou rien.</p>
+                <p data-t="98.69">Le clan l'avait formé activement au taijutsu, en corrélation avec ses futurs Byakugan. Pourtant, les combats avec les siens finirent par l’ennuyer. Lassé d'affronter sans cesse les membres de sa propre famille, il chercha de nouveaux défis. C’est ainsi qu’il se rapprocha des taijutsu-men, des ninjas bien plus compétents que lui, avec qui il pouvait enfin progresser.</p>
+                <p data-t="120.41">Akira, l’enfant autrefois né avec une cuillère en or dans la bouche, était désormais un garçon isolé, presque orphelin aux yeux du monde. Peu de gens osaient s'approcher de lui, et cela ne faisait que renforcer son caractère solitaire, expressif et intransigeant. Mais au fond, peut-être ne demandait-il qu’une chose&nbsp;: être compris.</p>
+                <p data-t="144.4">Dix ans s’étaient écoulés, et Akira avait grandi, mûri, mais surtout, des idées avaient germé en lui. Une créativité sans pareille l’animait, le guidant sur un chemin que seul lui semblait voir. Il possédait une volonté de fer plutôt que de feu, mais manquait encore d’un véritable but. Jusqu’au jour où il en trouva un&nbsp;: rallier les maîtres du taijutsu et les Hyûga dans un dojo qu’il construirait de ses propres mains. Ce projet devint sa raison de vivre.</p>
+            </div>
         </section>
 
-        <!-- 4 · Long terme -->
-        <section class="page page--ledger" data-toc="Long terme">
+        <!-- 4 · Chapitre 1 (fin) -->
+        <section class="page page--story" data-toc="Chapitre 1 (fin)" data-chapter="1">
             <header class="page__head">
-                <p class="chapter">Budget · Long terme</p>
-                <h2>Le chef et le stratège</h2>
+                <p class="chapter">Chapitre 1 · suite</p>
             </header>
-            <table class="ledger">
-                <thead><tr><th>Poste</th><th>Coût</th></tr></thead>
-                <tbody>
-                    <tr><td>Un orateur pour parler en son nom</td><td>18 000</td></tr>
-                    <tr><td>Équipes de quatre <small>entraînement et équipement</small></td><td>60 000</td></tr>
-                    <tr><td>Balise de permutation <small>recherche</small></td><td>45 000</td></tr>
-                    <tr><td>Étude du genjutsu</td><td>9 000</td></tr>
-                </tbody>
-                <tfoot><tr><th>Total</th><th>132 000</th></tr></tfoot>
-            </table>
-        </section>
-
-        <!-- 5 · Notes -->
-        <section class="page page--ledger" data-toc="Notes">
-            <header class="page__head">
-                <p class="chapter">En marge</p>
-                <h2>Notes</h2>
-            </header>
-            <ul class="ledger-notes">
-                <li>Modérer mes mots devant le Conseil. Les chiffres parlent mieux que moi.</li>
-                <li>Médecin ou combattant&nbsp;? Chiffrer les deux voies avant de choisir.</li>
-                <li>Trouver un partenaire. Ne coûte rien, rapporte beaucoup.</li>
-                <li>Major de la promotion&nbsp;: objectif gratuit, à tenir.</li>
-            </ul>
-        </section>
-
-        <!-- 6 · Bilan -->
-        <section class="page page--ledger" data-toc="Bilan">
-            <header class="page__head">
-                <p class="chapter">Bilan</p>
-                <h2>Solde prévisionnel</h2>
-                <svg class="ornament" aria-hidden="true"><use href="#ornament" /></svg>
-            </header>
-            <table class="ledger ledger--sum">
-                <tbody>
-                    <tr><td>Court terme</td><td>55 000</td></tr>
-                    <tr><td>Moyen terme</td><td>215 000</td></tr>
-                    <tr><td>Long terme</td><td>132 000</td></tr>
-                </tbody>
-                <tfoot><tr><th>À réunir</th><th>402 000 ryō</th></tr></tfoot>
-            </table>
-            <p class="ledger-intro">De quoi rêver du trésor de Konoha.</p>
-            <p class="signature">Akira Hyûga</p>
+            <div class="prose">
+                <p data-t="174.67">Akira n’était plus ce garçon qui recevait tout sans effort. Désormais, il était déterminé à travailler pour réaliser ses rêves, refusant de compter sur la générosité ou le soutien des autres. Il ne voulait plus seulement recevoir, mais bâtir, créer, et prouver sa valeur par lui-même.</p>
+                <p data-t="192.78">Cependant, quelque chose d’étrange persistait en lui&nbsp;: sa préférence pour la branche secondaire de son clan. Contrairement à la branche principale, où les privilèges étaient acquis par naissance, la branche secondaire représentait à ses yeux un modèle d’humanité et de solidarité. Akira voyait en eux une chaleur et une authenticité qu’il n’avait jamais trouvées chez les siens.</p>
+                <p data-t="217.12">Il se mit alors à rêver d’un avenir différent, un avenir où les injustices de son clan seraient abolies. Peut-être, pensait-il, pourrait-il un jour briser ces codes archaïques qui opposaient les membres d’une même famille. Pour Akira, l’humain devait passer avant tout, au-delà des titres et des lignées.</p>
+                <p data-t="235.47">Son regard se tourna vers l’avenir, empli d’ambition et d’une lueur nouvelle. Akira n’était plus seulement un enfant gâté ou un ninja prometteur. Il était devenu un rêveur audacieux, prêt à défier les traditions pour construire un monde à son image.</p>
+                <p class="to-be-continued">Chapitres écrits : 1 sur 8 · À suivre…</p>
+            </div>
+            <!-- Vignette à l'encre : la cour du domaine Hyûga, son grand arbre, deux silhouettes à l'entraînement. -->
+            <svg class="vignette vignette--chapter" viewBox="0 0 300 110" aria-hidden="true">
+                <path d="M10 40 H110 M10 40 L24 30 H96 L110 40 M16 40 V80 M104 40 V80 M190 40 H290 M190 40 L204 30 H276 L290 40 M196 40 V80 M284 40 V80" />
+                <path d="M30 48 H50 V70 H30 Z M60 48 H80 V70 H60 Z M220 48 H240 V70 H220 Z M250 48 H270 V70 H250 Z" />
+                <path d="M150 96 C148 80 152 70 148 58 M152 96 C156 80 152 70 156 58" />
+                <path d="M126 58 C112 50 118 30 134 30 C136 14 164 12 168 28 C186 26 190 50 174 58 C164 64 136 64 126 58 Z" />
+                <path d="M96 96 v-16 m0 0 l-5 -8 m5 8 l6 -6 M96 80 m0 -10 a3 3 0 1 0 0.1 0" />
+                <path d="M206 96 v-16 m0 0 l5 -8 m-5 8 l-6 -6 M206 80 m0 -10 a3 3 0 1 0 0.1 0" />
+                <path class="vignette__ground" d="M6 98 C90 95 210 101 294 97" />
+            </svg>
         </section>
 
         <section class="page page--back" data-toc="Fin">
             <div class="cover cover--back cover--indigo">
                 <div class="cover__frame">
                     <svg class="cover__emblem cover__emblem--small" aria-hidden="true"><use href="#konoha" /></svg>
+                    <p class="cover__quote">« Soit on le comprenait, soit on le détestait. »</p>
                     <p class="cover__again js-only"><a href="#page-0" class="no-scene"><span aria-hidden="true">⟲</span> Revenir à la couverture</a><a href="#ranger" class="scene-only"><span aria-hidden="true">⤶</span> Ranger le livre</a><a href="#menu" class="menu-link" hidden><span aria-hidden="true">✦</span> Sélection de la catégorie</a></p>
-                    <p class="cover__seal" aria-hidden="true">両</p>
+                    <p class="cover__seal" aria-hidden="true">史</p>
                 </div>
             </div>
         </section>
@@ -554,6 +520,13 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
         </button>
         <span class="toolbar__sep" aria-hidden="true"></span>
+        <!-- Voix off du carnet de l'histoire (affiché seulement pour ce carnet). -->
+        <button class="tool tool--voice" id="voice" type="button" aria-pressed="false" hidden>
+            <span class="pad pad--cross" aria-hidden="true"></span>
+            <span class="tool--voice__label">Écouter</span>
+            <span class="tool--voice__bar" aria-hidden="true"><span id="voice-bar"></span></span>
+            <span class="tool--voice__time" id="voice-time"></span>
+        </button>
         <button class="tool tool--shelve scene-only" id="shelve" type="button" aria-label="Ranger le livre" title="Ranger le livre dans la bibliothèque">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16" /><path d="M6 20V6h3v14M11 20V4h3v16M16 20l-1.5-12 3-.4L19 20" /></svg>
             <span>Ranger</span>
@@ -571,8 +544,8 @@
 
     <p class="sr-only" id="announcer" aria-live="polite"></p>
 
-    <script src="public/js/book.js?v=615cf9d9"></script>
-    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=db883315", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=8b078d1c", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=d2eaa848", "./public/js/scene/head.js": "./public/js/scene/head.js?v=b91baeb1", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=2650e73b", "./public/js/scene/post.js": "./public/js/scene/post.js?v=332bcc41", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c3b7ad90", "./public/js/scene/room.js": "./public/js/scene/room.js?v=53f0b44f", "./public/js/scene/screens.js": "./public/js/scene/screens.js?v=94127e02", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=f16f6061", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=b2bf91ed", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=f09db468", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=535bacc1", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
+    <script src="public/js/book.js?v=90c215c9"></script>
+    <script type="importmap">{"imports": {"three": "./public/vendor/three.module.min.js", "./public/js/scene/arms.js": "./public/js/scene/arms.js?v=703d1934", "./public/js/scene/audio.js": "./public/js/scene/audio.js?v=db883315", "./public/js/scene/avatar.js": "./public/js/scene/avatar.js?v=8b078d1c", "./public/js/scene/dream.js": "./public/js/scene/dream.js?v=d2eaa848", "./public/js/scene/head.js": "./public/js/scene/head.js?v=b91baeb1", "./public/js/scene/ninja.js": "./public/js/scene/ninja.js?v=2650e73b", "./public/js/scene/post.js": "./public/js/scene/post.js?v=332bcc41", "./public/js/scene/radio.js": "./public/js/scene/radio.js?v=c3b7ad90", "./public/js/scene/room.js": "./public/js/scene/room.js?v=95bddc89", "./public/js/scene/screens.js": "./public/js/scene/screens.js?v=a6d161ed", "./public/js/scene/sculpt.js": "./public/js/scene/sculpt.js?v=f16f6061", "./public/js/scene/sdf.js": "./public/js/scene/sdf.js?v=b2bf91ed", "./public/js/scene/textures.js": "./public/js/scene/textures.js?v=3c3023d5", "./public/js/scene/timeline.js": "./public/js/scene/timeline.js?v=8aaebf66", "./public/js/scene/village.js": "./public/js/scene/village.js?v=535bacc1", "./public/vendor/RoundedBoxGeometry.js": "./public/vendor/RoundedBoxGeometry.js?v=8b62a048"}}</script>
     <!-- Si le navigateur gère les modules, la scène se charge ; sinon, ou en cas d'erreur, le carnet s'affiche seul. -->
     <script type="module">window.SceneLoading = true;</script>
     <script>
@@ -595,7 +568,7 @@
             }).catch(function () {});
         })();
     </script>
-    <script type="module" src="public/js/scene/main.js?v=99256cb5" onerror="window.Carnet && window.Carnet.standalone()"></script>
+    <script type="module" src="public/js/scene/main.js?v=14e6ce66" onerror="window.Carnet && window.Carnet.standalone()"></script>
 </body>
 
 </html>
