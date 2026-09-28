@@ -580,11 +580,9 @@ html:not(.js) .js-only {
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .4), inset 0 0 40px rgba(0, 0, 0, .5);
 }
 
-
 .face--cover .paper::after {
     background: linear-gradient(90deg, rgba(0, 0, 0, .55) 0%, rgba(255, 220, 160, .12) 3%, transparent 7%);
 }
-
 
 .page--cover,
 .page--back {
@@ -2148,8 +2146,6 @@ html.book-open .scene-caption {
     display: inline;
 }
 
-
-
 /* Le rêve */
 .dream-glow {
     position: fixed;
@@ -2774,7 +2770,6 @@ html.book-open .radio {
     from { opacity: 0; transform: translateY(-.4em) skewX(-4deg); filter: blur(4px); }
 }
 
-
 /* Catégories voisines : petits mots pâles au-dessus et en dessous des flèches. */
 .storm-menu__near {
     margin-left: 4%;
@@ -3149,32 +3144,6 @@ html.menu-open .scene-skip {
 .ss-top__name { font-size: clamp(18px, 2.2vw, 30px); line-height: 1.1; }
 .ss-top__count { min-height: 1em; font-family: var(--font-body); font-size: 13px; opacity: .8; }
 
-.ss-tabs {
-    position: absolute;
-    top: 12vh;
-    right: 0;
-    display: grid;
-    gap: 4px;
-}
-
-.ss-tabs button {
-    min-width: 13em;
-    padding: .35em 2em .35em 1.6em;
-    font: inherit;
-    font-size: clamp(12px, 1.1vw, 15px);
-    text-align: left;
-    color: #fff;
-    background: rgba(30, 30, 34, .85);
-    border: 0;
-    clip-path: polygon(1em 0, 100% 0, 100% 100%, 0 100%);
-    cursor: pointer;
-}
-
-.ss-tabs button.is-active {
-    color: #2a1405;
-    background: linear-gradient(90deg, #ffb347, #ffd98a);
-}
-
 .ss-body {
     position: absolute;
     inset: 15vh 4vw 12vh;
@@ -3192,17 +3161,6 @@ html.menu-open .scene-skip {
     gap: 1.4em;
 }
 
-/* --- Panneaux et listes --- */
-.ss-panels {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17em), 1fr));
-    gap: 1.4vw;
-    align-items: start;
-    max-width: 1100px;
-    height: 100%;
-    overflow-y: auto;
-}
-
 .ss-panel {
     padding: 0 1.2em .9em;
     font-family: var(--font-body);
@@ -3212,8 +3170,6 @@ html.menu-open .scene-skip {
     border-radius: 14px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, .45);
 }
-
-.ss-panels .ss-panel { animation: ss-fade .45s ease-out calc(var(--i, 0) * .12s) both; }
 .ss-panel__text { margin: 0 0 .6em; line-height: 1.45; }
 .ss-panel__em { font-weight: 600; color: var(--ss-green); }
 
@@ -3228,19 +3184,6 @@ html.menu-open .scene-skip {
     text-transform: uppercase;
     background: linear-gradient(180deg, rgba(60, 64, 70, .95), rgba(30, 32, 36, .95));
     border-radius: 14px 14px 22px 22px;
-}
-
-.ss-panel--note svg {
-    display: block;
-    width: 100%;
-    max-width: 320px;
-    margin: .6em auto 0;
-    fill: none;
-    stroke: var(--ss-green);
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    opacity: .8;
 }
 
 .ss-list {
@@ -3321,275 +3264,10 @@ html.menu-open .scene-skip {
     color: #d8324f;
 }
 
-/* --- Caractère : trois colonnes, un trait par colonne --- */
-.ss-traits {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    height: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding-top: 4vh;
-}
-
-.ss-trait {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.6vh;
-    padding: 0 2vw;
-    text-align: center;
-}
-
-.ss-trait + .ss-trait { border-left: 2px solid rgba(255, 255, 255, .7); }
-
-.ss-trait__name {
-    min-height: 2.3em;
-    margin: 0;
-    font-weight: 400;
-    font-size: clamp(18px, 2.3vw, 34px);
-    line-height: 1.1;
-    text-transform: uppercase;
-    color: var(--trait);
-    text-shadow: 0 0 12px var(--trait-glow), 2px 2px 0 rgba(0, 0, 0, .6);
-}
-
-.ss-trait.tone-gold { --trait: #ffe27a; --trait-glow: rgba(255, 200, 60, .55); }
-.ss-trait.tone-teal { --trait: #8ff5d2; --trait-glow: rgba(60, 230, 170, .5); }
-.ss-trait.tone-red { --trait: #ff6b6b; --trait-glow: rgba(255, 60, 60, .55); }
-.ss-trait.tone-pink { --trait: #ff7fc8; --trait-glow: rgba(255, 60, 170, .55); }
-.ss-trait.tone-blue { --trait: #8fd0ff; --trait-glow: rgba(60, 160, 255, .55); }
-.ss-trait.tone-grey { --trait: #d8d8d8; --trait-glow: rgba(200, 200, 200, .4); }
-
-/* Trait pas encore révélé : titre et vignette seulement, un peu éteints. */
-.ss-trait:not(.is-shown) { opacity: .55; }
-
-.ss-trait__text {
-    margin: 0;
-    max-width: 22em;
-    font-family: var(--font-body);
-    font-size: clamp(14px, 1.3vw, 18px);
-    line-height: 1.45;
-    text-shadow: 0 1px 4px #000;
-}
-
-.ss-trait.is-new .ss-trait__text { animation: ss-fade .5s ease-out; }
-.ss-trait.is-new .ss-trait__art { animation: ss-pop .45s ease-out; }
-
-@keyframes ss-pop {
-    40% { scale: 1.06; box-shadow: 0 0 34px var(--trait-glow); }
-}
-
-.ss-trait__art {
-    display: grid;
-    place-items: center;
-    width: min(100%, 260px);
-    aspect-ratio: 16 / 10;
-    background: radial-gradient(ellipse at 50% 40%, var(--trait-glow), transparent 70%), rgba(0, 0, 0, .45);
-    border: 2px solid var(--trait);
-    border-radius: 10px;
-    box-shadow: 0 0 18px var(--trait-glow);
-}
-
-.ss-trait__art span {
-    font-family: var(--font-kanji);
-    font-size: clamp(56px, 7vw, 110px);
-    line-height: 1;
-    color: #fff;
-    text-shadow: 0 0 20px var(--trait-glow);
-}
-
-.ss-trait__kind {
-    margin: 0;
-    padding: .15em 1em;
-    font-size: clamp(12px, 1.1vw, 15px);
-    color: #111;
-    background: var(--trait);
-    border-radius: 999px;
-}
-
-/* --- Histoire : sélection des chapitres, puis lecture --- */
-.ss-body--histoire:not(:has(.ss-reader)) {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
-    gap: 3vw;
-    align-items: center;
-}
-
-.ss-chapters__side p { margin: 0; }
-.ss-chapters__label { font-size: clamp(16px, 1.6vw, 22px); color: #7dffb0; }
-
-.ss-chapters__title {
-    margin: .3em 0 1em !important;
-    font-size: clamp(24px, 3vw, 44px);
-    line-height: 1.1;
-    text-transform: uppercase;
-    color: #7dffb0;
-    text-shadow: 0 0 12px rgba(60, 255, 150, .6), 2px 2px 0 rgba(0, 0, 0, .7);
-}
-
-.ss-chapters__stats { display: grid; gap: .6em; margin: 0; padding: 0; list-style: none; }
-
-.ss-chapters__stats li {
-    display: inline-flex;
-    align-items: center;
-    gap: .6em;
-    width: fit-content;
-    padding: .3em 1.4em .3em .4em;
-    font-size: clamp(13px, 1.2vw, 16px);
-    background: rgba(40, 42, 48, .9);
-    border-radius: 999px;
-}
-
-.ss-chapters__stats li::before {
-    content: "✓";
-    display: grid;
-    place-items: center;
-    width: 1.6em;
-    height: 1.6em;
-    color: #222;
-    background: #ddd;
-    border-radius: 50%;
-}
-
-.ss-chapters__stats li.is-next::before { content: "…"; }
-
-.ss-chapters__grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.2vw;
-}
-
-.ss-chapter {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    font: inherit;
-    color: #fff;
-    background: linear-gradient(180deg, #3a2e18, #1a140a);
-    border: 3px solid #b8903c;
-    border-radius: 6px;
-    aspect-ratio: 3 / 4.3;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-}
-
-.ss-chapter.is-active {
-    border-color: #ff9a3c;
-    box-shadow: 0 0 0 2px #fff3cf, 0 0 22px rgba(255, 160, 60, .7);
-    transform: translateY(-6px) scale(1.04);
-}
-
-.ss-chapter__label {
-    padding: .2em;
-    font-family: var(--font-title);
-    font-weight: 700;
-    font-size: clamp(10px, .95vw, 14px);
-    color: #3a2508;
-    background: linear-gradient(180deg, #f5dfa0, #d6b35e);
-}
-
-.ss-chapter__art {
-    flex: 1;
-    display: grid;
-    place-items: center;
-    padding: .4em;
-    background: #f1e6c8;
-}
-
-.ss-chapter__art svg {
-    width: 100%;
-    fill: none;
-    stroke: #2b1d10;
-    stroke-width: 2.4;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.ss-chapter.is-locked { cursor: default; filter: grayscale(1) brightness(.6); }
-.ss-chapter.is-locked .ss-chapter__art { background: repeating-linear-gradient(45deg, #2a2a2a 0 8px, #333 8px 16px); }
-.ss-chapter__lock { font-size: clamp(28px, 3vw, 46px); color: #999; }
-
-.ss-chapter__soon {
-    position: absolute;
-    bottom: .4em;
-    left: 0;
-    right: 0;
-    font-size: clamp(10px, .9vw, 13px);
-    text-align: center;
-    color: #ddd;
-}
-
-.ss-reader {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
-    justify-items: center;
-    gap: 2vh;
-    height: 100%;
-    max-width: 980px;
-    margin: 0 auto;
-}
-
-.ss-reader__frame {
-    display: grid;
-    place-items: center;
-    align-content: center;
-    gap: .6em;
-    width: min(100%, 720px);
-    min-height: 0;
-    padding: 1em 2em;
-    background: linear-gradient(180deg, #f3e9cd, #e4d4a9);
-    border: 4px solid #111;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, .6);
-}
-
-.ss-reader__frame svg {
-    width: min(100%, 520px);
-    max-height: 100%;
-    fill: none;
-    stroke: #2b1d10;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.ss-reader__label { margin: 0; font-family: var(--font-title); font-weight: 700; color: #5b4630; }
-
-.ss-reader__text {
-    width: 100%;
-    padding: .8em 0;
-    font-family: var(--font-body);
-    font-size: clamp(15px, 1.5vw, 21px);
-    line-height: 1.5;
-    border-top: 2px solid rgba(255, 255, 255, .7);
-    border-bottom: 2px solid rgba(255, 255, 255, .7);
-}
-
-.ss-reader__text p { margin: 0; }
-.ss-reader__text .is-new { animation: ss-fade .45s ease-out; }
-
 /* Glissement seul (sans fondu) : le texte reste lisible même si l'animation tarde à démarrer. */
 @keyframes ss-fade {
     from { translate: 0 .5em; }
 }
-.ss-reader__count { margin-top: .4em !important; font-size: .75em; text-align: right; opacity: .6; }
-
-.ss-reader__back {
-    position: absolute;
-    left: 0;
-    top: -5.5vh;
-    padding: .2em 0;
-    font: inherit;
-    font-size: clamp(14px, 1.4vw, 18px);
-    color: #fff;
-    background: none;
-    border: 0;
-    cursor: pointer;
-}
-
-.ss-reader__back:hover,
-.ss-reader__back:focus-visible { color: var(--ss-green); }
 
 /* --- Boîte « Revenir à la sélection de la catégorie ? » --- */
 .ss-dialog {
@@ -3660,24 +3338,12 @@ html.menu-open .scene-skip {
     .storm-screen { background: rgba(4, 14, 13, .82); }
     .ss-title { top: auto; bottom: 10vh; font-size: 13px; }
     .ss-top { top: 1.5vh; padding: .2em 2em .3em; }
-    .ss-tabs { top: 10.5vh; left: 16px; right: 16px; grid-auto-flow: column; }
-    .ss-tabs button { min-width: 0; }
+
     .storm-screen[data-tabs] .ss-body { right: 16px; top: 19vh; }
     .ss-body { inset: 17vh 16px 16vh; overflow-y: auto; }
     .ss-layout--side { width: auto; right: 16px; }
     .ss-hero__name { font-size: 34px; }
-    .ss-traits { grid-template-columns: 1fr; gap: 2vh; height: auto; padding-top: 0; }
-    .ss-trait { flex-direction: row; flex-wrap: wrap; justify-content: center; }
-    .ss-trait + .ss-trait { border-left: 0; border-top: 1px solid rgba(255, 255, 255, .5); padding-top: 2vh; }
-    .ss-trait__name { min-height: 0; width: 100%; font-size: 20px; }
-    .ss-trait__art { width: 120px; }
-    .ss-trait__art span { font-size: 54px; }
-    .ss-body--histoire:not(:has(.ss-reader)) { grid-template-columns: 1fr; align-content: start; }
-    .ss-chapters__title { margin-bottom: .5em !important; }
-    .ss-chapters__grid { gap: 8px; }
-    .ss-reader__back { top: -5vh; }
-    .ss-reader__voice { bottom: -6vh; }
-    .ss-reader__time { display: none; }
+
     .ss-actions { left: 0; right: 0; justify-content: center; bottom: 3vh; }
     .ss-actions kbd { display: none; }
 }
@@ -3715,79 +3381,6 @@ html.menu-open .scene-skip {
     transform: translateX(-130%) skewX(-18deg);
 }
 
-/* Lecture d'un chapitre : l'illustration zoome lentement (effet Ken Burns du Canva). */
-.ss-reader__frame { overflow: hidden; }
-.ss-reader__frame svg { animation: ss-kenburns 14s ease-in-out infinite alternate; }
-
-@keyframes ss-kenburns {
-    to { transform: scale(1.12) translate(-2%, -3%); }
-}
-
-/* « Écouter » : la voix off du chapitre, comme le bouton du Canva. */
-.ss-reader__voice {
-    position: absolute;
-    left: 50%;
-    bottom: -7.4vh;
-    display: flex;
-    align-items: center;
-    gap: .7em;
-    translate: -50% 0;
-    font-size: clamp(13px, 1.3vw, 17px);
-}
-
-.ss-reader__voice[hidden] { display: none; }
-
-.ss-reader__listen {
-    display: inline-flex;
-    align-items: center;
-    gap: .45em;
-    min-width: 6.5em;
-    padding: .2em 0;
-    font: inherit;
-    color: #fff;
-    background: none;
-    border: 0;
-    cursor: pointer;
-}
-
-.ss-reader__listen::before {
-    content: "✕";
-    display: grid;
-    place-items: center;
-    width: 1.4em;
-    height: 1.4em;
-    font-size: .8em;
-    color: #1b2a26;
-    background: #e8f5ef;
-    border-radius: 50%;
-}
-
-.ss-reader__listen:hover,
-.ss-reader__listen:focus-visible { color: var(--ss-green); }
-
-.ss-reader__bar {
-    position: relative;
-    width: clamp(80px, 14vw, 200px);
-    height: 4px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, .25);
-    border-radius: 2px;
-}
-
-.ss-reader__bar span {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 0;
-    background: var(--ss-green);
-    box-shadow: 0 0 6px var(--ss-glow);
-}
-
-.ss-reader__time { min-width: 6.5em; font-family: var(--font-body); font-variant-numeric: tabular-nums; opacity: .75; }
-
-@media (prefers-reduced-motion: reduce) {
-    .ss-reader__frame svg { animation: none; }
-}
-
 /* Musique du menu : le petit lecteur YouTube reste visible au-dessus du menu et des écrans. */
 html.menu-open .radio {
     z-index: 16;
@@ -3803,8 +3396,6 @@ html.menu-open .radio {
         scale: .6;
     }
 }
-
-
 
 /* ==========================================================================
    Style de la candidature Canva
@@ -3937,63 +3528,6 @@ html.menu-open .radio {
 
 .storm-menu.is-entering .storm-menu__banner { animation-name: storm-in; }
 
-/* Lecture d'un chapitre : fenêtre à barre orange, emblème en haut à gauche, fumée dans les coins. */
-.ss-reader__frame {
-    padding-top: 2.4em;
-    border: 3px solid #1a1a1a;
-    border-radius: 10px;
-}
-
-.ss-reader__chrome {
-    position: absolute;
-    inset: 0 0 auto 0;
-    padding: .25em .8em;
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    letter-spacing: .3em;
-    text-align: left;
-    color: #5a3b12;
-    background: linear-gradient(180deg, #ffd35a, #f0a93a);
-    border-bottom: 3px solid #e2506a;
-}
-
-.ss-reader__frame { position: relative; }
-
-.ss-reader__badge {
-    position: absolute;
-    left: -1vw;
-    top: -2.5vh;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    width: clamp(44px, 5vw, 64px);
-    height: clamp(44px, 5vw, 64px);
-    font-family: var(--font-kanji);
-    font-size: clamp(22px, 2.6vw, 32px);
-    color: #b3261b;
-    background: radial-gradient(circle, #fff27a, #ffc21a 70%);
-    border-radius: 50%;
-    box-shadow: 0 0 18px rgba(255, 200, 40, .6);
-}
-
-.ss-body--histoire::before,
-.ss-body--histoire::after {
-    content: "";
-    position: absolute;
-    bottom: -12vh;
-    width: 30vw;
-    height: 22vh;
-    pointer-events: none;
-    background:
-        radial-gradient(circle at 30% 70%, rgba(255, 255, 255, .22), transparent 45%),
-        radial-gradient(circle at 60% 60%, rgba(255, 255, 255, .18), transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, .2), transparent 42%);
-    filter: blur(6px);
-}
-
-.ss-body--histoire::before { left: -4vw; }
-.ss-body--histoire::after { right: -4vw; transform: scaleX(-1); }
-
 /* HRP : personnage à gauche (nom et pastilles en bas à gauche), présentation à droite. */
 .ss-body--hrp.ss-layout--side {
     inset: 12vh 4vw 12vh;
@@ -4058,7 +3592,6 @@ html.menu-open .radio {
     .ss-body--hrp .ss-card { position: static; width: auto; margin-bottom: 1.2vh; }
     .ss-body--hrp .ss-pills { flex-direction: row; }
     .ss-body--hrp .ss-pill { min-width: 0; }
-    .ss-reader__badge { left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4078,15 +3611,6 @@ html.menu-open .sound-panel {
     color: var(--ink-soft);
     border-left: 3px solid rgba(142, 31, 23, .45);
     padding-left: .8em;
-}
-
-.ss-chapters__summary {
-    max-width: 30em;
-    margin: -.4em 0 1.2em !important;
-    font-family: var(--font-body);
-    font-size: clamp(13px, 1.2vw, 16px);
-    line-height: 1.45;
-    opacity: .85;
 }
 
 /* ==========================================================================
@@ -4214,3 +3738,5 @@ html:has(#scene-intro:not([hidden]):not(.is-leaving)) .scene-skip,
 html:has(#scene-end:not([hidden])) .scene-skip {
     display: none;
 }
+
+.storm-menu__near[hidden] { display: none; }
