@@ -400,11 +400,12 @@ async function start() {
     async function enter() {
         await walk([V(0, EYE, 4.0), V(0, EYE, 3.62)], 2.6);
         await lookAt(0.7, V(-0.2, 1.1, 2.97));
-        // Il se penche vers la porte ; la main se pose à plat sur le shoji,
-        // le bout des doigts dans la poignée creuse, et la fait glisser.
+        // Il se penche vers la porte ; le bout des doigts entre dans la poignée
+        // creuse, la paume de côté, et fait glisser le shoji (main à plat
+        // contre la porte, doigts vers le haut : le poignet devait plier à 116°).
         const p0 = cam.pos.clone();
         timeline.tween(0.8, (k) => cam.pos.lerpVectors(p0, V(-0.05, EYE - 0.04, 3.4), k));
-        const onDoor = quat(V(0, 0, -1), V(0.08, 1, 0));
+        const onDoor = quat(V(1, 0, 0.3), V(0.3, 0.12, -1));
         const handle = room.doorHandle.position;
         const flat = (gap) => handAt(left, V(handle.x, handle.y - 0.005, 0.0175 + gap), onDoor, V(-0.0075, -0.021, -0.155));
         await reach(left, room.door, flat(0.04), onDoor, 0.8, { curl: 0.05, thumb: 0.1, index: null });
@@ -745,6 +746,10 @@ async function start() {
         menuKanji.textContent = c.kanji;
         menuKanji.classList.toggle('is-long', c.kanji.length > 1);
         // Les catégories voisines, en petit au-dessus et en dessous (roue façon Storm).
+        // Avec seulement deux catégories, l'autre ne s'affiche qu'une fois
+        // (sous la flèche du bas), au lieu d'apparaître au-dessus et en dessous.
+        const few = MENU.length < 3;
+        nearPrev.hidden = few;
         nearPrev.textContent = MENU[(menuIndex + MENU.length - 1) % MENU.length].word;
         nearNext.textContent = MENU[(menuIndex + 1) % MENU.length].word;
         menuDesc.replaceChildren(Object.assign(document.createElement('span'), { textContent: c.desc }));

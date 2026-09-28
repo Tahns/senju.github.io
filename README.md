@@ -97,7 +97,7 @@ Chaque `<section class="page">` correspond à une page, dans l'ordre.
 
 ## Portrait
 
-Dépose l'image du personnage dans `public/img/Apparence.jpg`. Elle apparaît dans le cadre de la page « Apparence ».
+Dépose l'image du personnage dans `public/img/Apparence.jpg`, puis, dans `index.html` (page « Présentation » de la fiche), retire la classe `is-empty` du cadre et ajoute la balise `<img>` indiquée en commentaire.
 Sans image, le cadre affiche « Portrait à venir ».
 
 ## Fichiers

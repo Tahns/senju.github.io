@@ -52,13 +52,13 @@ visiteur remarque en premier.
 | # | Faiblesse | Visibilité | Piste |
 |---|-----------|-----------|-------|
 | F1 | Rien n'a été vu sur un vrai appareil : fluidité, son, lecteur YouTube, voix Opus sur Safari, téléphone. Tout est testé en rendu logiciel et sans son. | Haute (risque) | Tour complet sur ordinateur et téléphone par le joueur, puis corrections |
-| F2 | Menu à 2 catégories : la « roue » affiche la même catégorie au-dessus et en dessous (« HRP / HRP »). | Moyenne | Masquer les voisines (ou n'en afficher qu'une) quand il n'y a que 2 catégories |
+| F2 | ~~Roue du menu « HRP / HRP »~~ | — | Corrigé : avec 2 catégories, l'autre ne s'affiche qu'une fois |
 | F3 | Coupe du modèle VRoid : cheveux courts, alors qu'un Hyûga les porte souvent longs. Les cheveux noirs et le Byakugan sont faits. | Moyenne | Modèle VRoid dédié (cheveux longs dans la même texture, tenue du clan) |
-| F4 | Images du Canva non reprises (captures de l'anime, pour les droits) : portrait « à venir », avec une erreur 404 dans la console. | Moyenne | Illustrations du joueur (portrait, tenues Chûnin / Enfant) |
+| F4 | Images du Canva non reprises (captures de l'anime, pour les droits) : portrait « à venir » (l'erreur 404 est corrigée). | Moyenne | Illustrations du joueur (portrait, tenues Chûnin / Enfant) |
 | F5 | Un seul chapitre écrit sur 8 (« Chapitres écrits : 1 sur 8 »). | Moyenne | Chapitres suivants, avec leur voix off (même outil de calage) |
-| F6 | Deux écarts entre le texte et la voix : « en corrélation **avec** » et « **des taijutsu-men** » à l'écrit, pas à l'oral. | Faible | Aligner l'écrit sur la voix, ou réenregistrer ces phrases |
-| F7 | Chambre : la main posée sur la porte reste un peu repliée, et la main gauche est légèrement retenue pendant le transport du livre (limites du poignet). | Faible | Retoucher ces deux gestes |
-| F8 | Restes de code des écrans retirés (Histoire, Personnage) dans `screens.js` et `style.css`. | Faible (maintenance) | Nettoyage |
+| F6 | Deux écarts voulus entre l'écrit et la voix : « en corrélation **avec** » et « **des taijutsu-men** » (fautes de la narration corrigées à l'écrit ; le suivi n'est pas gêné). | Faible | Réenregistrer ces deux phrases si besoin |
+| F7 | ~~Main repliée sur la porte~~ | — | Corrigé : bout des doigts dans la poignée, paume de côté (la main gauche reste retenue de ~7° en portant le livre, invisible) |
+| F8 | ~~Code des écrans retirés~~ | — | Corrigé : ~12 Ko de CSS et le code des onglets, zooms et chapitres retirés |
 | F9 | Poids au premier chargement : ~4 Mo de modèle et ~0,7 Mo de three.js (la voix n'est chargée qu'au clic). | Faible | Modèle allégé (textures, maillage) |
 
 ## Opportunités
@@ -94,8 +94,6 @@ visiteur remarque en premier.
 ## Plan (ordre de passage)
 
 1. F1 : tour complet sur un vrai ordinateur et un vrai téléphone, retours en captures.
-2. F2 : roue du menu à 2 catégories.
-3. F6, F7, F8 : écarts texte/voix, gestes de la chambre, nettoyage.
-4. F3 : modèle Hyûga.
-5. F4, F5 : illustrations et chapitres suivants fournis par le joueur.
-6. F9 : allègement du modèle.
+2. F3 : modèle Hyûga.
+3. F4, F5 : illustrations et chapitres suivants fournis par le joueur.
+4. F9 : allègement du modèle.

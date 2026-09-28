@@ -510,3 +510,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   menu (Histoire, HRP, clin d'œil et shunshin), puis Byakugan, rafale des 64
   paumes, Kûshô, Kaiten façon anime, pluie de ryō et final, avec le modèle
   aux nouvelles proportions.
+- **Corrections du SWOT** : roue du menu à 2 catégories (l'autre ne s'affiche
+  qu'une fois) ; plus de requête vers le portrait absent (erreur 404) ; porte
+  ouverte du bout des doigts dans la poignée, paume de côté (le poignet
+  devait plier à 116°) ; ~12 Ko de CSS et le code des écrans retirés supprimés.

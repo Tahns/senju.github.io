@@ -128,10 +128,6 @@ export function createScreens({ sound, onExit, onBook, onSide = () => {} }) {
             <p class="ss-top__name">${NAME}</p>
             <p class="ss-top__count" id="ss-count" aria-hidden="true"></p>
         </header>
-        <nav class="ss-tabs" id="ss-tabs" aria-label="Caractère et objectifs" hidden>
-            <button type="button" data-go="caractere">Caractère</button>
-            <button type="button" data-go="objectifs">Objectifs</button>
-        </nav>
         <div class="ss-body" id="ss-body" aria-live="polite"></div>
         <div class="ss-actions">
             <button class="storm-menu__action" id="ss-pause" type="button" title="Échap"><span class="pad pad--circle" aria-hidden="true"></span> Pause</button>
@@ -152,13 +148,11 @@ export function createScreens({ sound, onExit, onBook, onSide = () => {} }) {
     const body = $('ss-body');
     const title = $('ss-title');
     const count = $('ss-count');
-    const tabs = $('ss-tabs');
     const nextBtn = $('ss-next');
     const dialog = $('ss-dialog');
 
     let screen = null;
     let step = 0;
-    let lastPage = null;
     // Bandeau qui balaie l'écran en diagonale (transition des jeux Storm).
     const band = el('div', 'ss-wipe');
     band.setAttribute('aria-hidden', 'true');
@@ -169,40 +163,15 @@ export function createScreens({ sound, onExit, onBook, onSide = () => {} }) {
     }
     let bookPage = 0;
 
-    // Transitions façon Canva : glissé-zoom quand l'écran change de page, et
-    // zoom depuis la carte du chapitre (ou retour vers elle). Animations Web
-    // en transformations seules : si elles tardent, le contenu reste visible.
+    // Transition façon Canva : glissé-zoom et bandeau quand l'écran change de
+    // page (animations en transformations seules : le contenu reste visible).
     const calm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function zoomFrom(node, rect) {
-        const to = node.getBoundingClientRect();
-        if (!rect || !to.width || calm()) return;
-        const dx = rect.left + rect.width / 2 - (to.left + to.width / 2);
-        const dy = rect.top + rect.height / 2 - (to.top + to.height / 2);
-        node.animate([
-            { transform: `translate(${dx}px, ${dy}px) scale(${rect.width / to.width}, ${rect.height / to.height})` },
-            { transform: 'none' }
-        ], { duration: 360, easing: 'cubic-bezier(.2, .8, .2, 1)' });
-    }
     function draw(fx = false, dir = 0) {
-        const page = screen.page ? screen.page(step) : step;
-        const card = body.querySelector('.ss-chapter.is-active');
-        const cardRect = card && card.getBoundingClientRect();
-        const frame = body.querySelector('.ss-reader__frame');
-        const frameRect = frame && frame.getBoundingClientRect();
-        const turned = !fx && page !== lastPage;
-        lastPage = page;
         body.replaceChildren();
         body.className = 'ss-body ss-body--' + screen.key + ' ss-layout--' + screen.layout;
         root.dataset.layout = screen.layout;
-        screen.render(step, body, (s) => { if (s !== step) { const d = s > step ? 1 : -1; step = s; sound.select(); draw(false, d); } }, (click) => {
-            if (click) sound.select();
-            draw();
-        });
-        const newFrame = body.querySelector('.ss-reader__frame');
-        const newCard = body.querySelector('.ss-chapter.is-active');
-        if (cardRect && newFrame) zoomFrom(newFrame, cardRect);
-        else if (frameRect && newCard) zoomFrom(newCard, frameRect);
-        else if (turned && !calm()) {
+        screen.render(step, body, (s) => { if (s !== step) { const d = s > step ? 1 : -1; step = s; sound.select(); draw(false, d); } });
+        if (!fx && dir && !calm()) {
             const x = (dir || 1) * 5;
             body.animate([{ transform: `translateX(${x}vw) scale(.97)` }, { transform: 'none' }], { duration: 420, easing: 'cubic-bezier(.2, .8, .2, 1)' });
             wipe();
@@ -210,21 +179,12 @@ export function createScreens({ sound, onExit, onBook, onSide = () => {} }) {
         title.textContent = screen.titles ? screen.titles[step] : screen.title;
         count.textContent = screen.steps > 1 ? `○ ${step + 1} / ${screen.steps}` : '';
         const last = step >= screen.steps - 1;
-        nextBtn.querySelector('span:not(.pad)').textContent = screen.actionLabel || (last ? 'Terminer' : 'Suivant');
-        tabs.hidden = !screen.tabs;
-        if (screen.tabs) root.dataset.tabs = '';
-        else delete root.dataset.tabs;
-        const tab = screen.tab && screen.tab(step);
-        tabs.querySelectorAll('button').forEach((b) => {
-            b.classList.toggle('is-active', b.dataset.go === tab);
-            b.setAttribute('aria-pressed', String(b.dataset.go === tab));
-        });
+        nextBtn.querySelector('span:not(.pad)').textContent = last ? 'Terminer' : 'Suivant';
         if (fx) root.classList.add('is-entering');
     }
 
     function open(key, page) {
         screen = BUILDERS[key]();
-        if (screen.reset) screen.reset();
         onSide(screen.side || 1);
         step = 0;
         bookPage = page;
@@ -233,26 +193,18 @@ export function createScreens({ sound, onExit, onBook, onSide = () => {} }) {
         void root.offsetWidth;
         dialog.hidden = true;
         root.hidden = false;
-        lastPage = null;
         draw(true);
         wipe();
         nextBtn.focus();
     }
 
     function close() {
-        if (screen && screen.leave) screen.leave();
         root.hidden = true;
         dialog.hidden = true;
         screen = null;
     }
 
     function next() {
-        if (screen.next) {
-            screen.next();
-            sound.select();
-            draw();
-            return;
-        }
         if (step < screen.steps - 1) {
             step++;
             sound.select();
@@ -263,10 +215,6 @@ export function createScreens({ sound, onExit, onBook, onSide = () => {} }) {
     }
 
     function prev() {
-        if (screen.prev) {
-            if (screen.prev()) { sound.select(); draw(); }
-            return;
-        }
         if (step > 0) {
             step--;
             sound.select();
@@ -297,15 +245,6 @@ export function createScreens({ sound, onExit, onBook, onSide = () => {} }) {
         close();
         onBook(bookPage);
     });
-    tabs.addEventListener('click', (e) => {
-        const b = e.target.closest('button[data-go]');
-        if (!b || !screen.tabStep) return;
-        const to = screen.tabStep[b.dataset.go];
-        const d = to > step ? 1 : -1;
-        step = to;
-        sound.select();
-        draw(false, d);
-    });
     // Cliquer à côté de la boîte de dialogue revient à dire « Non ».
     dialog.addEventListener('click', (e) => { if (e.target === dialog) pause(false); });
 
@@ -325,10 +264,10 @@ export function createScreens({ sound, onExit, onBook, onSide = () => {} }) {
         if (e.key === 'Escape') { e.preventDefault(); pause(true); }
         else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
             e.preventDefault();
-            if (screen.move) { screen.move(1); sound.select(); draw(); } else next();
+            next();
         } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
             e.preventDefault();
-            if (screen.move) { if (screen.move(-1)) { sound.select(); draw(); } } else prev();
+            prev();
         } else if (e.key === 'Enter' && document.activeElement === document.body) {
             e.preventDefault();
             next();
