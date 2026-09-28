@@ -333,174 +333,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         ninja.sync();
     });
 
-    /* ---------------- Effets : sabre, eau, pièces ---------------- */
-    // Coup de sabre : un croissant de lumière, vif au bout, qui s'efface.
-    const slashMaterial = () => new THREE.ShaderMaterial({
-        uniforms: { uOpacity: { value: 0 }, uColor: { value: new THREE.Color('#dff4ff') } },
-        vertexShader: 'varying vec2 vP; void main(){ vP = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-        fragmentShader: 'uniform float uOpacity; uniform vec3 uColor; varying vec2 vP; void main(){ float t = clamp(atan(vP.y, vP.x) / 2.4, 0.0, 1.0); float r = (length(vP) - 0.8) / 0.34; float edge = smoothstep(0.0, 0.75, r) * (1.0 - smoothstep(0.9, 1.0, r)); float core = smoothstep(0.62, 0.92, r) * (1.0 - smoothstep(0.92, 1.0, r)); gl_FragColor = vec4(uColor * (1.0 + core * 2.5), pow(t, 1.6) * edge * uOpacity); }',
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide
-    });
-    const arcs = [0, 1, 2].map(() => {
-        const m = new THREE.Mesh(new THREE.RingGeometry(0.8, 1.14, 64, 1, 0, 2.4), slashMaterial());
-        m.scale.setScalar(1.35); // grand arc, à la mesure du geste
-        scene.add(m);
-        return m;
-    });
-
-    // Dragon d'eau : un tube qui s'enroule autour d'Akira, puis jaillit.
-    const dragonPoints = [];
-    for (let i = 0; i <= 64; i++) {
-        const t = i / 64;
-        const a = t * Math.PI * 4.5 + 1.2;
-        const r = 1.05 - t * 0.35;
-        dragonPoints.push(V(Math.cos(a) * r, 0.15 + t * 2.4, Math.sin(a) * r));
-    }
-    // Puis il jaillit vers le ciel, au-dessus du village (face à la caméra).
-    dragonPoints.push(V(0.35, 3.1, -0.9), V(0.9, 4.2, -2.6), V(1.6, 5.8, -5.2), V(2.6, 8, -9), V(3.8, 10.5, -14));
-    const dragonCurve = new THREE.CatmullRomCurve3(dragonPoints);
-    // Fraction de la longueur où finit la spirale (la tête y fait une pause).
-    const spiralEnd = (() => {
-        const lengths = dragonCurve.getLengths(400);
-        const k = Math.round((64 / (dragonPoints.length - 1)) * 400);
-        return lengths[k] / lengths[400];
-    })();
-    const segments = 420;
-    const radial = 18;
-    const dragonGeo = new THREE.TubeGeometry(dragonCurve, segments, 0.17, radial, false);
-    const centers = new Float32Array(dragonGeo.attributes.position.count * 3);
-    for (let i = 0; i <= segments; i++) {
-        const c = dragonCurve.getPointAt(i / segments);
-        for (let j = 0; j <= radial; j++) centers.set([c.x, c.y, c.z], (i * (radial + 1) + j) * 3);
-    }
-    dragonGeo.setAttribute('center', new THREE.BufferAttribute(centers, 3));
-    const dragonMat = new THREE.ShaderMaterial({
-        uniforms: { uHead: { value: 0 }, uTail: { value: 0 }, uTime: { value: 0 } },
-        vertexShader: `attribute vec3 center; uniform float uHead; uniform float uTail; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
-            void main(){
-                vUv = uv;
-                float body = smoothstep(uTail, uTail + 0.1, uv.x) * (1.0 - smoothstep(uHead - 0.015, uHead, uv.x));
-                // Le corps s'affine vers la tête (maillage à part, posé au bout).
-                float neck = 1.0 - 0.35 * smoothstep(uHead - 0.06, uHead, uv.x);
-                float s = body * neck * (0.55 + 0.45 * smoothstep(uTail, uTail + 0.3, uv.x));
-                vec3 p = center + (position - center) * s;
-                vec4 mv = modelViewMatrix * vec4(p, 1.0);
-                vN = normalize(normalMatrix * normal);
-                vV = -mv.xyz;
-                gl_Position = projectionMatrix * mv;
-            }`,
-        fragmentShader: `uniform float uTime; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
-            void main(){
-                float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0);
-                vec3 deep = vec3(0.05, 0.32, 0.78);
-                vec3 light = vec3(0.45, 0.85, 1.0);
-                vec3 c = mix(deep, light, f * 0.8 + max(vN.y, 0.0) * 0.25);
-                float foam = smoothstep(0.72, 1.0, sin(vUv.x * 260.0 - uTime * 14.0 + sin(vUv.y * 18.85) * 1.6));
-                c += vec3(1.0) * foam * 0.9;
-                gl_FragColor = vec4(c * 1.2, 0.62 + f * 0.33 + foam * 0.2);
-            }`,
-        transparent: true,
-        depthWrite: false
-    });
-    const dragon = new THREE.Mesh(dragonGeo, dragonMat);
-    dragon.frustumCulled = false;
-    scene.add(dragon);
-    // Tête du dragon : crâne, museau, mâchoire entrouverte, cornes rejetées en
-    // arrière, crinière et yeux lumineux, dans la même eau que le corps. Elle
-    // suit la pointe du ruban et regarde dans le sens du mouvement.
-    const skinMat = new THREE.ShaderMaterial({
-        uniforms: { uTime: dragonMat.uniforms.uTime, uFade: { value: 1 } },
-        vertexShader: 'varying vec3 vN; varying vec3 vV; varying vec3 vP; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = -mv.xyz; vP = position; gl_Position = projectionMatrix * mv; }',
-        fragmentShader: `uniform float uTime; uniform float uFade; varying vec3 vN; varying vec3 vV; varying vec3 vP;
-            void main(){
-                float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0);
-                vec3 c = mix(vec3(0.05, 0.32, 0.78), vec3(0.45, 0.85, 1.0), f * 0.8 + max(vN.y, 0.0) * 0.3);
-                float ripple = smoothstep(0.8, 1.0, sin(vP.z * 40.0 - uTime * 10.0 + sin(vP.x * 30.0) * 1.5));
-                c += vec3(1.0) * ripple * 0.5;
-                gl_FragColor = vec4(c * 1.25, (0.7 + f * 0.3) * uFade);
-            }`,
-        transparent: true
-    });
-    const eyeMat = new THREE.MeshBasicMaterial({ color: '#e8fbff', transparent: true });
-    const dragonHead = new THREE.Group();
-    const part = (geo, x, y, z, rx = 0, sx = 1, sy = 1, sz = 1, mat = skinMat) => {
-        const m = new THREE.Mesh(geo, mat);
-        m.position.set(x, y, z);
-        m.rotation.x = rx;
-        m.scale.set(sx, sy, sz);
-        dragonHead.add(m);
-        return m;
-    };
-    const ball = new THREE.SphereGeometry(1, 20, 14);
-    part(ball, 0, 0, 0, 0, 0.2, 0.17, 0.22); // crâne
-    part(ball, 0, -0.02, 0.2, 0, 0.13, 0.09, 0.2); // museau
-    part(ball, 0, -0.1, 0.14, 0.35, 0.1, 0.04, 0.17); // mâchoire entrouverte
-    const horn = new THREE.ConeGeometry(0.05, 0.42, 10);
-    [-1, 1].forEach((side) => {
-        const h = part(horn, side * 0.1, 0.16, -0.14, -0.95);
-        h.rotation.z = side * -0.35;
-        part(ball, side * 0.115, 0.06, 0.1, 0, 0.038, 0.038, 0.038, eyeMat); // yeux
-        const whisker = part(new THREE.ConeGeometry(0.012, 0.32, 6), side * 0.1, -0.06, 0.34, 1.9);
-        whisker.rotation.z = side * 0.9;
-    });
-    const spike = new THREE.ConeGeometry(0.04, 0.16, 8);
-    for (let i = 0; i < 4; i++) part(spike, 0, 0.15 - i * 0.03, -0.12 - i * 0.09, -1.1 - i * 0.12); // crinière
-    dragonHead.visible = false;
-    scene.add(dragonHead);
-    const headAhead = V();
-    updaters.push((dt, time) => {
-        dragonMat.uniforms.uTime.value = time;
-        const h = dragonMat.uniforms.uHead.value;
-        dragonHead.visible = h > 0.01;
-        if (!dragonHead.visible) return;
-        const u = THREE.MathUtils.clamp(h - 0.012, 0, 1);
-        dragonCurve.getPointAt(u, dragonHead.position);
-        headAhead.copy(dragonHead.position).add(dragonCurve.getTangentAt(Math.min(u, 0.999)));
-        dragonHead.lookAt(headAhead);
-        // Apparaît avec le ruban, s'éteint quand le dragon file au loin.
-        const size = THREE.MathUtils.smoothstep(h, 0.01, 0.08) * (1 - THREE.MathUtils.smoothstep(h, 0.98, 1.08));
-        dragonHead.scale.setScalar(Math.max(0.001, size * 1.35));
-        skinMat.uniforms.uFade.value = size;
-        eyeMat.opacity = size;
-    });
-
-    const waterCount = 420;
-    const waterPos = new Float32Array(waterCount * 3);
-    const waterGeo = new THREE.BufferGeometry();
-    waterGeo.setAttribute('position', new THREE.BufferAttribute(waterPos, 3));
-    const waterMat = new THREE.PointsMaterial({ color: '#8fd4ff', size: 0.08, map: dot(), transparent: true, opacity: 0, depthWrite: false });
-    const water = new THREE.Points(waterGeo, waterMat);
-    water.frustumCulled = false;
-    scene.add(water);
-    const waterSeeds = Array.from({ length: waterCount }, () => ({ a: random() * Math.PI * 2, r: random(), h: random(), s: random() }));
-    const waterState = { rise: 0, blast: 0 };
-    updaters.push((dt, time) => {
-        waterSeeds.forEach((w, i) => {
-            const k = w.h;
-            // Spirale qui monte autour de lui (un dragon d'eau), puis jaillit vers le ciel.
-            const angle = w.a + time * 4 + k * 9;
-            const radius = 0.6 + w.r * 0.25 + (1 - waterState.rise) * 1.5;
-            let x = Math.cos(angle) * radius;
-            let y = k * 3 * waterState.rise + 0.2;
-            let z = Math.sin(angle) * radius;
-            const b = waterState.blast;
-            if (b > 0) {
-                const d = (b * 14 + w.s * 3) * (0.5 + k);
-                // Les embruns suivent le dragon : vers le ciel, au-dessus du village.
-                x = x * (1 - b) + (w.r - 0.5) * b * 1.5 + d * 0.15;
-                y = y * (1 - b) + (2.5 + (w.s - 0.5) * 0.8) * b + d * 0.45;
-                z = z * (1 - b) - d * 0.7;
-            }
-            waterPos[i * 3] = x;
-            waterPos[i * 3 + 1] = y;
-            waterPos[i * 3 + 2] = z;
-        });
-        waterGeo.attributes.position.needsUpdate = true;
-    });
-
+    /* ---------------- Effets : pièces ---------------- */
     const coinTex = coinTexture();
     const goldSide = new THREE.MeshStandardMaterial({ color: '#f0c24a', metalness: 0.75, roughness: 0.28, emissive: new THREE.Color('#9a6a10'), emissiveIntensity: 0.55 });
     const goldFace = new THREE.MeshStandardMaterial({ color: '#ffd766', metalness: 0.75, roughness: 0.22, emissive: new THREE.Color('#a8740f'), emissiveIntensity: 0.6, alphaMap: coinTex, alphaTest: 0.5, side: THREE.DoubleSide });
@@ -653,24 +486,6 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     });
 
     // Pièce lancée d'une pichenette, qui retombe dans la main.
-    // Arc-en-ciel dans les embruns, après le jaillissement du dragon d'eau.
-    const rainbowMat = new THREE.ShaderMaterial({
-        uniforms: { uOpacity: { value: 0 } },
-        vertexShader: 'varying vec2 vP; void main(){ vP = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-        fragmentShader: 'uniform float uOpacity; varying vec2 vP; vec3 hue(float h){ return clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0); } void main(){ float r = (length(vP) - 5.2) / 0.9; float band = smoothstep(0.0, 0.15, r) * (1.0 - smoothstep(0.85, 1.0, r)); float ends = smoothstep(0.0, 0.6, vP.y); gl_FragColor = vec4(mix(hue(0.78 - r * 0.78), vec3(1.0), 0.25), band * ends * uOpacity * 0.3); }',
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide,
-        fog: false
-    });
-    const rainbow = new THREE.Mesh(new THREE.RingGeometry(5.2, 6.1, 96, 1, 0, Math.PI), rainbowMat);
-    // Derrière Akira, au-dessus du village (dans l'axe des plans suivants).
-    rainbow.position.set(-6, -6, -60);
-    rainbow.scale.setScalar(6);
-    rainbow.visible = false;
-    scene.add(rainbow);
-
     // Aura de chakra (Suiton) : une flamme bleue translucide qui monte autour
     // d'Akira pendant les mudras, et des étincelles qui s'élèvent.
     const auraMat = new THREE.ShaderMaterial({
@@ -893,71 +708,6 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         });
     });
 
-    // Traînée de la lame : un ruban lumineux qui suit la pointe et le talon du
-    // sabre. Chaque point garde l'élan qu'avait la lame à cet instant et
-    // s'efface en quelques dixièmes de seconde : tout l'arc du coup reste
-    // visible. Sabre chargé de foudre (coup final) : ruban plus long, bleu électrique.
-    const TRAIL = 40;
-    const trailPos = new Float32Array(TRAIL * 2 * 3);
-    const trailAlpha = new Float32Array(TRAIL * 2);
-    const trailGeo = new THREE.BufferGeometry();
-    trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
-    trailGeo.setAttribute('alpha', new THREE.BufferAttribute(trailAlpha, 1));
-    const trailIdx = [];
-    for (let i = 0; i < TRAIL - 1; i++) trailIdx.push(i * 2, i * 2 + 1, i * 2 + 2, i * 2 + 1, i * 2 + 3, i * 2 + 2);
-    trailGeo.setIndex(trailIdx);
-    const trailColor = { value: new THREE.Color(0.85, 0.95, 1.0) };
-    const trail = new THREE.Mesh(trailGeo, new THREE.ShaderMaterial({
-        uniforms: { uColor: trailColor, uBoost: { value: 1.5 } },
-        vertexShader: 'attribute float alpha; varying float vA; void main(){ vA = alpha; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-        fragmentShader: 'uniform vec3 uColor; uniform float uBoost; varying float vA; void main(){ gl_FragColor = vec4(uColor * uBoost, vA); }',
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide
-    }));
-    trail.frustumCulled = false;
-    scene.add(trail);
-    const tipLocal = V(0, 0.89, 0);
-    const baseLocal = V(0, 0.35, 0);
-    const steelColor = new THREE.Color(0.85, 0.95, 1.0);
-    const boltColor = new THREE.Color(0.22, 0.5, 1.0);
-    const trailPts = [];
-    let trailParent = null;
-    updaters.push((dt) => {
-        const inHand = ninja.katana.parent !== ninja.katana.userData.sheathed.parent;
-        // Sabre dégainé ou rengainé : il « saute » d'un parent à l'autre, on repart à zéro
-        // (sinon la traînée dessinerait un trait du dos jusqu'à la main).
-        if (ninja.katana.parent !== trailParent) {
-            trailParent = ninja.katana.parent;
-            trailPts.length = 0;
-        }
-        const charged = raiton > 0.05;
-        const life = charged ? 1.0 : 0.3;
-        trail.material.uniforms.uBoost.value = charged ? 2.0 : 1.5;
-        trailColor.value.lerpColors(steelColor, boltColor, Math.min(1, raiton));
-        trailPts.forEach((pt) => { pt.age += dt; });
-        const tip = ninja.katana.localToWorld(tipLocal.clone());
-        const base = ninja.katana.localToWorld(baseLocal.clone());
-        // Élan de la lame (m/s à la pointe) ; au ralenti du coup final, on le renforce.
-        const speed = trailPts.length && dt > 0 ? trailPts[0].tip.distanceTo(tip) / dt : 0;
-        const energy = inHand ? Math.min(1, speed / (charged ? 1.5 : 4.5)) : 0;
-        if (charged) base.lerp(tip, -0.5); // ruban plus large : il déborde vers la garde
-        trailPts.unshift({ tip, base, energy, age: 0 });
-        while (trailPts.length > TRAIL || (trailPts.length && trailPts[trailPts.length - 1].age > life)) trailPts.pop();
-        for (let i = 0; i < TRAIL; i++) {
-            const pt = trailPts[Math.min(i, trailPts.length - 1)];
-            if (!pt) continue;
-            trailPos.set([pt.tip.x, pt.tip.y, pt.tip.z, pt.base.x, pt.base.y, pt.base.z], i * 6);
-            const fade = i < trailPts.length ? Math.max(0, 1 - pt.age / life) : 0;
-            const a = inHand ? pt.energy * (charged ? fade : fade * fade) * (charged ? 1 : 0.7) : 0;
-            trailAlpha[i * 2] = a;
-            trailAlpha[i * 2 + 1] = a * 0.12;
-        }
-        trailGeo.attributes.position.needsUpdate = true;
-        trailGeo.attributes.alpha.needsUpdate = true;
-    });
-
     const flipCoin = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.01, 24), [goldSide, goldFace, goldFace]);
     flipCoin.visible = false;
     scene.add(flipCoin);
@@ -1012,16 +762,6 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         const from = faceLevels[name] || 0;
         faceLevels[name] = value;
         return timeline.tween(seconds, (k) => ninja.express(name, from + (value - from) * k));
-    }
-    function slash(timeline, index, rotation, position) {
-        const arc = arcs[index];
-        arc.rotation.set(...rotation);
-        arc.position.copy(position);
-        arc.material.uniforms.uOpacity.value = 1;
-        return timeline.tween(0.45, (k) => {
-            arc.material.uniforms.uOpacity.value = 1 - k;
-            arc.rotation.z = rotation[2] + k * 0.6;
-        }, ease.out);
     }
     function cutPost(timeline, index) {
         const post = posts[index];
@@ -1141,7 +881,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             const aim = Math.atan2(P.x - ninja.root.position.x, P.z - ninja.root.position.z);
             if (i === 1) {
                 say('Hakke Kûshô : la paume du vide', 3, '空掌');
-                shot(tl, V(0.35, 1.45, -1.9), V(1.0, 1.0, 0.35), 1.2);
+                shot(tl, V(2.6, 1.5, 2.1), V(0.7, 1.0, 0.35), 1.2);
             }
             if (last) {
                 tl.tween(0.5, (k) => { auraMat.uniforms.uPower.value = 0.7 * k; }, ease.out);
@@ -1487,12 +1227,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         if (ninja.katana.parent !== ninja.katana.userData.sheathed.parent) ninja.sheathe();
         ninja.pouch.scale.setScalar(1);
         raiton = 0;
-        rainbow.visible = false;
         flipCoin.visible = false;
         spawnRate = 0;
-        dragonMat.uniforms.uHead.value = 0;
-        dragonMat.uniforms.uTail.value = 0;
-        waterMat.opacity = 0;
         setLook(stormLook, 1);
         auraMat.uniforms.uPower.value = 0;
         // Entrée : la caméra part du ciel d'orage et plonge vers Akira (l'amorti fait le reste).
@@ -1533,13 +1269,11 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         crowOnScreen() { crow.updateMatrixWorld(); return crow.visible ? crow.getWorldPosition(V()).project(camera).toArray() : null; },
         camera,
         ninja,
-        // Pour les tests : forcer la foudre sur la lame, montrer l'arc-en-ciel.
+        // Pour les tests : forcer la foudre sur la lame.
         setRaiton(v) { raiton = v; },
         setDusk,
         // Pour les tests : place la caméra d'un coup (sans amorti).
         setCamera(pos, target) { snapCamera(V(...pos), V(...target)); },
-        setDragon(h) { dragonMat.uniforms.uHead.value = h; dragonMat.uniforms.uTail.value = 0; },
-        setRainbow(v) { rainbow.visible = v > 0; rainbowMat.uniforms.uOpacity.value = v; },
         play,
         update(dt, time) { updaters.forEach((fn) => fn(dt, time)); },
         // Rendu avec profondeur de champ : la mise au point suit Akira.

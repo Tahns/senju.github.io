@@ -4157,3 +4157,35 @@ html.menu-open .sound-panel {
     .tool--voice__bar,
     .tool--voice__time { display: none; }
 }
+
+/* Carnet seul : bouton pour passer à l'histoire (ou revenir à la fiche). */
+.tool--switch {
+    display: inline-flex;
+    align-items: center;
+    gap: .45em;
+    width: auto;
+    padding: 0 .8em;
+    font-family: var(--font-title);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.tool--switch[hidden] { display: none; }
+
+.tool--switch__icon {
+    display: grid;
+    place-items: center;
+    width: 1.7em;
+    height: 1.7em;
+    font-family: var(--font-kanji);
+    font-size: 1.2em;
+    letter-spacing: 0;
+    color: #fff;
+    background: #3a4a8c;
+    border-radius: 50%;
+}
+
+@media (max-width: 520px) {
+    .tool--switch__label { display: none; }
+}

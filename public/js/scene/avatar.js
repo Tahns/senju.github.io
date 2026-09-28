@@ -228,6 +228,11 @@ function restyle(model) {
                 std.emissive.set(c);
             });
             if (name.includes('Shoes')) std.visible = false;
+            // Cheveux plus sombres, presque noirs, comme ceux des Hyûga.
+            if (/HAIR/.test(name)) {
+                std.color.set('#6e5a54');
+                std.emissive.set('#4a3a35');
+            }
             // Byakugan : l'iris des Hyûga, pâle et sans pupille, qui s'illumine à l'activation.
             if (name.includes('EyeIris')) {
                 std.map = null;

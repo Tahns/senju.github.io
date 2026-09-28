@@ -451,3 +451,14 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   n'avancent que quand la voix parle (jamais pendant les silences), et les fins
   de phrases et virgules sont calées sur les pauses réelles (la plupart des
   ponctuations tombent sur une pause). Mise à jour aussi quand on saute dans l'audio.
+- **Physique Hyûga** : cheveux presque noirs et longue mèche nouée dans le dos
+  (comme Neji), qui pend avec la gravité, reste contre le dos et ondule au vent.
+- **Histoire sans la 3D** : en carnet seul, un bouton « Histoire » / « Fiche »
+  passe de la fiche au carnet de l'histoire lu à voix haute (test
+  `tools/test/standalone.js`). Titre en double retiré de la première page du récit.
+- **Nettoyage** : dragon d'eau, embruns, arc-en-ciel, traînée et croissants du
+  sabre retirés du rêve (~180 lignes, 5 objets de moins dessinés à chaque
+  image) ; Hakke Kûshô filmé avec le village en fond ; zoom vers la lecture
+  raccourci ; le test du parcours se ferme proprement en cas d'erreur.
+- **Image d'aperçu refaite** (`public/img/og.jpg`) : Akira aux yeux du Byakugan
+  et aux cheveux longs, bras croisés devant la tour du Hokage.

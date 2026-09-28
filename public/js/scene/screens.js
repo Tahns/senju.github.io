@@ -240,7 +240,7 @@ function histoire() {
         const paras = ps.flatMap((pg) => Array.from(pg.querySelectorAll('.prose p:not(.to-be-continued)')));
         return {
             label: clean(s.querySelector('.chapter')?.textContent || `Chapitre ${i + 1}`),
-            title: clean(s.querySelector('h2')?.textContent || ''),
+            title: clean(s.dataset.title || s.querySelector('h2')?.textContent || ''),
             summary: clean(s.querySelector('.chapo')?.textContent || ''),
             paras: paras.map((n) => clean(n.textContent)),
             // Instant (en secondes) où la voix off commence chaque paragraphe.
@@ -452,7 +452,7 @@ export function createScreens({ sound, onExit, onBook, onVoice = () => {}, muted
         node.animate([
             { transform: `translate(${dx}px, ${dy}px) scale(${rect.width / to.width}, ${rect.height / to.height})` },
             { transform: 'none' }
-        ], { duration: 520, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+        ], { duration: 360, easing: 'cubic-bezier(.2, .8, .2, 1)' });
     }
     function draw(fx = false, dir = 0) {
         const page = screen.page ? screen.page(step) : step;
