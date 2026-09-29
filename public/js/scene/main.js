@@ -145,10 +145,12 @@ async function start() {
         new Promise((resolve) => setTimeout(resolve, 2500))
     ]).catch(() => {});
 
-    const room = buildRoom(scene);
-    const right = new Arm(rig, 1);
-    const left = new Arm(rig, -1);
+    // Les mains se sculptent (en arrière-plan) pendant qu'on construit la chambre.
+    const detail = low ? 'low' : mobile ? 'mobile' : 'high';
+    const right = new Arm(rig, 1, detail);
+    const left = new Arm(rig, -1, detail);
     const arms = [right, left];
+    const room = buildRoom(scene);
     // Ce que les doigts touchent sans le traverser : les deux carnets, la porte
     // et la boîte à musique (coffret, couvercle, clé).
     const touch = [...Object.values(room.books).map(({ mesh }) => boxTouch(mesh)), room.doorTouch, ...room.musicBoxTouch];
@@ -1116,6 +1118,7 @@ async function start() {
         if (!manual) requestAnimationFrame(frame);
     }
 
+    await Promise.all(arms.map((arm) => arm.ready));
     applyCamera();
     arms.forEach((arm) => arm.update());
     renderer.compile(scene, camera);

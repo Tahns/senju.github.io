@@ -542,3 +542,17 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   Shirohae et la flûte et les tambours du rêve ; il ne garde que le vent de
   l'orage. Shirohae démarre quand Akira a fini de remonter la clé (repli : la
   mélodie de la boîte si YouTube ne charge pas).
+
+## Mardi 29 septembre
+
+- **Mains réalistes** (première personne) : fini les « petits morceaux »
+  (paume en boîte, sphères, une capsule par phalange). Chaque main est un seul
+  maillage lisse sculpté par champ de distance (`hand-shape.js`, calculé dans
+  un worker) : dos bombé, jointures, éminences du pouce et de l'auriculaire,
+  creux de la paume, poignet qui se fond dans l'avant-bras, doigts effilés aux
+  articulations marquées, ongles à fleur de peau ; teinte par sommet (jointures
+  et bouts des doigts rosés, plis de flexion, lignes de la main). Il est porté
+  (skinning) par les nœuds existants — paume, phalanges, pouce — : `grip`,
+  `fitDigits` et `touch` marchent comme avant, et la peau visible reste dans
+  les capsules de collision. Sonde sur tout le parcours de la chambre (sommets
+  visibles contre livres, porte, boîte) : aucune pénétration au-delà de 1 mm.

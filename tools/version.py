@@ -27,7 +27,7 @@ def main():
     html = re.sub(r'src="public/js/book\.js(\?v=\w+)?"', f'src="public/js/book.js?v={stamp("public/js/book.js")}"', html)
     html = re.sub(r'src="public/js/scene/main\.js(\?v=\w+)?"', f'src="public/js/scene/main.js?v={stamp("public/js/scene/main.js")}"', html)
     imports = {'three': './public/vendor/three.module.min.js'}
-    modules = sorted(p for p in (ROOT / 'public/js/scene').glob('*.js') if p.name not in ('main.js', 'head-worker.js'))
+    modules = sorted(p for p in (ROOT / 'public/js/scene').glob('*.js') if p.name != 'main.js' and not p.name.endswith('-worker.js'))
     modules.append(ROOT / 'public/vendor/RoundedBoxGeometry.js')
     for p in modules:
         rel = p.relative_to(ROOT).as_posix()
