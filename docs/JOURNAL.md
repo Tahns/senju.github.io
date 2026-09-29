@@ -547,3 +547,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (iPhone). Le carnet garde le sien dans sa barre d'outils.
 - Carte « Fin » : les pastilles de chapitres du rêve (Jûken, Kaiten,
   Trésorier, Un jour…) sont retirées.
+- Menu « Sélection de la catégorie » : les flèches dorées et le kanji ne
+  sautent plus entre « Histoire » et « HRP ». La colonne du mot prenait la
+  largeur du mot (« HRP » la rétrécissait) et les flèches y étaient placées
+  en % ; elle garde maintenant la largeur de « Histoire ». Sur téléphone, le
+  bandeau garde la hauteur de deux lignes (il grandissait avec « Histoire »
+  et cachait l'indice « Glisse vers le haut ou le bas »).
