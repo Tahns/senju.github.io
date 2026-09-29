@@ -620,3 +620,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   `fitDigits` et `touch` marchent comme avant, et la peau visible reste dans
   les capsules de collision. Sonde sur tout le parcours de la chambre (sommets
   visibles contre livres, porte, boîte) : aucune pénétration au-delà de 1 mm.
+- Rêve : plus de vide entre le col et le cou. La peau du cou était coupée
+  au-dessus du col (on voyait le col vide) ; seule la peau des épaules, loin
+  de l'axe du cou, est encore masquée. Manches un peu plus épaisses (×0,97
+  au lieu de ×0,88).
