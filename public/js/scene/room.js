@@ -583,7 +583,8 @@ export function buildRoom(scene) {
     lidMirror.position.set(0.08, -0.0005, 0);
     lid.add(lidMirror);
     const key = new THREE.Group();
-    key.position.set(-0.02, 0.035, -0.114);
+    // Assez haut sur le flanc pour que la main qui la tourne reste au-dessus du coffre.
+    key.position.set(-0.02, 0.058, -0.114);
     musicBox.add(key);
     // Tige, puis molette crantée qu'on pince entre le pouce et l'index (ronde :
     // on la reprend de la même façon après chaque quart de tour).
@@ -611,8 +612,8 @@ export function buildRoom(scene) {
     keyGrip.position.set(0, 0, -0.023);
     key.add(keyGrip);
 
-    // Formes de la boîte pour les doigts (distance signée, repère de chaque pièce) :
-    // le coffret, le couvercle (qui pivote) et la clé (tige et ailette).
+    // Formes pour les doigts (distance signée, repère de chaque pièce) : le
+    // coffret, le couvercle (qui pivote), la clé (tige et molette) et le coffre.
     const sdBox = (x, y, z, hx, hy, hz) => {
         const qx = Math.abs(x) - hx, qy = Math.abs(y) - hy, qz = Math.abs(z) - hz;
         return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0);
@@ -631,7 +632,10 @@ export function buildRoom(scene) {
                 };
                 return Math.min(cyl(0.0025, -0.008, 0.008), cyl(0.0063, -0.023, 0.007));
             }
-        }
+        },
+        // Le coffre sous la boîte (et le pot du bonsaï posé dessus) : la main qui
+        // remonte la clé ne doit pas s'y enfoncer.
+        { object: tansu, radius: 0.7, sd: (p) => Math.min(sdBox(p.x, p.y - 0.41, p.z, 0.21, 0.41, 0.4), sdBox(p.x, p.y - 0.85, p.z - 0.22, 0.11, 0.028, 0.075)) }
     ];
 
     /* ---------------- Futon ---------------- */
