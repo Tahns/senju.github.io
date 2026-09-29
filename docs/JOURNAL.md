@@ -547,3 +547,15 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (iPhone). Le carnet garde le sien dans sa barre d'outils.
 - Carte « Fin » : les pastilles de chapitres du rêve (Jûken, Kaiten,
   Trésorier, Un jour…) sont retirées.
+
+## Mardi 29 septembre
+
+- Écran « Présentation HRP » refait : carte d'encre sombre façon papier washi,
+  double filet doré, grand 日向 en filigrane ; bandeau pinceau rose-violet
+  avec sceau rouge 日向 et « Présentation HRP » sur une ligne ; chaque
+  rubrique a son kanji (人, 志, 暦, 道), séparées par un œil (Byakugan) doré ;
+  texte aligné à gauche, lignes de 60 à 75 signes. La carte suit la hauteur
+  du texte (centrée), seul le texte défile (fondu en bas s'il en reste).
+  Teinte rose et violette du mot « HRP » du menu, pastilles en biseau ;
+  l'ombre passe sous la carte pour laisser Akira net à gauche. Téléphone : nom
+  sur une ligne, bandeau du haut à gauche (plus sous le bouton plein écran).

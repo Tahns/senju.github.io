@@ -3497,9 +3497,21 @@ html.menu-open .radio {
 
 .storm-menu.is-entering .storm-menu__banner { animation-name: storm-in; }
 
-/* HRP : personnage à gauche (nom et pastilles en bas à gauche), présentation à droite. */
+/* HRP : personnage à gauche (nom et pastilles en bas à gauche), présentation à droite.
+   Teinte rose et violette du mot « HRP » dans le menu, filets dorés, carte d'encre
+   sombre façon papier washi, sceau 日向 et kanji de rubrique. */
+.storm-screen[data-layout="side"] {
+    --ss-green: #ffd6e2;
+    --ss-glow: rgba(255, 90, 140, .6);
+    --ss-gold: #e6c47a;
+    --ss-ink: #f3ead7;
+    /* Le personnage (à gauche) reste net : l'ombre se pose sous la carte, à droite. */
+    background:
+        linear-gradient(90deg, rgba(10, 6, 24, .55) 0%, rgba(10, 6, 24, .12) 32%, rgba(10, 6, 24, .35) 55%, rgba(10, 6, 24, .78) 100%);
+}
+
 .ss-body--hrp.ss-layout--side {
-    inset: 12vh 4vw 12vh;
+    inset: 14vh 4vw 13vh;
     width: auto;
     display: block;
 }
@@ -3507,60 +3519,332 @@ html.menu-open .radio {
 .ss-body--hrp .ss-hero {
     position: absolute;
     left: 0;
-    top: 22%;
+    top: 16%;
+}
+
+.ss-body--hrp .ss-hero__jp {
+    margin-bottom: .3em !important;
+    font-size: clamp(14px, 1.3vw, 19px);
+    color: var(--ss-gold);
+    text-shadow: 0 0 10px rgba(230, 196, 122, .45);
+}
+
+.ss-body--hrp .ss-hero__name {
+    color: #fff;
+    text-shadow:
+        0 0 6px rgba(255, 110, 150, .9), 0 0 22px rgba(229, 53, 127, .55), 0 0 44px rgba(91, 43, 224, .45),
+        3px 3px 0 rgba(36, 17, 94, .85);
+}
+
+.ss-body--hrp .ss-hero__nick {
+    color: var(--ss-gold);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, .8);
 }
 
 .ss-body--hrp .ss-pills {
     position: absolute;
     left: 0;
-    bottom: 6%;
+    bottom: 4%;
     flex-direction: column;
     align-items: flex-start;
+    gap: .7em;
 }
 
-.ss-body--hrp .ss-pill { min-width: 15em; text-align: center; }
+/* Pastilles en biseau, comme les boutons du menu. */
+.ss-body--hrp .ss-pill {
+    min-width: 14em;
+    padding: .45em 2em;
+    font-family: var(--zk-font);
+    letter-spacing: .03em;
+    text-align: center;
+    color: rgba(255, 255, 255, .78);
+    background: linear-gradient(90deg, rgba(24, 14, 48, .88), rgba(12, 8, 26, .78));
+    border: 1px solid rgba(230, 196, 122, .35);
+    border-radius: 3px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - .8em) 100%, 0 100%);
+    transition: color .2s, background .2s, translate .2s;
+}
 
+.ss-body--hrp .ss-pill:hover,
+.ss-body--hrp .ss-pill:focus-visible {
+    outline: none;
+    color: #fff;
+    translate: .3em 0;
+}
+
+.ss-body--hrp .ss-pill.is-active {
+    color: #fff;
+    background: linear-gradient(90deg, var(--zk-magenta), var(--zk-purple));
+    border-color: var(--ss-gold);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .15), 0 0 16px rgba(229, 53, 127, .55);
+    text-shadow: 0 1px 3px rgba(36, 17, 94, .9);
+}
+
+/* La carte : encre sombre et fibres de papier, double filet doré, grand 日向 en
+   filigrane. Sa hauteur suit le texte ; au-delà, seul le texte défile. */
 .ss-body--hrp .ss-card {
     position: absolute;
     right: 0;
+    /* Centrée en hauteur, à la taille de son texte. */
     top: 0;
     bottom: 0;
-    width: min(42vw, 560px);
-    padding: 0 1.4em 1.2em;
-    color: #fff;
-    text-align: center;
-    background: rgba(90, 100, 80, .82);
-    border: 3px solid #2e4a52;
-    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    width: min(40vw, 600px);
+    height: fit-content;
+    max-height: 100%;
+    margin-block: auto;
+    padding: 0;
+    overflow: hidden;
+    isolation: isolate;
+    font-size: clamp(15px, 1.15vw, 18px);
+    color: var(--ss-ink);
+    text-align: left;
+    background:
+        radial-gradient(120% 55% at 100% 0%, rgba(229, 53, 127, .16), transparent 60%),
+        radial-gradient(90% 60% at 0% 100%, rgba(91, 43, 224, .24), transparent 65%),
+        repeating-linear-gradient(97deg, rgba(255, 255, 255, .018) 0 1px, transparent 1px 7px),
+        repeating-linear-gradient(8deg, rgba(255, 240, 210, .014) 0 1px, transparent 1px 11px),
+        linear-gradient(180deg, rgba(22, 13, 44, .95), rgba(11, 7, 24, .96));
+    border: 1px solid rgba(230, 196, 122, .6);
+    border-radius: 4px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .6), 0 0 0 1px rgba(0, 0, 0, .5), 0 0 40px rgba(229, 53, 127, .12);
+    animation: ss-card-in .55s cubic-bezier(.2, .8, .2, 1) both;
 }
 
+/* Filet intérieur et coins dorés. */
+.ss-body--hrp .ss-card::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    z-index: 1;
+    border: 1px solid rgba(230, 196, 122, .18);
+    border-radius: 2px;
+    background:
+        linear-gradient(var(--ss-gold), var(--ss-gold)) left top / 14px 2px,
+        linear-gradient(var(--ss-gold), var(--ss-gold)) left top / 2px 14px,
+        linear-gradient(var(--ss-gold), var(--ss-gold)) right bottom / 14px 2px,
+        linear-gradient(var(--ss-gold), var(--ss-gold)) right bottom / 2px 14px;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.ss-body--hrp .ss-card::after {
+    content: "日向";
+    position: absolute;
+    right: -.05em;
+    bottom: -.12em;
+    z-index: -1;
+    font-family: var(--font-kanji);
+    font-size: clamp(120px, 12vw, 220px);
+    line-height: 1;
+    writing-mode: vertical-rl;
+    color: rgba(230, 196, 122, .045);
+    pointer-events: none;
+}
+
+@keyframes ss-card-in {
+    from { translate: 1.5em 0; scale: .985; }
+}
+
+/* Bandeau pinceau : sceau rouge 日向, titre sur une ligne. */
 .ss-card__head {
-    display: grid;
-    margin: 0 -1.4em .8em;
-    padding: .4em;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .75em;
+    flex: none;
+    margin: 0;
+    padding: .9em 1.6em .8em 1.3em;
     font-family: var(--zk-font);
-    font-size: clamp(16px, 1.6vw, 22px);
     line-height: 1.1;
-    color: #ff6b7d;
-    background: #1f3a40;
-    border-radius: 9px 9px 0 0;
 }
 
-.ss-body--hrp .ss-card__title { color: #ffd35a; text-decoration: underline; font-size: clamp(14px, 1.3vw, 18px); }
+.ss-card__head::before {
+    content: "";
+    position: absolute;
+    inset: .55em 0 .45em .6em;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(229, 53, 127, .92), rgba(150, 40, 170, .75) 55%, rgba(91, 43, 224, 0));
+    clip-path: polygon(0 18%, 3% 4%, 30% 0, 62% 8%, 100% 2%, 96% 40%, 100% 78%, 70% 94%, 36% 100%, 4% 92%, 1% 60%);
+}
+
+.ss-card__head::after {
+    content: "";
+    position: absolute;
+    left: 1.3em;
+    right: 1.3em;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--ss-gold), rgba(230, 196, 122, .35) 60%, transparent);
+}
+
+.ss-card__seal {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.15em;
+    height: 2.15em;
+    font-family: var(--font-kanji);
+    font-size: clamp(13px, 1.05vw, 16px);
+    line-height: .98;
+    white-space: pre;
+    text-align: center;
+    color: #fff4df;
+    background: radial-gradient(circle at 35% 30%, #d8394f, #9e1c33);
+    border: 1px solid rgba(255, 230, 200, .55);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .5), inset 0 0 0 2px rgba(120, 10, 30, .6);
+    rotate: -4deg;
+}
+
+.ss-card__label {
+    font-size: clamp(18px, 1.7vw, 25px);
+    letter-spacing: .03em;
+    white-space: nowrap;
+    color: #fff;
+    text-shadow: 0 2px 0 rgba(36, 17, 94, .85), 0 0 12px rgba(255, 110, 150, .5);
+}
+
+/* Le texte : aligné à gauche, lignes de 60 à 75 signes, défilement discret. */
+.ss-card__scroll {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.1em 1.75em 1.3em;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(230, 196, 122, .5) transparent;
+}
+
+.ss-card__scroll.has-more {
+    -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 3em), transparent);
+    mask-image: linear-gradient(180deg, #000 calc(100% - 3em), transparent);
+}
+
+.ss-card__scroll:focus-visible { outline: 1px dashed rgba(230, 196, 122, .6); outline-offset: -4px; }
+
+.ss-card__sec {
+    max-width: 68ch;
+    animation: ss-sec-in .5s cubic-bezier(.2, .8, .2, 1) both;
+    animation-delay: calc(.18s + var(--i, 0) * .09s);
+}
+
+@keyframes ss-sec-in {
+    from { translate: 0 .8em; }
+}
+
+/* Séparateur entre deux rubriques : filet doré et œil (Byakugan) au centre. */
+.ss-card__sec + .ss-card__sec::before {
+    content: "";
+    display: block;
+    height: 14px;
+    margin: 1.1em 0 1em;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 14'%3E%3Cpath d='M2 7 Q17 -3 32 7 Q17 17 2 7Z' fill='none' stroke='%23e6c47a' stroke-width='1.3'/%3E%3Ccircle cx='17' cy='7' r='3.2' fill='none' stroke='%23e6c47a' stroke-width='1.1'/%3E%3Ccircle cx='17' cy='7' r='1' fill='%23e6c47a'/%3E%3C/svg%3E") center / 34px 14px no-repeat,
+        linear-gradient(90deg, transparent, rgba(230, 196, 122, .45) 20%, rgba(230, 196, 122, .45) calc(50% - 24px), transparent calc(50% - 24px), transparent calc(50% + 24px), rgba(230, 196, 122, .45) calc(50% + 24px), rgba(230, 196, 122, .45) 80%, transparent) center / 100% 1px no-repeat;
+}
+
+.ss-body--hrp .ss-card__title {
+    display: flex;
+    align-items: center;
+    gap: .6em;
+    margin: 0 0 .7em;
+    font-size: clamp(17px, 1.45vw, 22px);
+    letter-spacing: .03em;
+    text-align: left;
+    text-decoration: none;
+    color: #ffd6e2;
+    text-shadow: 0 0 10px rgba(229, 53, 127, .45);
+}
+
+.ss-card__mark {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.75em;
+    height: 1.75em;
+    font-family: var(--font-kanji);
+    font-size: .95em;
+    line-height: 1;
+    color: var(--ss-gold);
+    text-shadow: none;
+    background: radial-gradient(circle, rgba(229, 53, 127, .28), rgba(36, 17, 94, .6));
+    border: 1px solid rgba(230, 196, 122, .6);
+    border-radius: 50%;
+}
+
 .ss-body--hrp .ss-card p,
-.ss-body--hrp .ss-card .ss-list { color: #fff; }
-.ss-body--hrp .ss-card .ss-list { text-align: left; }
-.ss-body--hrp .ss-card .ss-panel__em { color: #ffd35a; }
+.ss-body--hrp .ss-card .ss-list {
+    font-size: 1em;
+    line-height: 1.62;
+    color: var(--ss-ink);
+}
+
+.ss-body--hrp .ss-card p { margin: 0 0 .75em; }
+.ss-body--hrp .ss-card p:last-child { margin-bottom: 0; }
+
+.ss-body--hrp .ss-card .ss-list {
+    gap: .55em;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+.ss-body--hrp .ss-card .ss-list li {
+    position: relative;
+    padding-left: 1.3em;
+}
+
+/* Puce : petit losange magenta cerclé d'or. */
+.ss-body--hrp .ss-card .ss-list li::before {
+    content: "";
+    position: absolute;
+    left: .15em;
+    top: .62em;
+    width: .42em;
+    height: .42em;
+    background: var(--zk-magenta);
+    box-shadow: 0 0 0 1px var(--ss-gold);
+    rotate: 45deg;
+}
+
+/* Horaires : encadré à filet magenta. */
+.ss-body--hrp .ss-card .ss-panel__em {
+    padding: .55em .9em;
+    font-weight: 600;
+    color: #ffe7b0;
+    background: linear-gradient(90deg, rgba(229, 53, 127, .16), rgba(91, 43, 224, .06));
+    border-left: 3px solid var(--zk-magenta);
+    border-radius: 0 4px 4px 0;
+}
 
 @media (max-aspect-ratio: 1/1) {
     .storm-menu::before,
     .storm-menu::after { height: 5vh; }
-    .ss-body--hrp.ss-layout--side { inset: 16vh 16px 14vh; overflow-y: auto; }
+    /* Téléphone : nom, pastilles puis carte ; la carte prend la place qui reste
+       et seul son texte défile (le bandeau reste visible). */
+    .storm-screen[data-layout="side"] { background: rgba(10, 6, 24, .72); }
+    .ss-body--hrp.ss-layout--side {
+        inset: 15vh 16px 16vh;
+        display: flex;
+        flex-direction: column;
+        gap: 1.4vh;
+        overflow: hidden;
+    }
     .ss-body--hrp .ss-hero,
-    .ss-body--hrp .ss-pills,
-    .ss-body--hrp .ss-card { position: static; width: auto; margin-bottom: 1.2vh; }
-    .ss-body--hrp .ss-pills { flex-direction: row; }
-    .ss-body--hrp .ss-pill { min-width: 0; }
+    .ss-body--hrp .ss-pills { position: static; width: auto; flex: none; }
+    .ss-body--hrp .ss-card { position: relative; width: auto; }
+    /* Bandeau du haut à gauche : les boutons plein écran et son restent à droite. */
+    .storm-screen[data-layout="side"] .ss-top { left: 16px; translate: none; padding: .2em 1.6em .3em 1em; clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%); }
+    .ss-top__pause { white-space: nowrap; }
+    .ss-body--hrp .ss-hero__name { display: inline-block; font-size: 30px; }
+    .ss-body--hrp .ss-hero__name--2 { margin-left: .35em !important; }
+    .ss-body--hrp .ss-card { margin-block: 0; height: auto; }
+    .ss-body--hrp .ss-pills { flex-direction: row; flex-wrap: nowrap; gap: .5em; }
+    .ss-body--hrp .ss-pill { flex: 1 1 0; min-width: 0; padding: .45em .6em; font-size: 13px; }
+    .ss-body--hrp .ss-card { flex: 0 1 auto; min-height: 0; max-height: none; font-size: 15px; }
+    .ss-card__head { padding: .75em 1.2em .65em 1em; }
+    .ss-card__scroll { padding: .9em 1.15em 1.1em; }
 }
 
 @media (prefers-reduced-motion: reduce) {
