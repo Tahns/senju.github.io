@@ -567,3 +567,19 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   Teinte rose et violette du mot « HRP » du menu, pastilles en biseau ;
   l'ombre passe sous la carte pour laisser Akira net à gauche. Téléphone : nom
   sur une ligne, bandeau du haut à gauche (plus sous le bouton plein écran).
+- **Modèle du rêve (poignets, cou, gilet, pantalon, posture)** : la cause
+  commune était un os en miroir. Les retouches du maillage (cou, peau, manches,
+  ventre, pantalon) calculaient la place des os avec `bindMatrixInverse`, que
+  three.js recalcule d'après la place actuelle du modèle, déjà retourné de
+  180° : chaque os était pris du côté opposé. Mesuré le long de l'avant-bras :
+  la manche s'arrêtait 9,3 cm avant le poignet (vide entre manche et main, dans
+  toutes les poses) ; maintenant elle couvre 2,5 cm de la main. Le pantalon
+  était élargi autour de la jambe d'en face (bandes et étui de cuisse qui en
+  sortaient) et le dos était resserré au lieu du ventre (haut en « robe »).
+  Les primitives partagent leurs sommets : le cou était élargi 4 fois sur le
+  corps (×1,75) et 2 fois sur le visage (×1,32), d'où la marche au raccord ;
+  chaque retouche ne passe plus qu'une fois (cou ×1,3 partout, 1,3 cm plus
+  court). Bas du haut remonté vers la taille, ceinture du pantalon resserrée
+  avec le ventre (elle ne perce plus le haut). Pose « debout » (menu) :
+  bras le long du corps, paumes vers les cuisses, pieds un peu écartés, au
+  lieu des bras raides écartés et des jambes serrées.

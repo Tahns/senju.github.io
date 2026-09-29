@@ -436,7 +436,10 @@ export function buildNinja(sculpt, avatarGltf = null) {
 
     // Poses : angles (en radians) des articulations.
     const POSES = {
-        stand: { spine: [0, 0, 0], head: [0, 0, 0], shoulderL: [0.05, 0, -0.18], shoulderR: [0.05, 0, 0.18], elbowL: [-0.2, 0, 0], elbowR: [-0.2, 0, 0], hipL: [0, 0, 0.04], hipR: [0, 0, -0.04], kneeL: [0.05, 0, 0], kneeR: [0.05, 0, 0] },
+        // Debout, détendu : bras le long du corps (paumes vers les cuisses), coudes
+        // souples, pieds un peu écartés (avant : bras raides écartés, paumes en
+        // avant, jambes serrées — « en pingouin »).
+        stand: { spine: [0, 0, 0], head: [0, 0, 0], shoulderL: [0.08, 0.45, -0.08], shoulderR: [0.08, -0.45, 0.08], elbowL: [-0.35, 0, 0], elbowR: [-0.35, 0, 0], hipL: [-0.03, 0, -0.05], hipR: [-0.03, 0, 0.05], kneeL: [0.1, 0, 0], kneeR: [0.06, 0, 0] },
         crossed: { spine: [0, 0, 0], head: [0.05, 0, 0], shoulderL: [-0.35, 1.15, -0.1], shoulderR: [-0.25, -1.15, 0.1], elbowL: [-1.55, 0, 0], elbowR: [-1.65, 0, 0], hipL: [0, 0, 0.1], hipR: [0, 0, -0.1] },
         draw: { spine: [0.05, 0.4, 0], head: [0, -0.3, 0], shoulderR: [-2.6, 0, 0.35], elbowR: [-0.9, 0, 0], shoulderL: [-0.3, 0, -0.3], elbowL: [-0.6, 0, 0], hipL: [-0.3, 0, 0.12], kneeL: [0.5, 0, 0], hipR: [0.25, 0, -0.1], kneeR: [0.2, 0, 0] },
         // Grands coups : armé (wind) puis frappe ample (strike), jambes en fente.
