@@ -14,7 +14,6 @@
  * jamais les traverser : voir fitDigits.
  */
 import * as THREE from 'three';
-import { RoundedBoxGeometry } from '../../vendor/RoundedBoxGeometry.js';
 import { skin as skinTexture } from './textures.js';
 
 const UPPER = 0.27;
@@ -47,14 +46,7 @@ function skinMaterial() {
 const sleeve = new THREE.MeshStandardMaterial({ color: '#232b4a', roughness: 0.88 });
 const lining = new THREE.MeshStandardMaterial({ color: '#d9d0bc', roughness: 0.9 });
 
-function capsule(radius, length) {
-    const geometry = new THREE.CapsuleGeometry(radius, Math.max(0.001, length - radius), 4, 10);
-    geometry.rotateX(-Math.PI / 2);
-    geometry.translate(0, 0, -length / 2);
-    return new THREE.Mesh(geometry, skinMaterial());
-}
-
-// Un doigt : trois phalanges articulées.
+// Un doigt : trois phalanges articulées (les os de la main sculptée).
 function finger(lengths, radius) {
     const joints = [];
     const root = new THREE.Group();
@@ -63,42 +55,73 @@ function finger(lengths, radius) {
         const joint = new THREE.Group();
         if (i > 0) joint.position.z = -lengths[i - 1];
         parent.add(joint);
-        const r = radius * (1 - i * 0.08);
-        joint.add(capsule(r, length));
-        joint.userData = { length, r };
-        if (i === lengths.length - 1) {
-            // Ongle, sur le dos de la dernière phalange.
-            const n = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), nail);
-            n.scale.set(r * 0.78, r * 0.32, length * 0.42);
-            n.position.set(0, r * 0.72, -length * 0.62);
-            joint.add(n);
-        }
+        // r : rayon de collision de la phalange (la peau visible reste dedans).
+        joint.userData = { length, r: radius * (1 - i * 0.08) };
         joints.push(joint);
         parent = joint;
     });
     return { root, joints };
 }
 
-function buildHand(side) {
+// Base du pouce : `thumb` le ramène sous la paume (opposition), `pinch` le
+// tourne face à l'index, `wrap` le fait passer par-dessus un bord.
+function thumbQuaternion(q, thumb, pinch, wrap) {
+    q.setFromEuler(thumbEuler.set(-0.25 - 0.55 * thumb, (0.8 - 0.55 * thumb) * (1 - (pinch || 0)), -0.45));
+    if (wrap) q.slerp(WRAP, wrap);
+    return q;
+}
+
+/*
+ * La main visible est un seul maillage lisse (voir hand-shape.js), porté par
+ * les nœuds ci-dessous comme par des os : paume, phalanges, pouce. On la
+ * sculpte une fois (hors du fil principal si possible) dans une pose de
+ * référence, doigts tendus et écartés ; les deux mains partagent la forme.
+ */
+const DETAIL = { high: 0.0012, mobile: 0.0015, low: 0.0018 };
+const BIND_SPREAD = -1; // doigts écartés : ils ne se collent pas pendant la sculpture
+const BIND_THUMB = 0.6;
+const shapes = {};
+function handShape(chains, cell) {
+    if (!shapes[cell]) {
+        shapes[cell] = new Promise((resolve) => {
+            const fallback = () => import('./hand-shape.js').then((m) => resolve(m.sculptHand(chains, cell)));
+            try {
+                const worker = new Worker(new URL('./hand-worker.js', import.meta.url), { type: 'module' });
+                worker.onmessage = (e) => {
+                    worker.terminate();
+                    resolve(e.data);
+                };
+                worker.onerror = () => {
+                    worker.terminate();
+                    fallback();
+                };
+                worker.postMessage({ chains, cell });
+            } catch (error) {
+                fallback();
+            }
+        }).then((raw) => {
+            const g = new THREE.BufferGeometry();
+            g.setAttribute('position', new THREE.BufferAttribute(raw.position, 3));
+            g.setAttribute('normal', new THREE.BufferAttribute(raw.normal, 3));
+            g.setAttribute('uv', new THREE.BufferAttribute(raw.uv, 2));
+            g.setAttribute('color', new THREE.BufferAttribute(raw.color, 3));
+            g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(raw.skinIndex, 4));
+            g.setAttribute('skinWeight', new THREE.BufferAttribute(raw.skinWeight, 4));
+            g.setIndex(new THREE.BufferAttribute(raw.index, 1));
+            g.computeBoundingSphere();
+            return { geometry: g, nails: raw.nails };
+        });
+    }
+    return shapes[cell];
+}
+let handSkin = null;
+const nailGeometry = new THREE.SphereGeometry(1, 16, 10);
+
+function buildHand(side, detail) {
     const hand = new THREE.Group();
     const mirror = new THREE.Group();
     mirror.scale.x = side; // main gauche = miroir de la droite
     hand.add(mirror);
-
-    const palm = new THREE.Mesh(new RoundedBoxGeometry(0.066, 0.024, 0.08, 4, 0.0115), skinMaterial());
-    palm.position.set(0, 0, -0.042);
-    mirror.add(palm);
-    // Jointures : légers renflements à la base des doigts.
-    [-0.023, -0.0075, 0.008, 0.0225].forEach((x) => {
-        const k = new THREE.Mesh(new THREE.SphereGeometry(0.0092, 12, 8), skinMaterial());
-        k.scale.set(1, 0.9, 1.1);
-        k.position.set(x, 0.002, -0.076);
-        mirror.add(k);
-    });
-    const heel = new THREE.Mesh(new THREE.SphereGeometry(0.022, 12, 10), skinMaterial());
-    heel.scale.set(1.25, 0.7, 1);
-    heel.position.set(0, -0.002, -0.006);
-    mirror.add(heel);
 
     const defs = [
         { x: -0.023, lengths: [0.034, 0.021, 0.018], radius: 0.0078, spread: -0.07 },
@@ -121,11 +144,46 @@ function buildHand(side) {
     const thumb = finger([0.034, 0.027, 0.022], 0.0095);
     thumbBase.add(thumb.root);
 
-    return { hand, fingers, thumbBase, thumb };
+    // Pose de référence, et repère de chaque os dans celui de la main.
+    fingers.forEach((f) => f.root.rotation.set(0, f.spread * BIND_SPREAD * 2.2, 0));
+    thumbQuaternion(thumbBase.quaternion, BIND_THUMB, 0, 0);
+    hand.updateMatrixWorld(true);
+    const toHand = mirror.matrixWorld.clone().invert();
+    const bones = [mirror, ...fingers.flatMap((f) => f.joints), ...thumb.joints];
+    const rest = bones.map((b) => new THREE.Matrix4().multiplyMatrices(toHand, b.matrixWorld));
+    const chains = [...fingers, thumb].map((f, i) => {
+        const e = rest[1 + i * 3].elements;
+        return { o: [e[12], e[13], e[14]], R: [[e[0], e[1], e[2]], [e[4], e[5], e[6]], [e[8], e[9], e[10]]], lengths: f.joints.map((j) => j.userData.length), radius: i < 4 ? defs[i].radius : 0.0095 };
+    });
+
+    if (!handSkin) {
+        // Même peau que l'avant-bras, nuancée par sommet (jointures, plis, lignes de la main).
+        handSkin = skinMaterial().clone();
+        handSkin.vertexColors = true;
+    }
+    const skin = new THREE.SkinnedMesh(new THREE.BufferGeometry(), handSkin);
+    skin.bind(new THREE.Skeleton(bones, rest.map((m) => m.clone().invert())), new THREE.Matrix4());
+    skin.frustumCulled = false;
+    mirror.add(skin);
+    const ready = handShape(chains, DETAIL[detail] || DETAIL.high).then(({ geometry, nails }) => {
+        skin.geometry = geometry;
+        // Ongles, sur le dos de la dernière phalange.
+        [...fingers, thumb].forEach((f, i) => {
+            const n = new THREE.Mesh(nailGeometry, nail);
+            n.position.fromArray(nails[i].position);
+            n.scale.fromArray(nails[i].scale);
+            n.rotation.x = nails[i].tilt;
+            n.frustumCulled = false;
+            f.joints[2].add(n);
+        });
+    });
+
+    return { hand, fingers, thumbBase, thumb, skin, ready };
 }
 
 export class Arm {
-    constructor(rig, side) {
+    // detail : 'high', 'mobile' ou 'low' (finesse du maillage de la main).
+    constructor(rig, side, detail = 'high') {
         this.rig = rig;
         this.side = side;
         this.shoulder = new THREE.Vector3(0.17 * side, -0.27, 0.1);
@@ -154,9 +212,11 @@ export class Arm {
         this.upper = cylinder(0.05, 0.054, sleeve);
         this.fore = cylinder(0.054, 0.046, sleeve);
         this.cuff = new THREE.Mesh(new THREE.TorusGeometry(0.047, 0.005, 6, 20), lining);
-        this.forearm = cylinder(0.022, 0.026, skinMaterial());
-        this.parts = buildHand(side);
+        // Avant-bras : il s'affine vers le poignet et se termine dans celui de la main.
+        this.forearm = cylinder(0.0175, 0.026, skinMaterial());
+        this.parts = buildHand(side, detail);
         this.hand = this.parts.hand;
+        this.ready = this.parts.ready; // la main sculptée est prête
         rig.add(this.upper, this.fore, this.cuff, this.forearm, this.hand);
         [this.upper, this.fore, this.cuff, this.forearm].forEach((m) => { m.frustumCulled = false; });
         this.hand.traverse((m) => { m.frustumCulled = false; });
@@ -189,12 +249,9 @@ export class Arm {
         this.fitDigits();
     }
 
-    // Base du pouce : `thumb` le ramène sous la paume (opposition), `pinch` le
-    // tourne face à l'index, `wrap` le fait passer par-dessus un bord.
+    // Base du pouce (voir thumbQuaternion).
     thumbPose(thumb) {
-        const q = this.parts.thumbBase.quaternion;
-        q.setFromEuler(thumbEuler.set(-0.25 - 0.55 * thumb, (0.8 - 0.55 * thumb) * (1 - (this.grip.pinch || 0)), -0.45));
-        if (this.grip.wrap) q.slerp(WRAP, this.grip.wrap);
+        thumbQuaternion(this.parts.thumbBase.quaternion, thumb, this.grip.pinch, this.grip.wrap);
     }
 
     /*
@@ -373,7 +430,7 @@ export class Arm {
         const foreDir = new THREE.Vector3().subVectors(wrist, elbow).normalize();
         const cuffEnd = wrist.clone().addScaledVector(foreDir, -0.075);
         this.placeSegment(this.fore, elbow, cuffEnd);
-        this.placeSegment(this.forearm, elbow, wrist);
+        this.placeSegment(this.forearm, elbow, wrist.clone().addScaledVector(foreDir, -0.008));
         this.cuff.position.copy(cuffEnd);
         this.cuff.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), foreDir);
 

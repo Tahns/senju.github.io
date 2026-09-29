@@ -606,3 +606,17 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   avec le ventre (elle ne perce plus le haut). Pose « debout » (menu) :
   bras le long du corps, paumes vers les cuisses, pieds un peu écartés, au
   lieu des bras raides écartés et des jambes serrées.
+
+## Mardi 29 septembre
+
+- **Mains réalistes** (première personne) : fini les « petits morceaux »
+  (paume en boîte, sphères, une capsule par phalange). Chaque main est un seul
+  maillage lisse sculpté par champ de distance (`hand-shape.js`, calculé dans
+  un worker) : dos bombé, jointures, éminences du pouce et de l'auriculaire,
+  creux de la paume, poignet qui se fond dans l'avant-bras, doigts effilés aux
+  articulations marquées, ongles à fleur de peau ; teinte par sommet (jointures
+  et bouts des doigts rosés, plis de flexion, lignes de la main). Il est porté
+  (skinning) par les nœuds existants — paume, phalanges, pouce — : `grip`,
+  `fitDigits` et `touch` marchent comme avant, et la peau visible reste dans
+  les capsules de collision. Sonde sur tout le parcours de la chambre (sommets
+  visibles contre livres, porte, boîte) : aucune pénétration au-delà de 1 mm.
