@@ -549,3 +549,9 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   Trésorier, Un jour…) sont retirées.
 - Plus d'arrêt avant le rêve : quand Akira s'endort, le rêve s'enchaîne
   directement ; la carte « Fin » vient après.
+- Menu « Sélection de la catégorie » : les flèches dorées et le kanji ne
+  sautent plus entre « Histoire » et « HRP ». La colonne du mot prenait la
+  largeur du mot (« HRP » la rétrécissait) et les flèches y étaient placées
+  en % ; elle garde maintenant la largeur de « Histoire ». Sur téléphone, le
+  bandeau garde la hauteur de deux lignes (il grandissait avec « Histoire »
+  et cachait l'indice « Glisse vers le haut ou le bas »).

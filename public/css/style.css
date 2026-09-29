@@ -2622,20 +2622,25 @@ html.book-open .radio {
     transform-origin: left center;
 }
 
+/* Largeur fixe, celle de « Histoire » (le mot le plus long) : les flèches,
+   les voisines et le kanji sont placés en % de cette largeur, et ne bougent
+   donc plus quand le mot change (« HRP » rétrécissait la colonne). */
 .storm-menu__picker {
+    --storm-word-size: clamp(44px, 6.6vw, 96px);
     position: absolute;
     left: 3vw;
     top: 50%;
     display: grid;
     justify-items: start;
     gap: .4em;
+    width: calc(var(--storm-word-size) * 4.85);
     translate: 0 -55%;
 }
 
 .storm-menu__word {
     margin: 0;
     font-family: 'Permanent Marker', var(--zk-font), cursive;
-    font-size: clamp(44px, 6.6vw, 96px);
+    font-size: var(--storm-word-size);
     line-height: 1;
     color: #b6ffd2;
     text-transform: uppercase;
@@ -2988,13 +2993,10 @@ html.menu-open .scene-skip {
     }
 
     .storm-menu__picker {
+        --storm-word-size: clamp(38px, 12vw, 72px);
         top: 10vh;
         translate: 0;
         gap: .1em;
-    }
-
-    .storm-menu__word {
-        font-size: clamp(38px, 12vw, 72px);
     }
 
     .storm-menu__kanji {
@@ -3010,9 +3012,18 @@ html.menu-open .scene-skip {
         animation-name: storm-slide;
     }
 
+    /* Toujours la hauteur de deux lignes, texte centré : le bandeau ne grandit
+       plus d'une catégorie à l'autre (et ne recouvre plus l'indice tactile). */
     .storm-menu__banner {
         bottom: 12vh;
+        display: grid;
+        align-content: center;
+        min-height: calc(2lh + 1em + 6px);
         font-size: 14px;
+    }
+
+    .storm-menu__hint {
+        bottom: calc(12vh + 6em);
     }
 
     .storm-menu__actions {
