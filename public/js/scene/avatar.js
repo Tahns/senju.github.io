@@ -71,12 +71,32 @@ function mergeHair(model) {
     });
 }
 
+// Position de repos d'un os dans l'espace de liaison du maillage. Pas
+// o.bindMatrixInverse : three.js le recalcule d'après la place actuelle du
+// maillage, et le modèle, déjà retourné de 180° (measureAvatar), donnait des os
+// en miroir (manches raccourcies de 12 cm, pantalon décalé, dos resserré au
+// lieu du ventre).
+const restM = new THREE.Matrix4();
+const restB = new THREE.Matrix4();
+function restBone(o, i, target = new THREE.Vector3()) {
+    return target.setFromMatrixPosition(restM.copy(o.bindMatrix).invert().multiply(restB.copy(o.skeleton.boneInverses[i]).invert()));
+}
+// Les primitives d'un même maillage VRoid partagent leurs sommets : chaque
+// déformation ne doit passer qu'une fois sur un tableau de positions (le cou
+// était élargi quatre fois sur le corps, deux fois sur le visage).
+function firstPass(o, done) {
+    const pos = o.geometry.attributes.position;
+    if (done.has(pos)) return false;
+    done.add(pos);
+    return true;
+}
+
 // Le cou du modèle VRoid est très fin (style « bishōnen ») : on écarte de
 // l'axe du cou les sommets qui suivent son os, en proportion de leur poids,
 // pour un cou de ninja adulte. Tête et épaules ne bougent pas.
-function thickenNeck(model, factor = 1.15) {
+function thickenNeck(model, factor = 1.3) {
     model.updateMatrixWorld(true);
-    const bindInv = new THREE.Matrix4();
+    const done = new Set();
     const axis = new THREE.Vector3();
     const headAt = new THREE.Vector3();
     const v = new THREE.Vector3();
@@ -88,8 +108,9 @@ function thickenNeck(model, factor = 1.15) {
         const h = bones.findIndex((b) => b.name === 'J_Bip_C_Head');
         if (n < 0 || h < 0) return;
         // Os du cou et de la tête dans l'espace de liaison du maillage.
-        axis.setFromMatrixPosition(bindInv.copy(o.skeleton.boneInverses[n]).invert()).applyMatrix4(o.bindMatrixInverse);
-        headAt.setFromMatrixPosition(bindInv.copy(o.skeleton.boneInverses[h]).invert()).applyMatrix4(o.bindMatrixInverse);
+        if (!firstPass(o, done)) return;
+        restBone(o, n, axis);
+        restBone(o, h, headAt);
         const pos = o.geometry.attributes.position;
         let moved = 0;
         for (let i = 0; i < pos.count; i++) {
@@ -121,15 +142,15 @@ function thickenNeck(model, factor = 1.15) {
 const COVERED = /^J_Bip_(C_(Spine|Chest|UpperChest)|[LR]_(Shoulder|UpperArm))$/;
 function tuckSkin(model, depth = 0.01) {
     model.updateMatrixWorld(true);
-    const m = new THREE.Matrix4();
+    const done = new Set();
     const v = new THREE.Vector3();
     const dir = new THREE.Vector3();
     model.traverse((o) => {
         if (!o.isSkinnedMesh || !/Body_00_SKIN/.test(o.material.name || '')) return;
         const bones = o.skeleton.bones;
-        const at = bones.map((b, i) => new THREE.Vector3().setFromMatrixPosition(m.copy(o.skeleton.boneInverses[i]).invert()).applyMatrix4(o.bindMatrixInverse));
         const n = bones.findIndex((b) => b.name === 'J_Bip_C_Neck');
-        if (n < 0) return;
+        if (n < 0 || !firstPass(o, done)) return;
+        const at = bones.map((b, i) => restBone(o, i));
         const covered = bones.map((b) => COVERED.test(b.name));
         const pos = o.geometry.attributes.position;
         const idx = o.geometry.attributes.skinIndex;
@@ -171,8 +192,7 @@ function hideCoveredSkin(model) {
         const bones = o.skeleton.bones;
         const visible = bones.map((b) => VISIBLE.test(b.name));
         const neck = bones.findIndex((b) => b.name === 'J_Bip_C_Neck');
-        const m4 = new THREE.Matrix4();
-        const neckY = neck < 0 ? -Infinity : new THREE.Vector3().setFromMatrixPosition(m4.copy(o.skeleton.boneInverses[neck]).invert()).applyMatrix4(o.bindMatrixInverse).y;
+        const neckY = neck < 0 ? -Infinity : restBone(o, neck).y;
         const idx = o.geometry.attributes.skinIndex;
         const wt = o.geometry.attributes.skinWeight;
         const pos = o.geometry.attributes.position;
@@ -207,7 +227,6 @@ function hideCoveredSkin(model) {
 // élargit les jambes du pantalon (déformation dans l'espace de liaison).
 function reshapeClothes(model) {
     model.updateMatrixWorld(true);
-    const m4 = new THREE.Matrix4();
     const v = new THREE.Vector3();
     const a = new THREE.Vector3();
     const b = new THREE.Vector3();
@@ -221,14 +240,14 @@ function reshapeClothes(model) {
         const bottom = /Bottoms/.test(name);
         if (!top && !bottom) return;
         const bones = o.skeleton.bones;
-        const at = bones.map((bn, i) => new THREE.Vector3().setFromMatrixPosition(m4.copy(o.skeleton.boneInverses[i]).invert()).applyMatrix4(o.bindMatrixInverse));
+        const at = bones.map((bn, i) => restBone(o, i));
         const find = (n) => bones.findIndex((bn) => bn.name === n);
         const hips = find('J_Bip_C_Hips');
         const chest = find('J_Bip_C_UpperChest') >= 0 ? find('J_Bip_C_UpperChest') : find('J_Bip_C_Chest');
         const neck = find('J_Bip_C_Neck');
         if (hips < 0 || chest < 0 || neck < 0) return;
-        // Devant du ventre : côté +z dans l'espace de liaison de ce modèle.
-        const front = 1;
+        // Devant du ventre : côté -z dans l'espace de liaison (VRM 0.x regarde vers -Z).
+        const front = -1;
         const axisZ = at[hips].z;
         const pos = o.geometry.attributes.position;
         const idx = o.geometry.attributes.skinIndex;
@@ -268,14 +287,19 @@ function reshapeClothes(model) {
                 pos.setXYZ(i, v.x, v.y, v.z);
                 continue;
             }
-            if (!top || !(limb || /_C_(Hips|Spine|Chest|UpperChest)$/.test(bone))) continue;
+            // Le haut du pantalon (ceinture) est resserré pareil : il reste sous le haut.
+            if (!(limb && top) && !/_C_(Hips|Spine|Chest|UpperChest)$/.test(bone)) continue;
             // Ventre : devant resserré, surtout entre le nombril et le bas du haut.
             const yTop = at[chest].y;
             if (v.y > yTop) continue;
             // 0 à la poitrine, 1 du ventre jusqu'en bas du haut.
             const belly = 1 - THREE.MathUtils.smoothstep(v.y, yTop - 0.14, yTop);
             const dz = v.z - axisZ;
-            if (dz * front > 0) v.z = axisZ + dz * (1 - 0.3 * belly);
+            if (dz * front > 0) v.z = axisZ + dz * (1 - 0.18 * belly);
+            // Bas du haut raccourci (il descendait jusqu'à l'entrejambe, comme une
+            // robe) : sous les hanches, remonté vers la taille.
+            const yHips = at[hips].y;
+            if (top && v.y < yHips) v.y = yHips + (v.y - yHips) * 0.6;
             pos.setXYZ(i, v.x, v.y, v.z);
         }
         pos.needsUpdate = true;
@@ -367,7 +391,10 @@ function adjustProportions(model) {
         scale(`J_Bip_${s}_Foot`, 0.95);     // tibia : 46 → 43 cm
     });
     const head = model.getObjectByName('J_Bip_C_Head');
-    if (head) head.scale.setScalar(0.93); // tête un peu plus petite (~6,4 têtes)
+    if (head) {
+        head.scale.setScalar(0.93); // tête un peu plus petite (~6,4 têtes)
+        head.position.multiplyScalar(0.85); // cou moins long (9 → 7,6 cm)
+    }
     model.updateMatrixWorld(true);
     // Jambes plus longues : le bassin remonte d'autant, les pieds restent au sol.
     if (foot && hips) {
