@@ -192,7 +192,8 @@ function hideCoveredSkin(model) {
         const bones = o.skeleton.bones;
         const visible = bones.map((b) => VISIBLE.test(b.name));
         const neck = bones.findIndex((b) => b.name === 'J_Bip_C_Neck');
-        const neckY = neck < 0 ? -Infinity : restBone(o, neck).y;
+        const neckAt = neck < 0 ? null : restBone(o, neck);
+        const neckY = neckAt ? neckAt.y : -Infinity;
         const idx = o.geometry.attributes.skinIndex;
         const wt = o.geometry.attributes.skinWeight;
         const pos = o.geometry.attributes.position;
@@ -206,10 +207,14 @@ function hideCoveredSkin(model) {
                 w += wt.getComponent(i, k);
                 if (b !== neck) other += wt.getComponent(i, k);
             }
-            // Peau du cou sous sa base (haut des épaules, sous le col) : cachée,
-            // sinon elle débordait du col comme une plaque.
-            const underCollar = other < 0.3 && pos.getY(i) < neckY + 0.012;
-            shown[i] = w > 0.3 && !underCollar ? 1 : 0;
+            // Peau des épaules sous le col (loin de l'axe du cou) : cachée, sinon
+            // elle débordait du col comme une plaque. La colonne du cou, elle,
+            // descend jusque dans le col (sinon on voyait le col vide).
+            const off = neckAt ? Math.hypot(pos.getX(i) - neckAt.x, pos.getZ(i) - neckAt.z) : 1;
+            const underCollar = other < 0.3 && pos.getY(i) < neckY + 0.012 && off > 0.08;
+            // Bas du cou devant (rattaché au torse) : gardé, sinon le col paraît vide.
+            const neckColumn = off < 0.07 && pos.getY(i) > neckY - 0.05;
+            shown[i] = (w > 0.3 && !underCollar) || neckColumn ? 1 : 0;
         }
         const src = o.geometry.index.array;
         const keep = [];
@@ -270,8 +275,8 @@ function reshapeClothes(model) {
             // Bas du haut accroché aux cuisses : traité comme le ventre.
             if (limb && !(top && limb[1].endsWith('Leg'))) {
                 const arm = limb[1].endsWith('Arm');
-                // Manches affinées (sweat) ; jambes du pantalon élargies.
-                const f = top && arm ? 0.88 : bottom && !arm ? 1.2 : 1;
+                // Manches à peine affinées (sweat) ; jambes du pantalon élargies.
+                const f = top && arm ? 0.97 : bottom && !arm ? 1.2 : 1;
                 if (f === 1) continue;
                 const child = find(bone.replace(limb[1], CHILD[limb[1]]));
                 if (child < 0) continue;
