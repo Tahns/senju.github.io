@@ -10,6 +10,10 @@
 
 const NAME = 'Akira Hyûga';
 const NICK = '« The vulgar child »';
+// Kanji de chaque rubrique de la présentation HRP (déjà dans la police des
+// kanji chargée par index.html) : 人 la personne, 志 la volonté, 暦 le
+// calendrier, 道 la voie parcourue.
+const KANJI = { Perso: '人', Motivation: '志', 'Disponibilités': '暦', 'Expérience': '道' };
 
 
 function el(tag, className = '', text = '') {
@@ -98,15 +102,34 @@ function hrp() {
                 b.addEventListener('click', () => go(i));
                 pills.append(b);
             });
-            const card = el('div', 'ss-card');
-            const head2 = el('p', 'ss-card__head');
-            head2.append(el('span', '', 'Présentation'), el('span', '', 'HRP'));
-            card.append(head2);
-            panelsOf(hp[step]).forEach((pn) => {
-                card.append(el('h3', 'ss-card__title', pn.querySelector('h3').textContent));
-                Array.from(pn.children).slice(1).forEach((n) => card.append(n));
+            // La carte : bandeau pinceau (sceau 日向 + titre), puis une section
+            // par rubrique, chacune marquée de son kanji. Seul le texte défile,
+            // le bandeau reste en place.
+            const card = el('article', 'ss-card');
+            card.setAttribute('aria-label', `Présentation HRP : ${tabs[step]}`);
+            const head2 = el('header', 'ss-card__head');
+            const seal = el('span', 'ss-card__seal', '日\n向');
+            seal.setAttribute('aria-hidden', 'true');
+            head2.append(seal, el('span', 'ss-card__label', 'Présentation HRP'));
+            const scroll = el('div', 'ss-card__scroll');
+            scroll.tabIndex = 0;
+            panelsOf(hp[step]).forEach((pn, i) => {
+                const name = pn.querySelector('h3').textContent;
+                const sec = el('section', 'ss-card__sec');
+                sec.style.setProperty('--i', i);
+                const h = el('h3', 'ss-card__title');
+                const mark = el('span', 'ss-card__mark', KANJI[name] || '日');
+                mark.setAttribute('aria-hidden', 'true');
+                h.append(mark, el('span', '', name));
+                sec.append(h, ...Array.from(pn.children).slice(1));
+                scroll.append(sec);
             });
+            card.append(head2, scroll);
             body.append(head, pills, card);
+            // Fondu en bas tant qu'il reste du texte à faire défiler.
+            const more = () => scroll.classList.toggle('has-more', scroll.scrollTop + scroll.clientHeight < scroll.scrollHeight - 4);
+            scroll.addEventListener('scroll', more, { passive: true });
+            requestAnimationFrame(more);
         }
     };
 }
