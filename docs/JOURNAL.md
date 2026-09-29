@@ -542,3 +542,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   Shirohae et la flûte et les tambours du rêve ; il ne garde que le vent de
   l'orage. Shirohae démarre quand Akira a fini de remonter la clé (repli : la
   mélodie de la boîte si YouTube ne charge pas).
+- Bouton plein écran (petit carré violet en haut à droite, touche F) dans la
+  scène, l'accueil et le menu ; caché si le navigateur ne le permet pas
+  (iPhone). Le carnet garde le sien dans sa barre d'outils.
+- Carte « Fin » : les pastilles de chapitres du rêve (Jûken, Kaiten,
+  Trésorier, Un jour…) sont retirées.
