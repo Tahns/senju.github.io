@@ -376,7 +376,8 @@ export class SceneAudio {
     }
 
     // Musique du rêve : taiko et flûte, mélodie originale en gamme yo.
-    startDream() {
+    // `music: false` : l'ambiance seule (le vent du menu), sans flûte ni tambours.
+    startDream({ music = true } = {}) {
         if (!this.ctx || this.dream) return;
         const ctx = this.ctx;
         this.dreamBus = ctx.createGain();
@@ -401,6 +402,7 @@ export class SceneAudio {
         const beat = 60 / 88;
         const state = { next: ctx.currentTime + 0.3, i: 0, drum: 0, drumNext: ctx.currentTime + 0.3 };
         this.dream = state;
+        if (!music) return;
         const schedule = () => {
             const horizon = ctx.currentTime + 0.5;
             while (state.drumNext < horizon) {

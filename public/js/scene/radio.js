@@ -3,7 +3,7 @@
  * Shippûden (Yasuharu Takanashi), choisie par le joueur : calme et émouvante,
  * dans la chambre comme dans le menu. Jouée par le lecteur officiel YouTube
  * (petit lecteur visible dans un coin, comme YouTube l'exige). Si YouTube ne se
- * charge pas, la chambre garde la boîte à musique et le menu l'orage.
+ * charge pas, c'est la mélodie de la boîte à musique qui joue.
  */
 const SHIROHAE = { id: 'yoRutY5tUGk', title: 'Shirohae', by: 'Naruto Shippûden OST' };
 export const TRACKS = { room: SHIROHAE, menu: SHIROHAE };

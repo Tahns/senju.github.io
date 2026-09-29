@@ -538,3 +538,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   devient une molette crantée (ronde : on la reprend pareil à chaque quart de
   tour), pincée du bout du pouce et de l'index (nouveau réglage `pinch` du
   pouce), paume vers la boîte, dans l'axe de l'avant-bras.
+- Musique : plus rien avant la boîte à musique. Le menu jouait à la fois
+  Shirohae et la flûte et les tambours du rêve ; il ne garde que le vent de
+  l'orage. Shirohae démarre quand Akira a fini de remonter la clé (repli : la
+  mélodie de la boîte si YouTube ne charge pas).
