@@ -569,15 +569,23 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         }, ease.out).then(() => { ring.material.opacity = 0; });
     }
 
-    // Hakkeshō Kaiten (rotation céleste), comme dans l'anime : un dôme bleu
-    // presque opaque aux reflets nuageux qui tournent, ceinturé d'anneaux de
-    // poussière beige, avec un nuage de poussière au ras du sol.
+    // Hakkeshō Kaiten (rotation céleste), comme dans l'anime : un dôme de
+    // chakra bleu-blanc translucide, strié de spirales qui tournent avec
+    // Akira, ceinturé d'anneaux de poussière ; au sol, un cercle creusé et
+    // des débris projetés en spirale.
+    // pnoise : bruit périodique en x (période P), pour que les motifs qui font
+    // le tour du dôme se raccordent sans couture.
     const NOISE = `float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
         float noise(vec2 p){ vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
             return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
-        float fbm(vec2 p){ return noise(p) * 0.55 + noise(p * 2.1 + 3.7) * 0.3 + noise(p * 4.3 + 9.1) * 0.15; }`;
+        float fbm(vec2 p){ return noise(p) * 0.55 + noise(p * 2.1 + 3.7) * 0.3 + noise(p * 4.3 + 9.1) * 0.15; }
+        float pnoise(vec2 p, float P){ vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+            float a = mod(i.x, P); float b = mod(i.x + 1.0, P);
+            return mix(mix(hash(vec2(a, i.y)), hash(vec2(b, i.y)), f.x), mix(hash(vec2(a, i.y + 1.0)), hash(vec2(b, i.y + 1.0)), f.x), f.y); }
+        float pfbm(vec2 p, float P){ return pnoise(p, P) * 0.6 + pnoise(p * 2.0 + vec2(0.0, 3.7), P * 2.0) * 0.4; }`;
+    // uSpin : angle parcouru par le chakra (radians) ; uBreak : dissipation (0 → 1).
     const kaitenMat = new THREE.ShaderMaterial({
-        uniforms: { uTime: { value: 0 }, uOpacity: { value: 0 } },
+        uniforms: { uSpin: { value: 0 }, uOpacity: { value: 0 }, uBreak: { value: 0 } },
         vertexShader: `varying vec2 vUv; varying vec3 vN; varying vec3 vV;
             void main(){
                 vUv = uv;
@@ -585,49 +593,94 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
                 vN = normalize(normalMatrix * normal); vV = -mv.xyz;
                 gl_Position = projectionMatrix * mv;
             }`,
-        fragmentShader: `uniform float uTime; uniform float uOpacity; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+        fragmentShader: `uniform float uSpin; uniform float uOpacity; uniform float uBreak; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
             ${NOISE}
             void main(){
-                float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0);
-                // Nuages de chakra étirés dans le sens de la rotation.
-                vec2 q = vec2(vUv.x * 10.0 - uTime * 4.5, vUv.y * 3.0);
-                float n = fbm(q);
-                float light = smoothstep(0.45, 0.8, n);
-                float dark = 1.0 - smoothstep(0.2, 0.5, n);
-                // Petits traits de vitesse blancs.
-                float speed = smoothstep(0.92, 1.0, sin(vUv.x * 160.0 - uTime * 30.0 + vUv.y * 4.0)) * smoothstep(0.3, 0.9, noise(vec2(vUv.x * 30.0, vUv.y * 8.0)));
-                vec3 col = mix(vec3(0.16, 0.36, 0.78), vec3(0.62, 0.8, 1.0), light);
-                col = mix(col, vec3(0.08, 0.2, 0.55), dark * 0.7);
-                col += speed * 0.35 + rim * vec3(0.25, 0.4, 0.7) * 0.4;
-                gl_FragColor = vec4(col, (0.92 + rim * 0.08) * uOpacity);
+                float facing = abs(dot(normalize(vN), normalize(vV) + vec3(1e-5)));
+                float rim = pow(1.0 - clamp(facing, 0.0, 1.0), 2.2);
+                float h = vUv.y; // 0 au sol, 1 au sommet
+                // Coordonnée en spirale (en tours) : les stries montent en s'enroulant.
+                float turns = uSpin * 0.15915;
+                float s = vUv.x + h * 0.45 - turns;
+                float warp = pfbm(vec2(s * 6.0, h * 3.0), 6.0);
+                float bands = 0.5 + 0.5 * sin((s * 5.0 + warp * 0.9) * 6.2832);
+                bands = smoothstep(0.45, 0.95, bands);
+                // Traînées fines, étirées dans le sens de la rotation (flou de vitesse).
+                float s2 = vUv.x + h * 0.8 - turns * 1.6;
+                float fine = pnoise(vec2(s2 * 24.0, h * 38.0), 24.0);
+                fine = smoothstep(0.62, 0.95, fine);
+                vec3 col = mix(vec3(0.08, 0.3, 0.85), vec3(0.62, 0.84, 1.0), clamp(bands * 0.85 + fine * 0.6, 0.0, 1.0));
+                col = mix(col, vec3(0.4, 0.68, 1.0), rim * 0.6);
+                // Pied du dôme : le chakra racle le sol, voilé de poussière.
+                float foot = 1.0 - smoothstep(0.0, 0.12, h);
+                col = mix(col, vec3(0.7, 0.64, 0.52), foot * 0.5);
+                float a = 0.2 + bands * 0.3 + fine * 0.18 + rim * 0.4 + foot * 0.2;
+                // Face arrière (vue à travers le dôme) plus discrète.
+                a *= gl_FrontFacing ? 1.0 : 0.55;
+                // Dissipation en rafale : le dôme se déchire en lambeaux.
+                float tear = pfbm(vec2(s * 9.0, h * 5.0 + uBreak * 2.0), 9.0);
+                a *= 1.0 - smoothstep(tear - 0.15, tear + 0.05, uBreak * 1.25 - 0.1);
+                gl_FragColor = vec4(min(col, vec3(1.0)), clamp(a, 0.0, 0.95) * uOpacity);
             }`,
         transparent: true,
         depthWrite: false,
         toneMapped: false,
         side: THREE.DoubleSide
     });
-    const kaiten = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 24, 0, Math.PI * 2, 0, Math.PI / 2), kaitenMat);
+    const kaiten = new THREE.Mesh(new THREE.SphereGeometry(1, low ? 40 : 64, low ? 14 : 24, 0, Math.PI * 2, 0, Math.PI / 2), kaitenMat);
     kaiten.visible = false;
     kaiten.renderOrder = 2;
     scene.add(kaiten);
-    // Anneaux de poussière qui tournent autour du dôme (bandes beiges effilochées).
-    const dustRingMat = new THREE.ShaderMaterial({
-        uniforms: { uTime: { value: 0 }, uOpacity: { value: 0 } },
-        vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-        fragmentShader: `uniform float uTime; uniform float uOpacity; varying vec2 vUv;
+    // Tourbillon au ras du corps : des filets de chakra qui s'enroulent autour
+    // d'Akira (sa silhouette reste visible, comme floutée par la vitesse).
+    const vortexMat = new THREE.ShaderMaterial({
+        uniforms: { uSpin: { value: 0 }, uOpacity: { value: 0 } },
+        vertexShader: `varying vec2 vUv; varying float vFacing;
+            void main(){
+                vUv = uv;
+                vec4 mv = modelViewMatrix * vec4(position, 1.0);
+                vFacing = abs(dot(normalize(normalMatrix * normal), normalize(-mv.xyz)));
+                gl_Position = projectionMatrix * mv;
+            }`,
+        fragmentShader: `uniform float uSpin; uniform float uOpacity; varying vec2 vUv; varying float vFacing;
             ${NOISE}
             void main(){
-                float n = fbm(vec2(vUv.x * 24.0 - uTime * 6.0, vUv.y * 2.0));
+                float s = vUv.x + vUv.y * 0.35 - uSpin * 0.15915;
+                float n = pnoise(vec2(s * 16.0, vUv.y * 26.0), 16.0);
+                float streak = smoothstep(0.55, 0.9, n);
+                // Bords effacés (pas de silhouette de tube) : seuls les filets restent.
+                float fade = smoothstep(0.0, 0.15, vUv.y) * (1.0 - smoothstep(0.75, 1.0, vUv.y)) * smoothstep(0.15, 0.6, vFacing);
+                gl_FragColor = vec4(vec3(0.75, 0.9, 1.0) * streak * fade * uOpacity, 1.0);
+            }`,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
+        side: THREE.DoubleSide
+    });
+    const vortex = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.55, 2.0, 40, 1, true), vortexMat);
+    vortex.position.y = 1.0;
+    vortex.visible = false;
+    vortex.renderOrder = 3;
+    scene.add(vortex);
+    // Anneaux de poussière qui tournent autour du dôme (bandes beiges effilochées).
+    const dustRingMat = new THREE.ShaderMaterial({
+        uniforms: { uSpin: { value: 0 }, uOpacity: { value: 0 } },
+        vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: `uniform float uSpin; uniform float uOpacity; varying vec2 vUv;
+            ${NOISE}
+            void main(){
+                float n = pfbm(vec2((vUv.x - uSpin * 0.2) * 20.0, vUv.y * 2.0), 20.0);
                 float edge = smoothstep(0.0, 0.35, vUv.y) * (1.0 - smoothstep(0.65, 1.0, vUv.y));
-                float a = edge * smoothstep(0.2, 0.5, n + edge * 0.35) * uOpacity;
-                gl_FragColor = vec4(mix(vec3(0.5, 0.43, 0.32), vec3(0.72, 0.66, 0.52), n), a);
+                float a = edge * smoothstep(0.42, 0.72, n + edge * 0.15) * uOpacity * 0.6;
+                gl_FragColor = vec4(mix(vec3(0.5, 0.43, 0.32), vec3(0.76, 0.7, 0.56), n), a);
             }`,
         transparent: true,
         depthWrite: false,
         toneMapped: false,
         side: THREE.DoubleSide
     });
-    [[0.08, 1.04, 0.16], [0.4, 0.95, 0.12], [0.7, 0.74, 0.1]].map(([y, r, w], i) => {
+    [[0.05, 1.08, 0.14], [0.35, 0.98, 0.1], [0.62, 0.8, 0.08]].map(([y, r, w], i) => {
         // Bande verticale (cylindre ouvert) légèrement inclinée.
         const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.03, w, 72, 1, true), dustRingMat);
         m.position.y = y;
@@ -635,7 +688,135 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         m.renderOrder = 3;
         kaiten.add(m);
     });
-    updaters.push((dt, time) => { kaitenMat.uniforms.uTime.value = time; dustRingMat.uniforms.uTime.value = time; });
+    // Cercle creusé au sol : terre à nu, rayée de sillons en spirale.
+    const scarMat = new THREE.ShaderMaterial({
+        uniforms: { uScar: { value: 0 }, uSpin: { value: 0 } },
+        vertexShader: 'varying vec2 vP; void main(){ vP = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: `uniform float uScar; uniform float uSpin; varying vec2 vP;
+            ${NOISE}
+            void main(){
+                float r = length(vP);
+                float a = atan(vP.y, vP.x + 1e-5) * 0.15915; // jamais atan(0, 0) (NaN)
+                // Sillons : spirales logarithmiques (les débris ont filé en tournant).
+                float groove = pnoise(vec2((a - log(max(r, 0.05)) * 0.35) * 14.0, r * 5.0), 14.0);
+                groove = smoothstep(0.35, 0.8, groove);
+                float grain = noise(vP * 22.0);
+                float zone = smoothstep(0.25, 0.5, r) * (1.0 - smoothstep(0.85, 0.97, r + grain * 0.05));
+                float lip = smoothstep(0.84, 0.93, r) * (1.0 - smoothstep(0.93, 1.0, r + grain * 0.06));
+                vec3 col = mix(vec3(0.2, 0.14, 0.08), vec3(0.36, 0.27, 0.16), groove * 0.7 + grain * 0.3);
+                col = mix(col, vec3(0.45, 0.36, 0.23), lip);
+                float alpha = (zone * (0.35 + groove * 0.45) * (0.7 + grain * 0.3) + lip * 0.55) * uScar;
+                gl_FragColor = vec4(col, clamp(alpha, 0.0, 0.9));
+            }`,
+        transparent: true,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -2
+    });
+    const scar = new THREE.Mesh(new THREE.CircleGeometry(1, 72), scarMat);
+    scar.rotation.x = -Math.PI / 2;
+    scar.position.y = 0.012;
+    scar.scale.setScalar(2);
+    scar.visible = false;
+    scene.add(scar);
+    // L'herbe se couche dans le cercle (le Kaiten racle le sol), puis se relève.
+    const grassFlat = { value: new THREE.Vector2(2, 0) };
+    const grassCompile = grass.mesh.material.onBeforeCompile;
+    grass.mesh.material.onBeforeCompile = (shader) => {
+        grassCompile(shader);
+        shader.uniforms.uFlat = grassFlat;
+        shader.vertexShader = shader.vertexShader
+            .replace('uniform float uTime;', 'uniform float uTime;\nuniform vec2 uFlat;')
+            .replace('transformed.z += sway', 'float fr = length(ip.xz);\nfloat fl = uFlat.y * (1.0 - smoothstep(uFlat.x * 0.85, uFlat.x * 1.1, fr));\ntransformed.y *= 1.0 - 0.8 * fl;\ntransformed.z += sway');
+    };
+    // Débris soulevés par le tourbillon : nuage de poussière (points) et
+    // feuilles, brins d'herbe et cailloux (petites plaques qui tournoient).
+    // Chaque débris suit un champ en spirale : aspiré tant que le dôme
+    // n'existe pas, puis projeté vers l'extérieur en tournant dans le même
+    // sens qu'Akira.
+    const whirl = { swirl: 0, push: 0, emit: 0, radius: 0.3 };
+    const puffCount = low ? 70 : 150;
+    const bitCount = low ? 28 : 64;
+    const puffPos = new Float32Array(puffCount * 3);
+    const puffGeo = new THREE.BufferGeometry();
+    puffGeo.setAttribute('position', new THREE.BufferAttribute(puffPos, 3));
+    const puffMat = new THREE.PointsMaterial({ color: '#a38c68', size: 0.6, map: dot(), transparent: true, opacity: 0, depthWrite: false });
+    const puffs = new THREE.Points(puffGeo, puffMat);
+    puffs.frustumCulled = false;
+    puffs.visible = false;
+    scene.add(puffs);
+    const bitMat = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, side: THREE.DoubleSide });
+    const bits = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.12, 0.06), bitMat, bitCount);
+    bits.frustumCulled = false;
+    bits.visible = false;
+    const bitColors = ['#5d8a2f', '#7da33d', '#a88f4c', '#8b7a5c', '#4f7426'].map((c) => new THREE.Color(c));
+    for (let i = 0; i < bitCount; i++) bits.setColorAt(i, bitColors[i % bitColors.length]);
+    scene.add(bits);
+    const makeBit = () => ({ r: 0, a: 0, y: -5, vy: 0, age: 9, life: 1, k: 0.6 + random() * 0.8, rot: V(random() * 6, random() * 6, random() * 6) });
+    const puffState = Array.from({ length: puffCount }, makeBit);
+    const bitState = Array.from({ length: bitCount }, makeBit);
+    function respawn(b) {
+        b.a = random() * Math.PI * 2;
+        // Avant le dôme : on arrache au sol loin autour ; ensuite, au pied du dôme.
+        b.r = whirl.push > 0.5 ? whirl.radius * (0.9 + random() * 0.2) : 0.7 + random() * 2.4;
+        b.y = 0.03 + random() * 0.15;
+        b.vy = 0;
+        b.age = 0;
+        b.life = 0.9 + random() * 1.1;
+    }
+    const bitM = new THREE.Matrix4();
+    const bitQ = new THREE.Quaternion();
+    const bitE = new THREE.Euler();
+    const bitS = V(1, 1, 1);
+    const bitP = V();
+    let whirlOn = false;
+    function stepWhirl(list, dt, write) {
+        list.forEach((b, i) => {
+            b.age += dt;
+            if (b.age > b.life || b.r > 7) {
+                if (whirl.emit > 0 && random() < whirl.emit) respawn(b);
+                else b.y = -5;
+            }
+            if (b.y > -1) {
+                // Vitesse tangentielle : forte près du dôme, plus faible au loin.
+                const w = whirl.swirl * b.k * 6 / (0.5 + b.r);
+                b.a += w * dt;
+                const out = whirl.push * (1.2 + b.r * 1.1) * b.k;
+                const inward = (1 - whirl.push) * whirl.swirl * 0.9;
+                b.r = Math.max(0.25, b.r + (out - inward) * dt);
+                // Tant que le dôme est là, rien ne reste à l'intérieur.
+                if (whirl.push > 0.5 && b.r < whirl.radius) b.r = whirl.radius;
+                b.vy += (whirl.swirl * (1.6 - b.y * 0.6) * b.k - 3.2 * (1 - whirl.swirl)) * dt;
+                b.vy = Math.max(-3, Math.min(3, b.vy));
+                b.y = Math.max(0.02, b.y + b.vy * dt);
+                b.rot.x += dt * 9 * b.k;
+                b.rot.z += dt * 6;
+            }
+            write(b, i);
+        });
+    }
+    updaters.push((dt) => {
+        if (!whirlOn) return;
+        const step = Math.min(dt, 0.05);
+        stepWhirl(puffState, step, (b, i) => {
+            puffPos[i * 3] = Math.cos(b.a) * b.r;
+            puffPos[i * 3 + 1] = b.y;
+            puffPos[i * 3 + 2] = -Math.sin(b.a) * b.r;
+        });
+        puffGeo.attributes.position.needsUpdate = true;
+        stepWhirl(bitState, step, (b, i) => {
+            bitP.set(Math.cos(b.a) * b.r, b.y, -Math.sin(b.a) * b.r);
+            bitQ.setFromEuler(bitE.set(b.rot.x, b.a + b.rot.y, b.rot.z));
+            bitS.setScalar(b.y > -1 ? 1 : 0);
+            bits.setMatrixAt(i, bitM.compose(bitP, bitQ, bitS));
+        });
+        bits.instanceMatrix.needsUpdate = true;
+    });
+    function startWhirl(on) {
+        whirlOn = on;
+        puffs.visible = bits.visible = on;
+        if (!on) [...puffState, ...bitState].forEach((b) => { b.y = -5; b.age = 9; });
+    }
     const sparkCount = 90;
     const sparkPos = new Float32Array(sparkCount * 3);
     const sparkGeo = new THREE.BufferGeometry();
@@ -965,64 +1146,228 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         face(tl, 'angry', 0, 0.5);
         await pose(tl, 'stand', 0.6);
 
-        // 3. Hakkeshō Kaiten : il tourne sur lui-même dans un dôme de chakra, qui éclate.
+        // 3. Hakkeshō Kaiten : garde basse, puis il pivote sur lui-même de plus
+        // en plus vite ; le chakra jaillit de tout son corps et forme un dôme
+        // qui tourbillonne, creuse le sol et projette tout en spirale, puis se
+        // dissipe en rafale quand il s'arrête.
         onAct('kaiten');
-        const low = shot(tl, V(0.4, 1.1, 5.6), V(0, 1.0, 0), 2);
-        await pose(tl, 'kaiten', 0.5);
+        const rot0 = ninja.root.rotation.y;
+        if (ninja.avatar) { ninja.avatar.grip('right', 0.2); ninja.avatar.grip('left', 0.25); }
+        const low = shot(tl, V(0.5, 1.2, 4.2), V(0, 0.95, 0), 1.3);
+        crouch(0.09, 0.6);
+        await pose(tl, 'kaiten', 0.6);
         await low;
         say('Hakkeshō Kaiten', 3.5, '回天');
         face(tl, 'angry', 0.5, 0.4);
-        kaiten.visible = true;
-        kaiten.scale.setScalar(0.4);
-        const rot0 = ninja.root.rotation.y;
-        for (let i = 0; i < 4; i++) tl.wait(i * 0.5).then(() => sound.whoosh());
-        // Le dôme grandit pendant que la rotation s'accélère ; la poussière se lève.
-        burst();
-        await tl.tween(1.4, (k) => {
-            ninja.root.rotation.y = rot0 + Math.PI * 2 * 2 * k * k;
-            const g = Math.min(1, k * 1.5);
-            kaiten.scale.set(0.4 + 1.2 * g, 0.4 + 1.75 * g, 0.4 + 1.2 * g);
-            kaitenMat.uniforms.uOpacity.value = Math.min(1, k * 2.5);
-            dustRingMat.uniforms.uOpacity.value = Math.min(1, k * 2);
-        }, ease.linear);
-        // Le dôme repousse tout autour de lui : les poteaux sont soufflés vers
-        // l'extérieur, dans l'axe qui part d'Akira, en tournoyant.
-        sound.splash();
-        if (sound.thunder) sound.thunder();
-        burst();
+        // Le chakra afflue, le souffle se retient.
+        if (sound.crackle) sound.crackle(0.5);
+        await tl.wait(0.3);
+
+        // Vitesse angulaire : montée (A), plateau (B), freinage (C). Le plateau est
+        // ajusté pour qu'il s'arrête face à son point de départ (tours entiers).
+        const wMax = Math.PI * 2 * 2.6;
+        const tA = 0.55;
+        const tC = 0.65;
+        const turns = Math.ceil(wMax * (tA / 2 + 2 + tC / 2) / (Math.PI * 2));
+        const tB = (turns * Math.PI * 2) / wMax - tA / 2 - tC / 2;
+        const T = tA + tB + tC;
+        const angleAt = (t) => {
+            if (t < tA) return wMax * t * t / (2 * tA);
+            if (t < tA + tB) return wMax * (tA / 2 + t - tA);
+            const u = Math.min(t - tA - tB, tC);
+            return wMax * (tA / 2 + tB + u - u * u / (2 * tC));
+        };
+        const speedAt = (t) => (t < tA ? t / tA : t < tA + tB ? 1 : Math.max(0, 1 - (t - tA - tB) / tC));
+        const gentle = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const A = ninja.poseValues('kaiten');
+        const B = ninja.poseValues('kaitenOpen');
+        const body = A.map((a) => a.slice());
+        // Demi-sphère bien ronde (échelle uniforme), qui dépasse sa tête.
+        const domeR = 2;
+        const tBirth = 0.3;
+        const tBreak = tA + tB;
+        // Le buste suit les hanches avec un ressort (effet de fouet) : il traîne à
+        // l'accélération, dépasse au freinage.
+        const lag = { x: 0, v: 0 };
+        let tPrev = 0;
+        let wPrev = 0;
+        let turnPrev = 0;
+        let chakraSpin = 0;
+        let fired = false;
+        let broke = false;
+        const cam0 = camGoal.clone();
+        const camA = Math.atan2(cam0.x, cam0.z);
+        const camD = Math.hypot(cam0.x, cam0.z);
+        // Pivot sur la plante du pied avant au démarrage, recentré à pleine vitesse.
+        const pivot = V(0.1, 0, 0.12);
         const flying = [];
-        posts.forEach((post) => {
-            post.cut.visible = false;
-            [post.base, post.topPart].forEach((o, j) => {
-                const dir = V(o.position.x, 0, o.position.z);
-                if (dir.lengthSq() < 1e-4) dir.set(1, 0, 0);
-                dir.normalize();
-                flying.push({ o, dir, p0: o.position.clone(), r0: o.rotation.clone(), d: 5 + j * 1.5 + Math.random() * 2, h: 1.2 + Math.random(), spin: (Math.random() < 0.5 ? -1 : 1) * (4 + Math.random() * 3) });
-            });
-        });
-        const blast = tl.tween(1.6, (k) => {
+        kaiten.visible = true;
+        kaiten.scale.setScalar(0.3);
+        vortex.visible = true;
+        scar.visible = true;
+        startWhirl(true);
+        whirl.emit = 0.6;
+        whirl.push = 0;
+        sound.whoosh();
+        if (sound.roar) sound.roar(T * 0.8);
+        await tl.tween(T, (k) => {
+            const t = k * T;
+            const dt = Math.max(0, Math.min(0.05, t - tPrev));
+            tPrev = t;
+            const theta = angleAt(t);
+            const sp = speedAt(t);
+            const w = sp * wMax;
+            const acc = dt > 0 ? (w - wPrev) / dt : 0;
+            wPrev = w;
+            // Ressort amorti (pas fixe court pour rester stable).
+            for (let n = 0; n < 4; n++) {
+                const h = dt / 4;
+                lag.v += (-150 * lag.x - 9 * lag.v - acc * 0.9) * h;
+                lag.x += lag.v * h;
+            }
+            lag.x = Math.max(-0.45, Math.min(0.45, lag.x || 0));
+            if (!Number.isFinite(lag.v)) lag.v = 0;
+
+            // Le corps : garde → bras qui s'ouvrent avec la vitesse, buste en retard.
+            const open = THREE.MathUtils.smoothstep(sp, 0.15, 0.85);
+            const life = gentle ? 0 : 1;
+            A.forEach((a, i) => a.forEach((v, j) => { body[i][j] = v + (B[i][j] - v) * open; }));
+            body[0][1] += lag.x; // buste
+            body[0][0] += Math.sin(t * 5.3) * 0.02 * life;
+            // Tête : garde la cible une fraction de tour, puis rattrape.
+            const headLag = Math.min(theta, 0.75) * (1 - THREE.MathUtils.smoothstep(theta, 0.8, 2.4));
+            body[1][1] += -headLag - lag.x * 0.5;
+            // Bras qui traînent derrière la rotation, et petites variations.
+            body[2][0] += lag.x * 0.7;
+            body[3][0] -= lag.x * 0.7;
+            body[2][2] += Math.sin(t * 7.1) * 0.05 * life;
+            body[3][2] += Math.sin(t * 6.3 + 1) * 0.06 * life;
+            ninja.setValues(body);
+            ninja.J.handR.rotation.x = -0.45 * open;
+            ninja.J.handL.rotation.x = -0.25 * open;
+            ninja.J.hips.position.y = hipsY - 0.09 - Math.sin(t * 4.1) * 0.008 * life;
+            // Pivot : rotation autour d'un point décalé, qui se recentre avec la vitesse.
+            const off = pivot.clone().multiplyScalar(1 - open);
+            const c0 = Math.cos(rot0), s0 = Math.sin(rot0);
+            const px = off.x * c0 + off.z * s0;
+            const pz = -off.x * s0 + off.z * c0;
+            const c1 = Math.cos(rot0 + theta), s1 = Math.sin(rot0 + theta);
+            ninja.root.position.set(px - (off.x * c1 + off.z * s1), 0, pz - (-off.x * s1 + off.z * c1));
+            ninja.root.rotation.y = rot0 + theta;
+            // Un souffle à chaque tour, tant que la rotation reste lisible.
+            const turn = Math.floor(theta / Math.PI);
+            if (turn > turnPrev && (sp < 0.8 || turn % 3 === 0)) sound.whoosh();
+            turnPrev = turn;
+
+            // Le chakra : même sens que lui, un peu moins vite (lisible à l'œil).
+            chakraSpin += w * 0.33 * dt + dt * 1.2;
+            kaitenMat.uniforms.uSpin.value = chakraSpin;
+            dustRingMat.uniforms.uSpin.value = chakraSpin;
+            vortexMat.uniforms.uSpin.value = theta * 0.5;
+            scarMat.uniforms.uSpin.value = chakraSpin;
+            vortex.rotation.y = 0;
+            vortex.position.set(ninja.root.position.x, 1.0, ninja.root.position.z);
+            vortexMat.uniforms.uOpacity.value = 0.4 * THREE.MathUtils.smoothstep(sp, 0.2, 0.9);
+            // Naissance du dôme depuis le corps : rapide, un léger rebond.
+            const g = THREE.MathUtils.clamp((t - tBirth) / 0.4, 0, 1);
+            const grow = g <= 0 ? 0 : 1 - Math.pow(1 - g, 3) + Math.sin(Math.PI * g) * 0.06;
+            const pulse = 1 + Math.sin(t * 13) * 0.012 * sp;
+            const r = 0.3 + (domeR - 0.3) * grow;
+            whirl.radius = r;
+            if (!broke) {
+                kaiten.scale.setScalar(r * pulse);
+                kaitenMat.uniforms.uOpacity.value = THREE.MathUtils.clamp((t - tBirth) / 0.15, 0, 1);
+                dustRingMat.uniforms.uOpacity.value = THREE.MathUtils.clamp((t - tBirth - 0.1) / 0.4, 0, 1);
+            }
+            whirl.swirl = sp;
+            whirl.push = g > 0.4 ? 1 : 0;
+            puffMat.opacity = 0.8 * Math.min(1, t / 0.4);
+            scarMat.uniforms.uScar.value = THREE.MathUtils.clamp((t - tBirth) / 1.2, 0, 1);
+            scar.scale.setScalar(Math.max(0.3, r));
+            grassFlat.value.set(r, THREE.MathUtils.clamp((t - tBirth) / 0.5, 0, 1));
+
+            if (!fired && g > 0.55) {
+                // Le front du dôme atteint les poteaux : soufflés vers l'extérieur,
+                // déviés dans le sens de la rotation, en tournoyant.
+                fired = true;
+                burst();
+                sound.splash();
+                if (sound.thunder) sound.thunder(0.6);
+                posts.forEach((post) => {
+                    post.cut.visible = false;
+                    [post.base, post.topPart].forEach((o, j) => {
+                        const r0 = Math.max(0.2, Math.hypot(o.position.x, o.position.z));
+                        flying.push({ o, a0: Math.atan2(-o.position.z, o.position.x), r0, y0: o.position.y, rot0: o.rotation.clone(), d: 4.5 + j * 1.5 + random() * 2, sweep: 0.9 + random() * 0.6, h: 1 + random() * 1.2, spin: 5 + random() * 4, t0: t });
+                    });
+                });
+            }
             flying.forEach((f) => {
-                f.o.position.set(f.p0.x + f.dir.x * f.d * k, f.p0.y + f.h * Math.sin(Math.PI * Math.min(1, k * 1.2)) - 1.5 * k * k, f.p0.z + f.dir.z * f.d * k);
-                // Bascule vers l'extérieur (axe perpendiculaire à la poussée).
-                f.o.rotation.set(f.r0.x + f.dir.z * f.spin * k, f.r0.y, f.r0.z - f.dir.x * f.spin * k);
+                const q = Math.min(1, (t - f.t0) / 1.6);
+                const e = 1 - Math.pow(1 - q, 2);
+                const a = f.a0 + f.sweep * e;
+                const rr = f.r0 + f.d * e;
+                f.o.position.set(Math.cos(a) * rr, f.y0 + f.h * Math.sin(Math.PI * Math.min(1, q * 1.15)) - 1.4 * q * q, -Math.sin(a) * rr);
+                // Bascule autour de l'axe perpendiculaire à la trajectoire.
+                const vx = Math.cos(a) * f.d - Math.sin(a) * rr * f.sweep;
+                const vz = -Math.sin(a) * f.d - Math.cos(a) * rr * f.sweep;
+                const len = Math.hypot(vx, vz) || 1;
+                f.o.rotation.set(f.rot0.x + (vz / len) * f.spin * e, f.rot0.y + a, f.rot0.z - (vx / len) * f.spin * e);
+                if (q >= 1) f.o.visible = false;
             });
-        }, ease.out).then(() => flying.forEach((f) => { f.o.visible = false; }));
-        await tl.tween(1.2, (k) => {
-            ninja.root.rotation.y = rot0 + Math.PI * 4 + Math.PI * 2 * 1.5 * k;
+
+            if (!broke && t >= tBreak) {
+                // Il freine : le dôme se déchire et part en rafale.
+                broke = true;
+                burst();
+                sound.whoosh();
+                sound.splash();
+                whirl.emit = 0.25;
+            }
+            if (broke) {
+                const b = Math.min(1, (t - tBreak) / tC);
+                kaitenMat.uniforms.uBreak.value = b;
+                kaitenMat.uniforms.uOpacity.value = 1 - b * b;
+                dustRingMat.uniforms.uOpacity.value = 1 - b;
+                kaiten.scale.setScalar(domeR * (1 + b * 0.3));
+            }
+
+            // Caméra : elle tourne lentement autour du dôme, un peu plus haut,
+            // avec un tremblement qui suit la vitesse.
+            const orbit = THREE.MathUtils.smoothstep(k, 0, 1);
+            const ca = camA - 0.7 * orbit;
+            camGoal.set(Math.sin(ca) * (camD + 0.5 * orbit), cam0.y + 0.45 * orbit, Math.cos(ca) * (camD + 0.5 * orbit));
+            lookGoal.set(0, 0.95 + 0.15 * orbit, 0);
+            const kick = Math.max(0, 1 - Math.abs(t - tBirth - 0.25) / 0.35) + Math.max(0, 1 - Math.abs(t - tBreak - 0.1) / 0.3);
+            const amp = gentle ? 0 : 0.008 * sp + 0.035 * kick;
+            shake.set(Math.sin(t * 47) * amp, Math.cos(t * 39) * amp, Math.sin(t * 31) * amp * 0.5);
         }, ease.linear);
         ninja.root.rotation.y = rot0;
-        // Il s'arrête net ; le dôme se dissipe, la poussière retombe.
-        pose(tl, 'guard', 0.3, ease.out);
-        await tl.tween(0.8, (k) => {
-            kaiten.scale.set(1.6 + k * 0.5, 2.15 * (1 - k * 0.3), 1.6 + k * 0.5);
-            kaitenMat.uniforms.uOpacity.value = 1 - k;
-            dustRingMat.uniforms.uOpacity.value = 1 - k;
-        }, ease.out);
-        await blast;
+        shake.set(0, 0, 0);
+        flying.forEach((f) => { f.o.visible = false; });
         kaiten.visible = false;
+        vortex.visible = false;
+        kaitenMat.uniforms.uBreak.value = 0;
+        whirl.emit = 0;
+        whirl.swirl = 0;
+        // Élan résiduel : les pieds glissent au sol, il retombe en garde Jûken.
+        const slide0 = ninja.root.position.clone();
+        const slideTo = V(-Math.sin(rot0) * 0.14, 0, -Math.cos(rot0) * 0.14).add(slide0);
+        tl.tween(0.45, (k) => { ninja.root.position.lerpVectors(slide0, slideTo, k); }, ease.out);
+        tl.tween(0.45, (k) => { ninja.J.handR.rotation.x = -0.45 * (1 - k); ninja.J.handL.rotation.x = -0.25 * (1 - k); });
+        await pose(tl, 'jukenStance', 0.45, ease.out);
+        await tl.wait(0.6);
+        // La poussière retombe ; l'herbe se relève lentement, la trace s'estompe.
+        tl.tween(1.2, (k) => { puffMat.opacity = 0.8 * (1 - k); }).then(() => startWhirl(false));
+        tl.tween(4, (k) => {
+            scarMat.uniforms.uScar.value = 1 - k;
+            grassFlat.value.y = 1 - k;
+        }).then(() => { scar.visible = false; });
         byakugan(0);
         face(tl, 'angry', 0, 0.5);
-        await pose(tl, 'stand', 0.5);
+        const back = ninja.root.position.clone();
+        tl.tween(0.6, (k) => { ninja.root.position.lerpVectors(back, V(0, 0, 0), k); }, ease.inOut);
+        crouch(0, 0.5);
+        await pose(tl, 'stand', 0.6);
 
         // 4. Trésorier de Konoha (son ambition « Comptabilité ») : une pluie de ryō.
         onAct('ryo');
