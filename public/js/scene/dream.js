@@ -716,11 +716,11 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     const scar = new THREE.Mesh(new THREE.CircleGeometry(1, 72), scarMat);
     scar.rotation.x = -Math.PI / 2;
     scar.position.y = 0.012;
-    scar.scale.setScalar(1.75);
+    scar.scale.setScalar(2);
     scar.visible = false;
     scene.add(scar);
     // L'herbe se couche dans le cercle (le Kaiten racle le sol), puis se relève.
-    const grassFlat = { value: new THREE.Vector2(1.75, 0) };
+    const grassFlat = { value: new THREE.Vector2(2, 0) };
     const grassCompile = grass.mesh.material.onBeforeCompile;
     grass.mesh.material.onBeforeCompile = (shader) => {
         grassCompile(shader);
@@ -1182,8 +1182,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         const A = ninja.poseValues('kaiten');
         const B = ninja.poseValues('kaitenOpen');
         const body = A.map((a) => a.slice());
-        const domeR = 1.75;
-        const domeH = 2.3;
+        // Demi-sphère bien ronde (échelle uniforme), qui dépasse sa tête.
+        const domeR = 2;
         const tBirth = 0.3;
         const tBreak = tA + tB;
         // Le buste suit les hanches avec un ressort (effet de fouet) : il traîne à
@@ -1275,7 +1275,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             const r = 0.3 + (domeR - 0.3) * grow;
             whirl.radius = r;
             if (!broke) {
-                kaiten.scale.set(r * pulse, (0.35 + (domeH - 0.35) * grow) * pulse, r * pulse);
+                kaiten.scale.setScalar(r * pulse);
                 kaitenMat.uniforms.uOpacity.value = THREE.MathUtils.clamp((t - tBirth) / 0.15, 0, 1);
                 dustRingMat.uniforms.uOpacity.value = THREE.MathUtils.clamp((t - tBirth - 0.1) / 0.4, 0, 1);
             }
@@ -1328,7 +1328,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
                 kaitenMat.uniforms.uBreak.value = b;
                 kaitenMat.uniforms.uOpacity.value = 1 - b * b;
                 dustRingMat.uniforms.uOpacity.value = 1 - b;
-                kaiten.scale.set(domeR * (1 + b * 0.35), domeH * (1 + b * 0.15), domeR * (1 + b * 0.35));
+                kaiten.scale.setScalar(domeR * (1 + b * 0.3));
             }
 
             // Caméra : elle tourne lentement autour du dôme, un peu plus haut,

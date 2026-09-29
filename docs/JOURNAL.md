@@ -558,3 +558,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   en spirale, herbe couchée qui se relève) ; poussière, feuilles et cailloux
   aspirés puis projetés en spirale ; poteaux soufflés dans le sens de la
   rotation ; caméra qui tourne autour, tremblement ; souffles à chaque tour.
+- Dôme du Kaiten bien rond : demi-sphère à échelle uniforme (rayon 2 m,
+  plus d'étirement en hauteur), trace au sol et herbe couchée au même rayon.
