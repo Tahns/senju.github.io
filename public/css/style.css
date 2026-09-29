@@ -3715,7 +3715,6 @@ html.menu-open .sound-panel {
 }
 
 /* Carte de fin : les chapitres du rêve n'apparaissent qu'après le rêve bonus. */
-.scene-card--end:not(.has-dreamed) .scene-chapters { display: none; }
 .scene-card--end.has-dreamed .scene-end__lead,
 .scene-card--end.has-dreamed #scene-bonus { display: none; }
 .scene-card__link--plain {
@@ -3740,3 +3739,50 @@ html:has(#scene-end:not([hidden])) .scene-skip {
 }
 
 .storm-menu__near[hidden] { display: none; }
+
+/* Bouton plein écran : petit carré à gauche du bouton son, même style. */
+.fullscreen-btn {
+    position: fixed;
+    top: 14px;
+    right: 66px;
+    z-index: 17;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    color: #fff;
+    background: linear-gradient(135deg, #7b4dff, var(--zk-deep));
+    border: 1.5px solid rgba(255, 255, 255, .7);
+    border-radius: 3px;
+    box-shadow: 3px 3px 0 var(--zk-magenta);
+    cursor: pointer;
+}
+
+.fullscreen-btn[hidden] {
+    display: none;
+}
+
+.fullscreen-btn:hover,
+.fullscreen-btn:focus-visible {
+    filter: brightness(1.15);
+}
+
+.fullscreen-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.fullscreen-btn .exit,
+.fullscreen-btn.is-on .enter {
+    display: none;
+}
+
+.fullscreen-btn.is-on .exit {
+    display: inline;
+}
