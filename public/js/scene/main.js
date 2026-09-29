@@ -172,6 +172,7 @@ async function start() {
     const sound = new SceneAudio();
     const radio = new Radio();
     window.__scene.sound = sound;
+    window.__scene.radio = radio;
     const panel = document.getElementById('sound-panel');
     const sliders = { music: document.getElementById('vol-music'), ambience: document.getElementById('vol-ambience'), sfx: document.getElementById('vol-sfx') };
     const muteBtn = document.getElementById('sound-mute');

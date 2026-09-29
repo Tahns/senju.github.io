@@ -1,125 +1,77 @@
 /*
  * Musique : « Shirohae (The Rain Stops) », bande originale de Naruto
- * Shippûden (Yasuharu Takanashi), choisie par le joueur : calme et émouvante,
- * dans la chambre comme dans le menu. Jouée par le lecteur officiel YouTube
- * (petit lecteur visible dans un coin, comme YouTube l'exige). Si YouTube ne se
- * charge pas, c'est la mélodie de la boîte à musique qui joue.
+ * Shippûden (Yasuharu Takanashi), fournie par le joueur. Elle ne commence que
+ * quand Akira remonte la boîte à musique (aucune musique avant, menu compris).
+ * Fichier hébergé avec le site (public/audio/shirohae.webm en Opus, .mp3 en
+ * secours) : plus besoin de YouTube, qui refusait souvent la lecture intégrée.
+ * Si le fichier ne se lit pas, c'est la mélodie de la boîte à musique qui joue.
  */
-const SHIROHAE = { id: 'yoRutY5tUGk', title: 'Shirohae', by: 'Naruto Shippûden OST' };
+const SHIROHAE = { src: 'public/audio/shirohae', title: 'Shirohae', by: 'Naruto Shippûden OST' };
 export const TRACKS = { room: SHIROHAE, menu: SHIROHAE };
-const VIDEO = TRACKS.room.id;
 
 export class Radio {
     constructor() {
         this.card = document.getElementById('radio');
-        this.player = null;
-        this.ready = null;
+        this.audio = null;
         this.volume = 0.6;
         this.playing = false;
         this.fadeTimer = 0;
         this.current = TRACKS.room;
     }
 
-    // Charge l'API YouTube et prépare le lecteur (sans jouer).
+    // Prépare l'élément audio.
     load() {
-        if (this.ready) return this.ready;
-        this.ready = new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => reject(new Error('YouTube indisponible')), 10000);
-            const create = () => {
-                try {
-                    this.player = new window.YT.Player('radio-player', {
-                        width: 200,
-                        height: 113,
-                        videoId: VIDEO,
-                        playerVars: { playsinline: 1, loop: 1, playlist: VIDEO, rel: 0, modestbranding: 1 },
-                        events: {
-                            onReady: () => {
-                                clearTimeout(timeout);
-                                this.player.setVolume(Math.round(this.volume * 100));
-                                resolve(this);
-                            },
-                            onStateChange: (e) => {
-                                this.playing = e.data === window.YT.PlayerState.PLAYING;
-                                // En boucle, quel que soit le morceau chargé.
-                                if (e.data === window.YT.PlayerState.ENDED) {
-                                    this.player.seekTo(0);
-                                    this.player.playVideo();
-                                }
-                            },
-                            onError: () => reject(new Error('Vidéo indisponible'))
-                        }
-                    });
-                } catch (error) {
-                    reject(error);
-                }
-            };
-            if (window.YT && window.YT.Player) {
-                create();
-                return;
-            }
-            const previous = window.onYouTubeIframeAPIReady;
-            window.onYouTubeIframeAPIReady = () => {
-                if (previous) previous();
-                create();
-            };
-            const script = document.createElement('script');
-            script.src = 'https://www.youtube.com/iframe_api';
-            script.onerror = () => reject(new Error('YouTube bloqué'));
-            document.head.appendChild(script);
-        });
-        this.ready.catch(() => {});
-        return this.ready;
+        if (this.audio) return Promise.resolve(this);
+        const audio = new Audio();
+        const opus = audio.canPlayType('audio/webm; codecs="opus"');
+        audio.src = `${this.current.src}.${opus ? 'webm' : 'mp3'}`;
+        audio.loop = true;
+        audio.volume = this.volume;
+        audio.addEventListener('playing', () => { this.playing = true; });
+        audio.addEventListener('pause', () => { this.playing = false; });
+        this.audio = audio;
+        // Appelé au clic sur « Commencer » : une lecture muette, aussitôt en
+        // pause, débloque le son pour plus tard (Safari/iPhone l'exige).
+        audio.muted = true;
+        audio.play().then(() => { audio.pause(); audio.currentTime = 0; audio.muted = false; }).catch(() => { audio.muted = false; });
+        return Promise.resolve(this);
     }
 
-    // Lance un morceau (« room » ou « menu ») ; renvoie true s'il joue vraiment
-    // au bout de quelques secondes.
-    async play(name = 'room') {
+    // Lance la musique ; renvoie true si elle joue vraiment.
+    async play() {
+        await this.load();
+        clearInterval(this.fadeTimer);
+        this.card.querySelector('b').textContent = this.current.title;
+        this.card.querySelector('small').textContent = this.current.by;
+        this.audio.volume = this.volume;
         try {
-            await this.load();
+            await this.audio.play();
         } catch (e) {
             return false;
         }
-        const track = TRACKS[name] || TRACKS.room;
-        clearInterval(this.fadeTimer);
-        this.card.querySelector('b').textContent = track.title;
-        this.card.querySelector('small').textContent = track.by;
         this.card.hidden = false;
         requestAnimationFrame(() => this.card.classList.add('is-on'));
-        this.player.setVolume(Math.round(this.volume * 100));
-        if (track !== this.current) {
-            this.current = track;
-            this.playing = false;
-            this.player.loadVideoById(track.id);
-        } else {
-            this.player.playVideo();
-        }
-        for (let i = 0; i < 20; i++) {
-            await new Promise((r) => setTimeout(r, 200));
-            if (this.playing) return true;
-        }
-        this.card.classList.remove('is-on');
-        this.card.hidden = true;
-        return false;
+        return true;
     }
 
     setVolume(volume) {
-        this.volume = volume;
+        this.volume = Math.max(0, Math.min(1, volume));
         clearInterval(this.fadeTimer);
-        if (this.player && this.player.setVolume) this.player.setVolume(Math.round(volume * 100));
+        if (this.audio) this.audio.volume = this.volume;
     }
 
     // Baisse progressivement le son jusqu'à l'arrêt (quand Akira s'endort).
     fadeOut(seconds) {
-        if (!this.player || !this.playing) return;
+        if (!this.audio || !this.playing) return;
         clearInterval(this.fadeTimer);
         const start = performance.now();
-        const from = this.volume;
+        const from = this.audio.volume;
         this.fadeTimer = setInterval(() => {
             const k = Math.min(1, (performance.now() - start) / (seconds * 1000));
-            this.player.setVolume(Math.round(from * (1 - k) * 100));
+            this.audio.volume = from * (1 - k);
             if (k >= 1) {
                 clearInterval(this.fadeTimer);
-                this.player.pauseVideo();
+                this.audio.pause();
                 this.card.classList.remove('is-on');
                 setTimeout(() => { this.card.hidden = true; }, 600);
             }
@@ -127,7 +79,7 @@ export class Radio {
     }
 
     stop() {
-        if (this.player && this.player.pauseVideo) this.player.pauseVideo();
+        if (this.audio) this.audio.pause();
         this.card.classList.remove('is-on');
         this.card.hidden = true;
     }
