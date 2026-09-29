@@ -473,30 +473,37 @@ async function start() {
         box.key.getWorldPosition(pivot.position);
         box.group.getWorldQuaternion(pivot.quaternion);
         scene.add(pivot);
-        const keyQ = quat(V(0, 0, 1), V(-1, -0.3, 0));
+        // Doigts vers l'avant et un peu vers le bas ; la main tourne vers le haut
+        // (sens +), si bien qu'elle reste au-dessus du coffre pendant tout le quart de tour.
+        const keyQ = quat(V(0, 0, 1), V(-0.87, -0.5, 0));
         // Milieu de la pince (repère de la main), et la molette, au bout de la tige.
         const PINCH = V(-0.0278, -0.051, -0.0922);
         const pinch = handAt(right, V(0, 0, -0.023), keyQ, PINCH);
         const held = { curl: 0.9, index: 0.7, thumb: 0.4, pinch: 1, spread: 0.1, wrap: 0 };
-        await reach(right, pivot, pinch.clone().add(V(0.01, 0.02, -0.04)), keyQ, 0.7, { ...held, index: 0.3, thumb: 0.9 });
+        // Arrivée par au-dessus du coffre.
+        await reach(right, pivot, pinch.clone().add(V(0.01, 0.02, -0.04)), keyQ, 0.7, { ...held, index: 0.3, thumb: 0.9 }, ease.inOut, { position: pinch.clone().add(V(0.06, 0.16, -0.1)) });
         await reach(right, pivot, pinch, keyQ, 0.25, held);
         for (let turn = 0; turn < 3; turn++) {
             sound.wind(0.5);
             const k0 = box.key.rotation.z;
             await timeline.tween(0.5, (k) => {
-                box.key.rotation.z = k0 - (Math.PI / 2) * k;
-                pivot.rotation.z = -(Math.PI / 2) * k;
+                box.key.rotation.z = k0 + (Math.PI / 2) * k;
+                pivot.rotation.z = (Math.PI / 2) * k;
             }, ease.inOut);
             if (turn < 2) {
                 // Il desserre les doigts, revient, et pince de nouveau la molette.
                 await timeline.tween(0.28, (k) => {
-                    pivot.rotation.z = -(Math.PI / 2) * (1 - k);
+                    pivot.rotation.z = (Math.PI / 2) * (1 - k);
                     const open = Math.sin(Math.PI * k);
                     right.grip.thumb = 0.4 + 0.5 * open;
                     right.grip.index = 0.7 - 0.35 * open;
                 }, ease.inOut);
             }
         }
+        // Il lâche la molette et dégage la main vers le haut et l'extérieur avant
+        // de la baisser (sinon elle passerait à travers le coffre).
+        const away = right.target.getWorldPosition(V(0, 0, 0)).add(V(0.02, 0.13, -0.06));
+        await reach(right, scene, away, right.target.getWorldQuaternion(new THREE.Quaternion()), 0.3, { thumb: 0.8 });
         await rest(right, 0.7);
         pivot.removeFromParent();
         startRoomMusic();

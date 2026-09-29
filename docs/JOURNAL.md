@@ -567,3 +567,8 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   Teinte rose et violette du mot « HRP » du menu, pastilles en biseau ;
   l'ombre passe sous la carte pour laisser Akira net à gauche. Téléphone : nom
   sur une ligne, bandeau du haut à gauche (plus sous le bouton plein écran).
+- Boîte à musique : la main qui remonte la clé ne traverse plus le coffre
+  (la paume y entrait de 70 mm). Le coffre et le pot du bonsaï sont des formes
+  que les doigts sentent ; la molette est plus haut sur le flanc ; la main
+  arrive par au-dessus, tourne vers le haut, et se dégage vers le haut avant
+  de redescendre. Mesuré : 0 mm sur tout le passage.
