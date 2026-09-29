@@ -818,10 +818,9 @@ async function start() {
         html.classList.add('dreaming', 'menu-open');
         hud.hidden = true;
         renderer.shadowMap.needsUpdate = true;
-        sound.startDream();
+        // Pas de musique avant la boîte à musique : seulement le vent de l'orage.
+        sound.startDream({ music: false });
         sound.setStorm(true);
-        // Musique du menu, comme dans les jeux Storm (l'orage reste en fond).
-        radio.play('menu');
         menuBack.hidden = false;
         menuEl.classList.add('is-entering');
         menuEl.hidden = false;
