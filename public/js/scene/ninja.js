@@ -470,8 +470,12 @@ export function buildNinja(sculpt, avatarGltf = null) {
         // Hakke Kûshô : les deux paumes projetées ensemble, en fente.
         kushoWind: { spine: [0.05, 0.9, 0], head: [0, -0.8, 0], shoulderL: [-0.5, 0, -0.3], elbowL: [-1.5, 0, 0], shoulderR: [-0.35, 0, 0.3], elbowR: [-1.6, 0, 0], hipL: [-0.7, 0, 0.25], kneeL: [0.9, 0, 0], hipR: [0.45, 0, -0.3], kneeR: [0.1, 0, 0] },
         kusho: { spine: [0.28, 0.05, 0], head: [-0.1, 0, 0], shoulderL: [-1.5, 0, 0.12], elbowL: [-0.05, 0, 0], shoulderR: [-1.5, 0, -0.12], elbowR: [-0.05, 0, 0], hipL: [-0.8, 0, 0.2], kneeL: [0.95, 0, 0], hipR: [0.55, 0, -0.2], kneeR: [0.1, 0, 0] },
-        // Kaiten : bras ouverts, genoux fléchis, il tourne sur lui-même.
-        kaiten: { spine: [0.05, 0, 0], head: [0.05, 0, 0], shoulderL: [-0.25, 0, -1.25], shoulderR: [-0.25, 0, 1.25], elbowL: [-0.25, 0, 0], elbowR: [-0.25, 0, 0], hipL: [-0.3, 0, -0.12], kneeL: [0.5, 0, 0], hipR: [-0.3, 0, 0.12], kneeR: [0.5, 0, 0] },
+        // Kaiten : garde basse et souple (bassin abaissé d'environ 9 cm), buste
+        // penché, une paume ouverte près du visage, l'autre bras bas en arc,
+        // coudes jamais verrouillés. Le buste est armé à l'opposé de la rotation.
+        kaiten: { spine: [0.2, -0.28, 0.02], head: [-0.12, 0.24, 0], shoulderR: [-1.2, 0, 0.5], elbowR: [-1.25, 0, 0], shoulderL: [-0.4, 0, -0.62], elbowL: [-0.7, 0, 0], hipL: [-0.45, 0, -0.2], kneeL: [0.8, 0, 0], hipR: [-0.4, 0, 0.2], kneeR: [0.75, 0, 0] },
+        // En pleine rotation : les bras s'ouvrent avec la vitesse, main haute et main basse.
+        kaitenOpen: { spine: [0.16, 0, 0.06], head: [-0.08, 0, -0.04], shoulderR: [-0.9, 0, 1.15], elbowR: [-1.0, 0, 0], shoulderL: [-0.35, 0, -1.0], elbowL: [-0.5, 0, 0], hipL: [-0.45, 0, -0.2], kneeL: [0.8, 0, 0], hipR: [-0.4, 0, 0.2], kneeR: [0.75, 0, 0] },
         flip: { spine: [0, 0.1, 0], head: [-0.25, 0.15, 0], shoulderR: [-1.0, 0, 0.3], elbowR: [-1.6, 0, 0], shoulderL: [0.05, 0, -0.18], elbowL: [-0.2, 0, 0], hipL: [0, 0, 0.08], hipR: [0, 0, -0.08] }
     };
     const NAMES = ['spine', 'head', 'shoulderL', 'shoulderR', 'elbowL', 'elbowR', 'hipL', 'hipR', 'kneeL', 'kneeR'];

@@ -542,3 +542,19 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   Shirohae et la flûte et les tambours du rêve ; il ne garde que le vent de
   l'orage. Shirohae démarre quand Akira a fini de remonter la clé (repli : la
   mélodie de la boîte si YouTube ne charge pas).
+
+## Mardi 29 septembre
+
+- **Hakkeshō Kaiten animé** (« fait une animation pour le tourbillon ») :
+  garde basse et souple (genoux fléchis, paume près du visage, l'autre bras
+  bas en arc), puis vraie rotation (≈ 2,6 tours/s : montée, plateau, freinage,
+  arrêt face au point de départ) partant des hanches ; buste et bras en retard
+  sur un ressort (effet de fouet), tête qui garde la cible avant de rattraper,
+  bras qui s'ouvrent avec la vitesse (sans jamais se verrouiller), pivot sur le
+  pied avant, glissé des pieds puis retour en garde Jûken.
+- Dôme de chakra translucide bleu-blanc : stries en spirale qui tournent avec
+  lui, bord lumineux, naissance rapide depuis le corps, déchirure en rafale
+  à l'arrêt ; filets de chakra autour du corps ; sol creusé en cercle (sillons
+  en spirale, herbe couchée qui se relève) ; poussière, feuilles et cailloux
+  aspirés puis projetés en spirale ; poteaux soufflés dans le sens de la
+  rotation ; caméra qui tourne autour, tremblement ; souffles à chaque tour.
