@@ -2355,37 +2355,6 @@ html.dreaming .scene-vignette {
     box-shadow: inset 0 0 18px rgba(80, 255, 170, .28), 0 0 18px rgba(80, 255, 170, .3);
 }
 
-/* Chapitres du rêve, sur la carte de fin */
-.scene-chapters {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    max-width: 340px;
-}
-
-.scene-chapters a {
-    padding: 4px 12px;
-    font-size: 13px;
-    color: rgba(230, 220, 255, .8);
-    text-decoration: none;
-    border: 1px solid rgba(123, 77, 255, .55);
-    border-radius: 999px;
-    background: rgba(18, 10, 42, .45);
-}
-
-.scene-chapters span {
-    margin-right: .45em;
-    font-family: var(--font-kanji);
-    color: #fff;
-}
-
-.scene-chapters a:hover,
-.scene-chapters a:focus-visible {
-    color: #fff;
-    border-color: var(--zk-magenta);
-}
-
 .scene-caption {
     font-family: var(--zk-font);
     font-style: normal;
@@ -3715,7 +3684,6 @@ html.menu-open .sound-panel {
 }
 
 /* Carte de fin : les chapitres du rêve n'apparaissent qu'après le rêve bonus. */
-.scene-card--end:not(.has-dreamed) .scene-chapters { display: none; }
 .scene-card--end.has-dreamed .scene-end__lead,
 .scene-card--end.has-dreamed #scene-bonus { display: none; }
 .scene-card__link--plain {
@@ -3740,3 +3708,55 @@ html:has(#scene-end:not([hidden])) .scene-skip {
 }
 
 .storm-menu__near[hidden] { display: none; }
+
+/* Bouton plein écran : petit carré à gauche du bouton son, même style. */
+.fullscreen-btn {
+    position: fixed;
+    top: 14px;
+    right: 66px;
+    z-index: 21; /* au-dessus des cartes (accueil, fin) et du menu */
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    color: #fff;
+    background: linear-gradient(135deg, #7b4dff, var(--zk-deep));
+    border: 1.5px solid rgba(255, 255, 255, .7);
+    border-radius: 3px;
+    box-shadow: 3px 3px 0 var(--zk-magenta);
+    cursor: pointer;
+}
+
+.fullscreen-btn[hidden] {
+    display: none;
+}
+
+.fullscreen-btn:hover,
+.fullscreen-btn:focus-visible {
+    filter: brightness(1.15);
+}
+
+.fullscreen-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.fullscreen-btn .exit,
+.fullscreen-btn.is-on .enter {
+    display: none;
+}
+
+.fullscreen-btn.is-on .exit {
+    display: inline;
+}
+
+/* Tant que le bouton son est caché (écran d'accueil), il prend sa place. */
+html:has(#scene-sound[hidden]) .fullscreen-btn {
+    right: 14px;
+}
