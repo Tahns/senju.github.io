@@ -957,7 +957,7 @@ async function start() {
     });
 
     // Parcours : « Commencer » ouvre le menu ; « Histoire » lance la chambre et
-    // les deux carnets ; à la fin, le rêve est proposé en bonus.
+    // les deux carnets ; quand il s'endort, le rêve s'enchaîne.
     let storyPlayed = false;
     async function play() {
         fade.style.opacity = 0;
@@ -1004,9 +1004,12 @@ async function start() {
             await putBack('fiche');
         }
         await goToBed();
-        // Il s'endort : fin de l'histoire. Le rêve est un bonus, au choix.
+        // Il s'endort et rêve aussitôt, sans arrêt ni menu ; la carte « Fin »
+        // vient après le rêve.
         checkpoint();
-        showEnd(false);
+        await dreamSequence();
+        checkpoint();
+        showEnd(true);
     }
 
     function showEnd(dreamed) {

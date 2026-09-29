@@ -547,3 +547,5 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (iPhone). Le carnet garde le sien dans sa barre d'outils.
 - Carte « Fin » : les pastilles de chapitres du rêve (Jûken, Kaiten,
   Trésorier, Un jour…) sont retirées.
+- Plus d'arrêt avant le rêve : quand Akira s'endort, le rêve s'enchaîne
+  directement ; la carte « Fin » vient après.
