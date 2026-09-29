@@ -624,3 +624,11 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   au-dessus du col (on voyait le col vide) ; seule la peau des épaules, loin
   de l'axe du cou, est encore masquée. Manches un peu plus épaisses (×0,97
   au lieu de ×0,88).
+- Musique : « Shirohae » est maintenant le fichier fourni par le joueur,
+  hébergé avec le site (public/audio/shirohae.webm en Opus 80 kb/s, 1,9 Mo ;
+  .mp3 en secours), au lieu du lecteur YouTube qui refusait la lecture
+  intégrée. Débloquée au clic sur « Commencer » (iPhone), elle ne démarre
+  qu'à la fin du remontage de la boîte à musique (vérifié : ~17 s, rien dans
+  le menu).
+- Chambre : avant-bras plus épais (rayon 1,95 cm au poignet, 3,2 cm au coude,
+  au lieu de 1,75 et 2,6).

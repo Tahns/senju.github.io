@@ -2478,16 +2478,6 @@ html.dreaming .scene-vignette {
     opacity: .7;
 }
 
-.radio__player,
-.radio__player iframe {
-    display: block;
-    width: 200px;
-    height: 113px;
-    border: 0;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
 html.book-open .radio {
     bottom: 84px;
 }

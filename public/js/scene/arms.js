@@ -213,7 +213,7 @@ export class Arm {
         this.fore = cylinder(0.054, 0.046, sleeve);
         this.cuff = new THREE.Mesh(new THREE.TorusGeometry(0.047, 0.005, 6, 20), lining);
         // Avant-bras : il s'affine vers le poignet et se termine dans celui de la main.
-        this.forearm = cylinder(0.0175, 0.026, skinMaterial());
+        this.forearm = cylinder(0.0195, 0.032, skinMaterial()); // poignet, coude
         this.parts = buildHand(side, detail);
         this.hand = this.parts.hand;
         this.ready = this.parts.ready; // la main sculptée est prête
