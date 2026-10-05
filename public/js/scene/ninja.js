@@ -563,15 +563,25 @@ export function buildNinja(sculpt, avatarGltf = null) {
             return false;
         };
         // Le corps procédural s'efface : on garde l'équipement (gilet, sabre, bourse, étui, bandes, sandales).
+        // Le modèle Higgsfield porte déjà tout : corps et équipement procéduraux s'effacent.
+        const glb = avatar.kind === 'glb';
+        const ours = new Set(Object.values(M));
         const hide = new Set([M.skin, M.head, M.cloth, M.hair, M.band, M.wrist, M.plate]);
         root.traverse((o) => {
             if (!o.isMesh || inModel(o)) return;
+            if (glb) {
+                const mats = Array.isArray(o.material) ? o.material : [o.material];
+                if (mats.some((m) => ours.has(m))) o.visible = false;
+                return;
+            }
             const mats = Array.isArray(o.material) ? o.material : [o.material];
             const toes = (o.parent === J.footL || o.parent === J.footR) && o.material === M.skin;
             if ((mats.some((m) => hide.has(m)) && !toes) || (o.material === M.swirl && o !== backSwirl)) o.visible = false;
         });
-        fitHeadband(avatar, M, tails);
-        dressAvatar(avatar, M);
+        if (!glb) {
+            fitHeadband(avatar, M, tails);
+            dressAvatar(avatar, M);
+        }
     }
 
     // Vie : clignements, respiration, regard qui flâne, pans du bandeau au vent.

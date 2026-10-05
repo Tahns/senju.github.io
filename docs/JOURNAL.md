@@ -636,3 +636,10 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   fiche (public/img/Apparence.jpg, 75 Ko) et ciel de Konoha la nuit peint
   dans la fenêtre de la chambre (public/img/ciel-nuit.jpg, 122 Ko ; le ciel
   dessiné reste en secours).
+- Rêve : nouveau modèle 3D d'Akira généré avec Higgsfield (portrait → image
+  en pied en pose A → modèle 3D riggé Meshy, 35,5 crédits au total) :
+  public/models/akira.glb (3,5 Mo, texture recompressée, animation intégrée
+  retirée). Tenue, bandeau, bandages et sandales sont dans le modèle :
+  l'équipement procédural de ninja.js s'efface. avatar.js reconnaît les deux
+  squelettes (table RIGS : VRM VRoid et Meshy) ; le VRM reste en secours.
+  Byakugan : deux halos pâles sur les yeux s'allument à l'activation.

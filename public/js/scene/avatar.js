@@ -1,5 +1,6 @@
 /*
- * Akira adulte : un vrai modèle anime (VRoid « HairSample_Male », CC0, allégé
+ * Akira adulte : modèle 3D généré avec Higgsfield (public/models/akira.glb,
+ * déjà vêtu et équipé). En secours : un modèle anime VRoid (« HairSample_Male », CC0, allégé
  * et recoloré : yeux pâles du Byakugan, cheveux bruns, gilet de jōnin peint sur le haut),
  * équipé par ninja.js (bandeau, sabre, bourse, étui, bandes, sandales). Son squelette recopie à chaque image les rotations du squelette
  * d'animation de ninja.js (reciblage), donc toutes les poses du rêve marchent.
@@ -8,7 +9,30 @@ import * as THREE from 'three';
 import { GLTFLoader } from '../../vendor/loaders/GLTFLoader.js';
 import { mergeGeometries } from '../../vendor/utils/BufferGeometryUtils.js';
 
-const MODEL = new URL('../../models/hoko.vrm', import.meta.url).href;
+// Modèle d'Akira généré avec Higgsfield (image → 3D riggée, Meshy) ; l'ancien
+// modèle VRoid reste en secours si le GLB ne se charge pas.
+const MODEL = new URL('../../models/akira.glb', import.meta.url).href;
+const FALLBACK = new URL('../../models/hoko.vrm', import.meta.url).href;
+
+// Noms des os selon le modèle. R / L : côté droit / gauche du personnage.
+// facing : rotation qui le tourne face à +Z (VRM 0.x regarde vers -Z).
+const RIGS = {
+    vrm: {
+        facing: Math.PI, hips: 'J_Bip_C_Hips', spine: 'J_Bip_C_Spine', neck: 'J_Bip_C_Neck', head: 'J_Bip_C_Head',
+        armR: 'J_Bip_R_UpperArm', foreR: 'J_Bip_R_LowerArm', handR: 'J_Bip_R_Hand',
+        armL: 'J_Bip_L_UpperArm', foreL: 'J_Bip_L_LowerArm', handL: 'J_Bip_L_Hand',
+        legR: 'J_Bip_R_UpperLeg', kneeR: 'J_Bip_R_LowerLeg', footR: 'J_Bip_R_Foot',
+        legL: 'J_Bip_L_UpperLeg', kneeL: 'J_Bip_L_LowerLeg', footL: 'J_Bip_L_Foot'
+    },
+    glb: {
+        facing: 0, hips: 'Hips', spine: 'Spine02', neck: 'neck', head: 'Head',
+        armR: 'RightArm', foreR: 'RightForeArm', handR: 'RightHand',
+        armL: 'LeftArm', foreL: 'LeftForeArm', handL: 'LeftHand',
+        legR: 'RightUpLeg', kneeR: 'RightLeg', footR: 'RightFoot',
+        legL: 'LeftUpLeg', kneeL: 'LeftLeg', footL: 'LeftFoot'
+    }
+};
+const rigOf = (model) => (model.getObjectByName('J_Bip_C_Hips') ? RIGS.vrm : RIGS.glb);
 
 let pending = null;
 // Avancement du téléchargement du modèle (0 → 1), pour l'afficher si on l'attend.
@@ -21,7 +45,7 @@ export function loadAvatar() {
     if (!pending) {
         const loader = new GLTFLoader();
         const base = MODEL.slice(0, MODEL.lastIndexOf('/') + 1);
-        const fromText = () => fetch(MODEL + '.txt')
+        const fromText = () => fetch(FALLBACK + '.txt')
             .then((r) => (r.ok ? r.text() : Promise.reject(new Error(r.status))))
             .then((text) => {
                 const bin = atob(text.trim());
@@ -31,12 +55,14 @@ export function loadAvatar() {
             });
         pending = new Promise((resolve) => {
             const done = (gltf) => { progress = 1; resolve(gltf); };
-            loader.load(MODEL, done, (e) => { if (e.total) progress = e.loaded / e.total; }, () => {
+            const onProgress = (e) => { if (e.total) progress = e.loaded / e.total; };
+            const vrm = () => loader.load(FALLBACK, done, onProgress, () => {
                 fromText().then(done).catch((error) => {
                     console.warn("Modèle d'Akira indisponible, repli sur la tête sculptée.", error);
                     resolve(null);
                 });
             });
+            loader.load(MODEL, done, onProgress, vrm);
         });
     }
     return pending;
@@ -410,18 +436,82 @@ function adjustProportions(model) {
 
 export function measureAvatar(gltf) {
     const model = gltf.scene;
-    adjustProportions(model);
-    model.rotation.y = Math.PI;
+    const R = rigOf(model);
+    if (R === RIGS.vrm) adjustProportions(model);
+    model.rotation.y = R.facing;
     model.updateMatrixWorld(true);
     const at = (name) => {
         const b = model.getObjectByName(name);
         return b ? b.getWorldPosition(new THREE.Vector3()) : null;
     };
     return {
-        hips: at('J_Bip_C_Hips'), spine: at('J_Bip_C_Spine'), neck: at('J_Bip_C_Neck'), head: at('J_Bip_C_Head'),
-        arm: at('J_Bip_L_UpperArm'), elbow: at('J_Bip_L_LowerArm'), hand: at('J_Bip_L_Hand'),
-        leg: at('J_Bip_L_UpperLeg'), knee: at('J_Bip_L_LowerLeg'), foot: at('J_Bip_L_Foot')
+        hips: at(R.hips), spine: at(R.spine), neck: at(R.neck), head: at(R.head),
+        arm: at(R.armL), elbow: at(R.foreL), hand: at(R.handL),
+        leg: at(R.legL), knee: at(R.kneeL), foot: at(R.footL)
     };
+}
+
+// Modèle Higgsfield : un seul maillage texturé (tenue, bandeau, sandales déjà
+// peints). Ombres, et la même petite lueur propre que l'ancien modèle (rendu anime).
+function restyleGlb(model) {
+    model.traverse((o) => {
+        if (!o.isMesh) return;
+        o.castShadow = true;
+        o.receiveShadow = true;
+        o.frustumCulled = false;
+        const m = o.material;
+        m.roughness = 0.8;
+        m.metalness = 0;
+        m.emissive = new THREE.Color('#ffffff');
+        m.emissiveMap = m.map;
+        m.emissiveIntensity = 0.08;
+    });
+}
+
+// Byakugan sur le modèle Higgsfield (yeux peints dans la texture) : deux halos
+// pâles posés sur les yeux, invisibles au repos, qui s'allument à l'activation.
+function eyeGlow(model, head) {
+    const skinned = [];
+    model.traverse((o) => { if (o.isSkinnedMesh) skinned.push(o); });
+    const box = new THREE.Box3();
+    const v = new THREE.Vector3();
+    model.updateMatrixWorld(true);
+    skinned.forEach((o) => {
+        const hi = o.skeleton.bones.indexOf(head);
+        if (hi < 0) return;
+        const idx = o.geometry.attributes.skinIndex;
+        const wt = o.geometry.attributes.skinWeight;
+        for (let i = 0; i < idx.count; i += 3) {
+            let w = 0;
+            for (let k = 0; k < 4; k++) if (idx.getComponent(i, k) === hi) w += wt.getComponent(i, k);
+            if (w < 0.6) continue;
+            o.getVertexPosition(i, v);
+            o.localToWorld(v);
+            head.worldToLocal(v);
+            box.expandByPoint(v);
+        }
+    });
+    if (box.isEmpty()) return [];
+    const size = box.getSize(new THREE.Vector3());
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.35, 'rgba(214,206,255,0.7)');
+    g.addColorStop(1, 'rgba(160,150,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    const tex = new THREE.CanvasTexture(canvas);
+    const k = 1 / head.getWorldScale(v).x;
+    return [-1, 1].map((s) => {
+        const m = new THREE.SpriteMaterial({ map: tex, color: '#e6e0ff', transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+        const sp = new THREE.Sprite(m);
+        sp.scale.setScalar(0.035 * k);
+        sp.position.set(box.getCenter(v).x + s * size.x * 0.17, box.min.y + size.y * 0.5, box.max.z - size.z * 0.05);
+        head.add(sp);
+        return m;
+    });
 }
 
 /*
@@ -431,32 +521,34 @@ export function measureAvatar(gltf) {
  */
 export function bindAvatar(gltf, J, parent) {
     const model = gltf.scene;
-    restyle(model);
+    const R = rigOf(model);
+    if (R === RIGS.vrm) restyle(model);
+    else restyleGlb(model);
     // Pas de capuche sous le gilet de jōnin : on replie ses os.
     ['J_Sec_C_Hood', 'J_Sec_L_HoodString1', 'J_Sec_R_HoodString1'].forEach((n) => {
         const b = model.getObjectByName(n);
         if (b) b.scale.setScalar(0.02);
     });
-    model.rotation.y = Math.PI; // VRM 0.x regarde vers -Z
+    model.rotation.y = R.facing;
     parent.add(model);
     const bone = (name) => model.getObjectByName(name);
     const pairs = [
-        [J.hips, 'J_Bip_C_Hips'],
-        [J.spine, 'J_Bip_C_Spine'],
-        [J.neck, 'J_Bip_C_Neck'],
-        [J.head, 'J_Bip_C_Head'],
-        [J.shoulderL, 'J_Bip_R_UpperArm', J.elbowL, 'J_Bip_R_LowerArm'],
-        [J.elbowL, 'J_Bip_R_LowerArm', J.handL, 'J_Bip_R_Hand'],
-        [J.handL, 'J_Bip_R_Hand'],
-        [J.shoulderR, 'J_Bip_L_UpperArm', J.elbowR, 'J_Bip_L_LowerArm'],
-        [J.elbowR, 'J_Bip_L_LowerArm', J.handR, 'J_Bip_L_Hand'],
-        [J.handR, 'J_Bip_L_Hand'],
-        [J.hipL, 'J_Bip_R_UpperLeg', J.kneeL, 'J_Bip_R_LowerLeg'],
-        [J.kneeL, 'J_Bip_R_LowerLeg', J.footL, 'J_Bip_R_Foot'],
-        [J.footL, 'J_Bip_R_Foot'],
-        [J.hipR, 'J_Bip_L_UpperLeg', J.kneeR, 'J_Bip_L_LowerLeg'],
-        [J.kneeR, 'J_Bip_L_LowerLeg', J.footR, 'J_Bip_L_Foot'],
-        [J.footR, 'J_Bip_L_Foot']
+        [J.hips, R.hips],
+        [J.spine, R.spine],
+        [J.neck, R.neck],
+        [J.head, R.head],
+        [J.shoulderL, R.armR, J.elbowL, R.foreR],
+        [J.elbowL, R.foreR, J.handL, R.handR],
+        [J.handL, R.handR],
+        [J.shoulderR, R.armL, J.elbowR, R.foreL],
+        [J.elbowR, R.foreL, J.handR, R.handL],
+        [J.handR, R.handL],
+        [J.hipL, R.legR, J.kneeL, R.kneeR],
+        [J.kneeL, R.kneeR, J.footL, R.footR],
+        [J.footL, R.footR],
+        [J.hipR, R.legL, J.kneeR, R.kneeL],
+        [J.kneeR, R.kneeL, J.footR, R.footL],
+        [J.footR, R.footL]
     ].map(([joint, name, childJoint, childName]) => ({ joint, bone: bone(name), childJoint, childBone: childName && bone(childName) }))
         .filter((p) => p.bone);
 
@@ -545,6 +637,7 @@ export function bindAvatar(gltf, J, parent) {
     const sway = new THREE.Quaternion();
     const euler = new THREE.Euler();
 
+    const glow = R === RIGS.glb ? eyeGlow(model, pairs.find((p) => p.joint === J.head).bone) : [];
     const target = new THREE.Quaternion();
     const pos = new THREE.Vector3();
     return {
@@ -561,7 +654,12 @@ export function bindAvatar(gltf, J, parent) {
         // closed : true (poing), false (main détendue) ou un degré de fermeture.
         grip(hand, closed) { curl(hand === 'right' ? 'L' : 'R', closed === true ? 1.25 : closed === false ? 0.35 : closed); },
         // Byakugan activé (0 → 1) : les yeux s'illuminent.
-        byakugan(k) { (model.userData.iris || []).forEach((m) => { m.emissiveIntensity = 0.12 + k * 1.4; }); },
+        byakugan(k) {
+            (model.userData.iris || []).forEach((m) => { m.emissiveIntensity = 0.12 + k * 1.4; });
+            glow.forEach((m) => { m.opacity = Math.min(1, k * 1.2); });
+        },
+        // « vrm » (ancien modèle VRoid, équipé par ninja.js) ou « glb » (modèle Higgsfield, déjà équipé).
+        kind: R === RIGS.vrm ? 'vrm' : 'glb',
         head: pairs.find((p) => p.joint === J.head).bone,
         sync() {
             parent.updateMatrixWorld(true);
