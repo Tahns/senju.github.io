@@ -647,3 +647,11 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   « Head » de ce modèle est à la base du crâne, 10 cm sous les yeux) et
   faisaient des points blancs. Ils sont maintenant posés au centre des yeux,
   mesuré par lancer de rayons sur le modèle.
+- Animations Higgsfield (capture de mouvement Meshy, 8 crédits chacune) :
+  Idle, Kung_Fu_Punch, Charged_Spell_Cast, Victory_Cheer, victory, rejoués sur
+  le modèle GLB (public/models/anims/*.glb, 75 à 200 Ko : clip seul + pose de
+  repos du squelette, sans maillage). avatar.js recible chaque os (rotation du
+  clip rapportée à son repos, appliquée au repos du modèle) avec un fondu par
+  rapport à la pose de ninja.js : charge de chakra avec le Byakugan, kata de
+  Jûken, exultation sous les ryō, poing levé final, respiration dans le menu.
+  Sans GLB, rien ne change (les poses font tout).

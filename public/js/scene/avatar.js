@@ -41,6 +41,22 @@ export const avatarProgress = () => progress;
 // Chargé en arrière-plan dès le début de la scène ; null si indisponible.
 // Repli : certains hébergeurs (aperçus) ne servent pas les .vrm ; on essaie
 // alors une copie en base64 (hoko.vrm.txt) si elle existe.
+// Animations Higgsfield (capture de mouvement Meshy, extraites sans maillage par
+// tools : voir JOURNAL) : chaque fichier porte son clip et la pose de repos de son
+// squelette (scenes[0].extras.rest), pour recibler sur le modèle du site.
+const CLIPS = ['idle', 'kungfu', 'charge', 'cheer', 'victory'];
+let clipsPending = null;
+export function loadClips() {
+    if (!clipsPending) {
+        const loader = new GLTFLoader();
+        clipsPending = Promise.all(CLIPS.map((name) => new Promise((resolve) => {
+            const url = new URL(`../../models/anims/${name}.glb`, import.meta.url).href;
+            loader.load(url, (gltf) => resolve([name, gltf]), undefined, () => resolve([name, null]));
+        }))).then((list) => Object.fromEntries(list.filter(([, g]) => g)));
+    }
+    return clipsPending;
+}
+
 export function loadAvatar() {
     if (!pending) {
         const loader = new GLTFLoader();
@@ -620,6 +636,85 @@ export function bindAvatar(gltf, J, parent) {
     const euler = new THREE.Euler();
 
     const glow = R === RIGS.glb ? eyeGlow(model, pairs.find((p) => p.joint === J.head).bone) : [];
+
+    // Clips Higgsfield (modèle GLB seulement) : chaque os du modèle prend la
+    // rotation de l'os du clip par rapport à sa pose de repos (repère du maillage),
+    // en fondu par-dessus la pose de ninja.js.
+    const clips = {};
+    const skinned = [];
+    model.traverse((o) => { if (o.isSkinnedMesh) skinned.push(o); });
+    const skinMesh = skinned[0];
+    const restB = new Map();
+    const order = [];
+    if (R === RIGS.glb && skinMesh) {
+        const m4 = new THREE.Matrix4();
+        const dummy = new THREE.Vector3();
+        skinMesh.skeleton.bones.forEach((bn, i) => {
+            const q = new THREE.Quaternion();
+            m4.copy(skinMesh.skeleton.boneInverses[i]).invert().decompose(dummy, q, new THREE.Vector3());
+            restB.set(bn.name, q.normalize());
+        });
+        model.traverse((o) => { if (o.isBone && restB.has(o.name)) order.push(o); });
+        loadClips().then((all) => {
+            Object.entries(all).forEach(([name, g]) => {
+                const rest = (g.scene.userData && g.scene.userData.rest) || {};
+                const frame = g.scene.getObjectByName('char1') || g.scene.getObjectByName('Armature') || g.scene;
+                const mixer = new THREE.AnimationMixer(g.scene);
+                const action = mixer.clipAction(g.animations[0]);
+                action.play();
+                const bones = new Map();
+                g.scene.traverse((o) => { if (rest[o.name]) bones.set(o.name, { node: o, rest: new THREE.Quaternion(...rest[o.name].q).normalize() }); });
+                const hipsNode = bones.get('Hips') && bones.get('Hips').node;
+                // Position des hanches au début du clip (on n'en garde que le mouvement relatif).
+                mixer.setTime(0);
+                g.scene.updateMatrixWorld(true);
+                // (en mètres, repère de la scène du clip : l'armature est à l'échelle 0,01)
+                const hips0 = hipsNode ? hipsNode.getWorldPosition(new THREE.Vector3()) : new THREE.Vector3();
+                clips[name] = { mixer, duration: g.animations[0].duration, frame, bones, hipsNode, hips0, scene: g.scene };
+            });
+        });
+    }
+    const cq = new THREE.Quaternion();
+    const fq = new THREE.Quaternion();
+    const bfq = new THREE.Quaternion();
+    const tq = new THREE.Quaternion();
+    const lq = new THREE.Quaternion();
+    const hv = new THREE.Vector3();
+    let current = null;
+    function applyClip() {
+        if (!current || current.weight <= 0) return;
+        const c = clips[current.name];
+        if (!c) return;
+        c.mixer.setTime(Math.max(0, Math.min(current.time, c.duration - 1e-3)));
+        c.scene.updateMatrixWorld(true);
+        c.frame.getWorldQuaternion(fq).invert();
+        skinMesh.getWorldQuaternion(bfq);
+        const w = Math.min(1, current.weight);
+        order.forEach((bn) => {
+            const cb = c.bones.get(bn.name);
+            if (!cb) return;
+            // Rotation du clip dans le repère de son maillage, rapportée au repos
+            // du clip puis appliquée au repos du modèle.
+            cb.node.getWorldQuaternion(cq);
+            tq.copy(fq).multiply(cq).multiply(lq.copy(cb.rest).invert()).multiply(restB.get(bn.name));
+            tq.premultiply(bfq);
+            bn.parent.getWorldQuaternion(lq).invert();
+            lq.multiply(tq);
+            bn.quaternion.slerp(lq, w);
+            bn.updateMatrixWorld(true);
+        });
+        // Hanches : mouvement vertical du clip (accroupi, sauts) et un peu de
+        // déplacement horizontal (le personnage reste à sa place dans la mise en scène).
+        if (c.hipsNode) {
+            c.hipsNode.getWorldPosition(hv).sub(c.hips0).applyQuaternion(fq);
+            hv.x *= 0.3;
+            hv.z *= 0.3;
+            hv.applyQuaternion(bfq).multiplyScalar(model.scale.x * w);
+            hips.parent.worldToLocal(hv.add(hips.getWorldPosition(new THREE.Vector3())));
+            hips.position.copy(hv);
+        }
+        model.updateMatrixWorld(true);
+    }
     const target = new THREE.Quaternion();
     const pos = new THREE.Vector3();
     return {
@@ -640,6 +735,10 @@ export function bindAvatar(gltf, J, parent) {
             (model.userData.iris || []).forEach((m) => { m.emissiveIntensity = 0.12 + k * 1.4; });
             glow.forEach((m) => { m.opacity = Math.min(1, k * 1.2); });
         },
+        // Clip Higgsfield à l'instant `time` (s), en fondu `weight` (0 → pose de
+        // ninja.js, 1 → clip seul) ; name = null pour arrêter. Durées : clipDuration.
+        setClip(name, time = 0, weight = 1) { current = name && clips[name] ? { name, time, weight } : null; },
+        clipDuration(name) { return clips[name] ? clips[name].duration : 0; },
         // « vrm » (ancien modèle VRoid, équipé par ninja.js) ou « glb » (modèle Higgsfield, déjà équipé).
         kind: R === RIGS.vrm ? 'vrm' : 'glb',
         head: pairs.find((p) => p.joint === J.head).bone,
@@ -657,6 +756,7 @@ export function bindAvatar(gltf, J, parent) {
             hips.parent.worldToLocal(pos);
             hips.position.copy(pos);
             model.updateMatrixWorld(true);
+            applyClip();
         }
     };
 }
