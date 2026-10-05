@@ -632,3 +632,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   le menu).
 - Chambre : avant-bras plus épais (rayon 1,95 cm au poignet, 3,2 cm au coude,
   au lieu de 1,75 et 2,6).
+- Images générées avec Higgsfield (0,5 crédit) : portrait d'Akira dans la
+  fiche (public/img/Apparence.jpg, 75 Ko) et ciel de Konoha la nuit peint
+  dans la fenêtre de la chambre (public/img/ciel-nuit.jpg, 122 Ko ; le ciel
+  dessiné reste en secours).
