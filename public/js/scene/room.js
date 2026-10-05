@@ -156,7 +156,16 @@ export function buildRoom(scene) {
     box(room, 2.0, 0.06, 0.08, darkWood, 0.45, 2.03, D / 2 - 0.035);
 
     /* ---------------- Fenêtre, lune ---------------- */
-    const sky = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 2.4), new THREE.MeshBasicMaterial({ map: T.nightSky() }));
+    // Ciel peint (Konoha la nuit, image générée) ; le ciel dessiné reste en
+    // attendant le chargement ou si l'image manque.
+    const skyMat = new THREE.MeshBasicMaterial({ map: T.nightSky() });
+    new THREE.TextureLoader().load('public/img/ciel-nuit.jpg', (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        skyMat.map.dispose();
+        skyMat.map = tex;
+        skyMat.needsUpdate = true;
+    });
+    const sky = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 2.4), skyMat);
     sky.position.set(-0.6, 1.5, -D / 2 - 0.9);
     room.add(sky);
     // Étoiles qui scintillent derrière la fenêtre ouverte.
