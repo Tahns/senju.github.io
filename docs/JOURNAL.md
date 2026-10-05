@@ -643,3 +643,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   l'équipement procédural de ninja.js s'efface. avatar.js reconnaît les deux
   squelettes (table RIGS : VRM VRoid et Meshy) ; le VRM reste en secours.
   Byakugan : deux halos pâles sur les yeux s'allument à l'activation.
+- Byakugan du modèle Higgsfield : les halos des yeux étaient décalés (l'os
+  « Head » de ce modèle est à la base du crâne, 10 cm sous les yeux) et
+  faisaient des points blancs. Ils sont maintenant posés au centre des yeux,
+  mesuré par lancer de rayons sur le modèle.

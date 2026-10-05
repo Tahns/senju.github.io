@@ -470,45 +470,27 @@ function restyleGlb(model) {
 
 // Byakugan sur le modèle Higgsfield (yeux peints dans la texture) : deux halos
 // pâles posés sur les yeux, invisibles au repos, qui s'allument à l'activation.
+// Centre des yeux dans le repère de l'os « Head » (en cm : l'armature est à
+// l'échelle 0,01), mesuré par lancer de rayons sur akira.glb. Attention : cet os
+// est à la base du crâne, ~10 cm sous les yeux.
+const EYES = [[-3.39, 10.1, 9.6], [3.37, 10.5, 9.0]];
 function eyeGlow(model, head) {
-    const skinned = [];
-    model.traverse((o) => { if (o.isSkinnedMesh) skinned.push(o); });
-    const box = new THREE.Box3();
-    const v = new THREE.Vector3();
-    model.updateMatrixWorld(true);
-    skinned.forEach((o) => {
-        const hi = o.skeleton.bones.indexOf(head);
-        if (hi < 0) return;
-        const idx = o.geometry.attributes.skinIndex;
-        const wt = o.geometry.attributes.skinWeight;
-        for (let i = 0; i < idx.count; i += 3) {
-            let w = 0;
-            for (let k = 0; k < 4; k++) if (idx.getComponent(i, k) === hi) w += wt.getComponent(i, k);
-            if (w < 0.6) continue;
-            o.getVertexPosition(i, v);
-            o.localToWorld(v);
-            head.worldToLocal(v);
-            box.expandByPoint(v);
-        }
-    });
-    if (box.isEmpty()) return [];
-    const size = box.getSize(new THREE.Vector3());
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 64;
     const ctx = canvas.getContext('2d');
     const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
     g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(0.35, 'rgba(214,206,255,0.7)');
+    g.addColorStop(0.3, 'rgba(222,214,255,0.75)');
     g.addColorStop(1, 'rgba(160,150,255,0)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 64, 64);
     const tex = new THREE.CanvasTexture(canvas);
-    const k = 1 / head.getWorldScale(v).x;
-    return [-1, 1].map((s) => {
+    const k = 1 / head.getWorldScale(new THREE.Vector3()).x;
+    return EYES.map(([x, y, z]) => {
         const m = new THREE.SpriteMaterial({ map: tex, color: '#e6e0ff', transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
         const sp = new THREE.Sprite(m);
-        sp.scale.setScalar(0.035 * k);
-        sp.position.set(box.getCenter(v).x + s * size.x * 0.17, box.min.y + size.y * 0.5, box.max.z - size.z * 0.05);
+        sp.scale.setScalar(0.028 * k);
+        sp.position.set(x, y, z);
         head.add(sp);
         return m;
     });
