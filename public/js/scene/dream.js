@@ -994,6 +994,16 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     // onAct(nom) : appelé au début de chaque chapitre (juken, kaiten, ryo, final).
     async function play({ timeline, sound, say, hud, counters, onAct = () => {} }) {
         const tl = timeline;
+        // Clip Higgsfield (capture de mouvement) joué de `from` à `to` (s) en
+        // `seconds`, en fondu entrant et sortant par-dessus la pose en cours.
+        // Sans modèle GLB ou sans clip chargé : rien ne change (les poses suffisent).
+        const clip = (name, seconds, { from = 0, to = null, fade = 0.3 } = {}) => tl.tween(seconds, (k) => {
+            const av = ninja.avatar;
+            if (!av || !av.setClip || !av.clipDuration(name)) return;
+            const end = to === null ? av.clipDuration(name) : to;
+            const w = Math.min(1, (k * seconds) / fade, ((1 - k) * seconds) / fade);
+            av.setClip(name, from + (end - from) * k, w);
+        }, ease.linear).then(() => { if (ninja.avatar && ninja.avatar.setClip) ninja.avatar.setClip(null); });
         snapCamera(V(0.5, 1.9, 7.5), V(0, 1.5, 0));
         setDusk(0);
         ninja.pouch.scale.setScalar(1);
@@ -1039,8 +1049,11 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         say('Byakugan', 2.2, '白眼');
         face(tl, 'angry', 0.6, 0.3);
         sound.whoosh();
+        // Il rassemble son chakra (capture de mouvement) pendant que ses yeux s'éveillent.
+        const charging = clip('charge', 1.5, { from: 0.3, to: 2.5 });
         await tl.tween(0.5, byakugan, ease.out);
         await tl.wait(0.8);
+        await charging;
         // Paumes ouvertes, poignets cassés vers l'arrière : les paumes font face à la cible.
         if (ninja.avatar) { ninja.avatar.grip('right', 0); ninja.avatar.grip('left', 0); }
         const wrists = (k) => { ninja.J.handR.rotation.x = -1.3 * k; ninja.J.handL.rotation.x = -1.3 * k; };
@@ -1059,6 +1072,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await crouch(0.1, 0.5);
         say('Jûken : le poing souple des Hyûga', 2.6, '柔拳');
         await stepShot;
+        // Kata d'ouverture (capture de mouvement kung-fu), puis retour en garde.
+        await clip('kungfu', 2.4, { from: 0.6, to: 3.2, fade: 0.35 });
         // Glissé en avant, sans quitter la garde.
         sound.whoosh();
         // La caméra passe de trois-quarts face : on voit les paumes alterner.
@@ -1380,8 +1395,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         spawnRate = 45;
         sound.coins(60, 3);
         const counting = tl.tween(8.5, (k) => counters(k), ease.inOut);
-        await pose(tl, 'catch', 0.6);
-        await tl.wait(1.6);
+        pose(tl, 'catch', 0.6);
+        // Il exulte sous la pluie de pièces (capture de mouvement).
+        await clip('cheer', 2.2, { from: 0.4, to: 3.2 });
         say('Le village prospère… et ses poches aussi.', 4.5);
         await pose(tl, 'pocket', 0.5);
         collecting = true;
@@ -1419,6 +1435,8 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         if (ninja.avatar) ninja.avatar.grip('right', true);
         pose(tl, 'vow', 1);
         say('Un jour… chef du clan Hyûga', 3.5, '当主');
+        // Poing levé vers la tour du Hokage (capture de mouvement « victoire »).
+        clip('victory', 3.2, { from: 0.5, to: 3.7, fade: 0.5 });
         face(tl, 'joy', 0, 0.8);
         face(tl, 'fun', 0.4, 0.8);
         await shot(tl, V(-1.6, 1.2, 3.4), V(0.5, 2, -6), 3.5, ease.sine);
@@ -1584,6 +1602,9 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
             const a = 1 - Math.exp(-dt / 0.22);
             ninja.setValues(ninja.currentValues().map((f, i) => f.map((v, j) => v + (menu.target[i][j] - v) * a)));
         }
+        // Respiration au repos (capture de mouvement Higgsfield), à moitié mêlée à la pose.
+        const av = ninja.avatar;
+        if (av && av.setClip && av.clipDuration('idle')) av.setClip('idle', menu.t % av.clipDuration('idle'), menu.push ? 0 : 0.55 * Math.min(1, menu.t));
         auraMat.uniforms.uPower.value = Math.min(0.42, auraMat.uniforms.uPower.value + dt * 0.4);
         // Caméra basse, qui dérive à peine ; Akira à droite (texte à gauche), centré en portrait.
         const portrait = camera.aspect < 1;
@@ -1612,6 +1633,7 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
     });
     function setMenu(on, sound = null) {
         menu.on = on;
+        if (!on && ninja.avatar && ninja.avatar.setClip) ninja.avatar.setClip(null);
         menu.sound = sound;
         menu.calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         strike.t = -1;
