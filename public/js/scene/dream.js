@@ -1049,8 +1049,15 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         say('Byakugan', 2.2, '白眼');
         face(tl, 'angry', 0.6, 0.3);
         sound.whoosh();
-        // Il rassemble son chakra (capture de mouvement) pendant que ses yeux s'éveillent.
-        const charging = clip('charge', 1.5, { from: 0.3, to: 2.5 });
+        // Il rassemble son chakra : les mains se joignent en sceau, puis s'ouvrent
+        // pendant que l'aura monte et que ses yeux s'éveillent.
+        const charging = (async () => {
+            await pose(tl, 'seal', 0.5, ease.inOut);
+            if (sound.crackle) sound.crackle(0.6);
+            await tl.wait(0.35);
+            await pose(tl, 'release', 0.4, ease.out);
+        })();
+        tl.tween(1.4, (k) => { auraMat.uniforms.uPower.value = 0.35 * Math.sin(Math.PI * k); }, ease.linear);
         await tl.tween(0.5, byakugan, ease.out);
         await tl.wait(0.8);
         await charging;
@@ -1072,8 +1079,17 @@ export function buildDream(renderer, { low = false, mobile = false, head, avatar
         await crouch(0.1, 0.5);
         say('Jûken : le poing souple des Hyûga', 2.6, '柔拳');
         await stepShot;
-        // Kata d'ouverture (capture de mouvement kung-fu), puis retour en garde.
-        await clip('kungfu', 2.4, { from: 0.6, to: 3.2, fade: 0.35 });
+        // Kata d'ouverture : la garde, puis des paumes qui alternent (le buste
+        // tourne à chaque frappe), et retour à la garde basse des Hyûga.
+        sound.whoosh();
+        await pose(tl, 'guard', 0.35, ease.inOut);
+        for (let i = 0; i < 4; i++) {
+            await pose(tl, i % 2 ? 'palmL' : 'palmR', 0.16, ease.out);
+            sound.whoosh();
+            await tl.wait(0.12);
+        }
+        await pose(tl, 'guard', 0.3, ease.inOut);
+        await pose(tl, 'jukenStance', 0.5, ease.inOut);
         // Glissé en avant, sans quitter la garde.
         sound.whoosh();
         // La caméra passe de trois-quarts face : on voit les paumes alterner.
