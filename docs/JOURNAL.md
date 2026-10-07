@@ -667,3 +667,6 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (pores, fines rides en losanges), halo rosé sur les bords des doigts (la
   lumière qui traverse la peau), doigts un peu plus pleins, ongles rosés et
   brillants, manche en tissu sergé (relief de trame) au lieu d'un aplat.
+- **Byakugan sans lumière** : les deux halos posés sur les yeux d'Akira (et
+  l'éclat de l'iris) sont retirés ; les yeux restent pâles et naturels
+  pendant tout le rêve.

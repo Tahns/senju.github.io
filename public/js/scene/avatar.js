@@ -484,34 +484,6 @@ function restyleGlb(model) {
     });
 }
 
-// Byakugan sur le modèle Higgsfield (yeux peints dans la texture) : deux halos
-// pâles posés sur les yeux, invisibles au repos, qui s'allument à l'activation.
-// Centre des yeux dans le repère de l'os « Head » (en cm : l'armature est à
-// l'échelle 0,01), mesuré par lancer de rayons sur akira.glb. Attention : cet os
-// est à la base du crâne, ~10 cm sous les yeux.
-const EYES = [[-3.39, 10.1, 9.6], [3.37, 10.5, 9.0]];
-function eyeGlow(model, head) {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 64;
-    const ctx = canvas.getContext('2d');
-    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(0.3, 'rgba(222,214,255,0.75)');
-    g.addColorStop(1, 'rgba(160,150,255,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 64, 64);
-    const tex = new THREE.CanvasTexture(canvas);
-    const k = 1 / head.getWorldScale(new THREE.Vector3()).x;
-    return EYES.map(([x, y, z]) => {
-        const m = new THREE.SpriteMaterial({ map: tex, color: '#e6e0ff', transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
-        const sp = new THREE.Sprite(m);
-        sp.scale.setScalar(0.028 * k);
-        sp.position.set(x, y, z);
-        head.add(sp);
-        return m;
-    });
-}
-
 /*
  * Reciblage : chaque os du modèle suit l'orientation (monde) d'une articulation
  * de ninja.js, à un décalage près calculé une fois, les deux squelettes au repos.
@@ -635,7 +607,6 @@ export function bindAvatar(gltf, J, parent) {
     const sway = new THREE.Quaternion();
     const euler = new THREE.Euler();
 
-    const glow = R === RIGS.glb ? eyeGlow(model, pairs.find((p) => p.joint === J.head).bone) : [];
 
     // Clips Higgsfield (modèle GLB seulement) : chaque os du modèle prend la
     // rotation de l'os du clip par rapport à sa pose de repos (repère du maillage),
@@ -730,10 +701,10 @@ export function bindAvatar(gltf, J, parent) {
         // Main droite (sabre) ou gauche : 0 = détendue, 1 = poing fermé.
         // closed : true (poing), false (main détendue) ou un degré de fermeture.
         grip(hand, closed) { curl(hand === 'right' ? 'L' : 'R', closed === true ? 1.25 : closed === false ? 0.35 : closed); },
-        // Byakugan activé (0 → 1) : les yeux s'illuminent.
+        // Byakugan activé (0 → 1) : les yeux restent naturels, sans lueur (la scène
+        // l'appelle toujours ; seul l'iris pâle du modèle de secours s'éclaire à peine).
         byakugan(k) {
-            (model.userData.iris || []).forEach((m) => { m.emissiveIntensity = 0.12 + k * 1.4; });
-            glow.forEach((m) => { m.opacity = Math.min(1, k * 1.2); });
+            (model.userData.iris || []).forEach((m) => { m.emissiveIntensity = 0.12 + k * 0.18; });
         },
         // Clip Higgsfield à l'instant `time` (s), en fondu `weight` (0 → pose de
         // ninja.js, 1 → clip seul) ; name = null pour arrêter. Durées : clipDuration.
