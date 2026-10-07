@@ -506,6 +506,60 @@ export function skin() {
     }, { repeat: [2, 2] });
 }
 
+// Relief de la peau (bump) : pores et fines rides entrecroisées, comme les
+// dermatoglyphes d'une vraie main. Niveaux de gris, sans couleur.
+export function skinBump() {
+    const random = rng(91);
+    return canvasTexture(256, 256, (ctx, w, h) => {
+        ctx.fillStyle = '#808080';
+        ctx.fillRect(0, 0, w, h);
+        // Fines rides en losanges : deux familles de traits courts, légèrement courbes.
+        ctx.lineCap = 'round';
+        for (let family = 0; family < 2; family++) {
+            const angle = family ? 0.62 : -0.62;
+            for (let i = 0; i < 520; i++) {
+                const x = random() * w, y = random() * h;
+                const len = 9 + random() * 22;
+                const a = angle + (random() - 0.5) * 0.35;
+                ctx.strokeStyle = 'rgba(40,40,40,' + (0.18 + random() * 0.2) + ')';
+                ctx.lineWidth = 0.7 + random() * 0.5;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.quadraticCurveTo(x + Math.cos(a) * len * 0.5 + (random() - 0.5) * 3, y + Math.sin(a) * len * 0.5 + (random() - 0.5) * 3, x + Math.cos(a) * len, y + Math.sin(a) * len);
+                ctx.stroke();
+            }
+        }
+        // Pores : petits creux ronds.
+        for (let i = 0; i < 1500; i++) {
+            ctx.fillStyle = 'rgba(30,30,30,' + (0.25 + random() * 0.3) + ')';
+            ctx.beginPath();
+            ctx.arc(random() * w, random() * h, 0.5 + random() * 0.8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        // Grain fin.
+        for (let i = 0; i < w * h * 0.3; i++) {
+            const v = random();
+            ctx.fillStyle = v > 0.5 ? 'rgba(255,255,255,' + (v - 0.5) * 0.1 + ')' : 'rgba(0,0,0,' + (0.5 - v) * 0.1 + ')';
+            ctx.fillRect(random() * w, random() * h, 1, 1);
+        }
+    }, { repeat: [3, 3], color: false });
+}
+
+// Trame d'un tissu serré (sergé) : relief fin pour les manches.
+export function fabricBump() {
+    return canvasTexture(128, 128, (ctx, w, h) => {
+        ctx.fillStyle = '#808080';
+        ctx.fillRect(0, 0, w, h);
+        for (let y = 0; y < h; y += 2) {
+            for (let x = 0; x < w; x += 2) {
+                const twill = ((x / 2 + y / 2) % 4) < 2;
+                ctx.fillStyle = twill ? 'rgba(255,255,255,.28)' : 'rgba(0,0,0,.28)';
+                ctx.fillRect(x, y, 2, 2);
+            }
+        }
+    }, { repeat: [14, 12], color: false });
+}
+
 // Laque noire décorée à la feuille d'or (maki-e) : branche de cerisier.
 export function makie() {
     const random = rng(88);
