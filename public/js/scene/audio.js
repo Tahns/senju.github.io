@@ -575,6 +575,74 @@ export class SceneAudio {
     }
 
     // Tintement de pièces d'or.
+    // Étoile filante : un souffle d'air qui file d'une oreille à l'autre (droite →
+    // gauche, comme la traînée à l'écran), un fin sifflement qui descend, des
+    // étincelles qui crépitent le long du trait, puis un grondement très sourd
+    // dans son sillage. Dure ~1,5 s.
+    meteor() {
+        if (!this.ctx) return;
+        const ctx = this.ctx;
+        const t = ctx.currentTime;
+        const D = 1.5;
+        const out = ctx.createGain();
+        const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+        if (pan) {
+            pan.pan.setValueAtTime(0.8, t);
+            pan.pan.linearRampToValueAtTime(-0.8, t + D);
+            out.connect(pan).connect(this.sfx);
+        } else {
+            out.connect(this.sfx);
+        }
+        // Souffle : bruit filtré qui gonfle vite puis s'éteint, du aigu vers le médium.
+        const air = ctx.createBufferSource();
+        air.buffer = this.noiseBuffer;
+        air.loop = true;
+        const band = ctx.createBiquadFilter();
+        band.type = 'bandpass';
+        band.Q.value = 1.3;
+        band.frequency.setValueAtTime(7200, t);
+        band.frequency.exponentialRampToValueAtTime(1700, t + D);
+        const swell = ctx.createGain();
+        swell.gain.setValueAtTime(0.0001, t);
+        swell.gain.exponentialRampToValueAtTime(0.34, t + 0.4);
+        swell.gain.exponentialRampToValueAtTime(0.07, t + 1.0);
+        swell.gain.exponentialRampToValueAtTime(0.0001, t + D);
+        air.connect(band).connect(swell).connect(out);
+        air.start(t, Math.random());
+        air.stop(t + D + 0.05);
+        // Sifflement : deux sinus à peine désaccordés qui glissent vers le grave, avec un léger tremblement.
+        const lfo = ctx.createOscillator();
+        lfo.frequency.value = 17;
+        const depth = ctx.createGain();
+        depth.gain.value = 35;
+        lfo.connect(depth);
+        const whistle = ctx.createGain();
+        whistle.gain.setValueAtTime(0.0001, t);
+        whistle.gain.exponentialRampToValueAtTime(0.03, t + 0.3);
+        whistle.gain.exponentialRampToValueAtTime(0.012, t + 0.9);
+        whistle.gain.exponentialRampToValueAtTime(0.0001, t + D * 0.95);
+        whistle.connect(out);
+        [1, 1.012].forEach((detune) => {
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(4300 * detune, t);
+            osc.frequency.exponentialRampToValueAtTime(1100 * detune, t + D * 0.9);
+            depth.connect(osc.frequency);
+            osc.connect(whistle);
+            osc.start(t);
+            osc.stop(t + D);
+        });
+        lfo.start(t);
+        lfo.stop(t + D);
+        // Étincelles : petits claquements secs, plus serrés au début du trait.
+        for (let i = 0; i < 18; i++) {
+            const at = Math.pow(Math.random(), 1.6) * D * 0.8;
+            this.noise({ at, duration: 0.012 + Math.random() * 0.02, attack: 0.002, type: 'highpass', freq: 5200 + Math.random() * 2500, gain: 0.03 + Math.random() * 0.05, pan: 0.8 - 1.6 * (at / D) });
+        }
+        // Sillage : un grondement lointain, à peine perceptible, qui s'installe après le passage.
+        this.noise({ at: 0.35, duration: 1.5, attack: 0.6, type: 'lowpass', freq: 260, to: 70, q: 0.7, gain: 0.1, pan: -0.3 });
+    }
+
     // Carillon qui monte, pour l'ouverture du rêve.
     shimmer() {
         [0, 2, 5, 7, 9, 12, 14, 17].forEach((st, i) => {

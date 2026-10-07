@@ -97,8 +97,7 @@ Chaque `<section class="page">` correspond à une page, dans l'ordre.
 
 ## Portrait
 
-Dépose l'image du personnage dans `public/img/Apparence.jpg`, puis, dans `index.html` (page « Présentation » de la fiche), retire la classe `is-empty` du cadre et ajoute la balise `<img>` indiquée en commentaire.
-Sans image, le cadre affiche « Portrait à venir ».
+Le portrait de la page « Présentation » est une capture du modèle 3D d'Akira (bras croisés), `public/img/portrait-akira.jpg`. Pour la refaire : `GRIP=0.95 VIEWPORT=990x1314 node tools/test/pose-shots.js crossed portrait '[[[0.25,1.74,0.85],[0,1.6,0]]]' '{"head":[-0.1,0.35,0]}'` (serveur local lancé), puis copier `portrait-0.jpg`.
 
 ## Fichiers
 

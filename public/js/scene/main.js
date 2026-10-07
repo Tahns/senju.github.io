@@ -639,7 +639,7 @@ async function start() {
         sound.windDown(9);
         radio.fadeOut(8);
         // Une étoile filante traverse la fenêtre : il fait un vœu, et s'endort.
-        timeline.wait(1.2).then(() => { room.shootingStar(); sound.shimmer(); });
+        timeline.wait(1.2).then(() => { room.shootingStar(); sound.meteor(); });
         await timeline.tween(3.4, (k) => room.setLantern(1 - 0.75 * k), ease.inOut);
         html.classList.add('eyes-heavy');
         await timeline.wait(1.8);

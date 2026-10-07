@@ -655,3 +655,11 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   rapport à la pose de ninja.js : charge de chakra avec le Byakugan, kata de
   Jûken, exultation sous les ryō, poing levé final, respiration dans le menu.
   Sans GLB, rien ne change (les poses font tout).
+- **Portrait du carnet** : l'image générée (qui faisait « IA ») est remplacée
+  par une capture du vrai modèle 3D d'Akira, bras croisés, en 990×1314
+  (`public/img/portrait-akira.jpg`, commande dans le README) ; le cadre carré
+  de l'ordinateur garde la tête et les bras.
+- **Étoile filante** : le carillon est remplacé par un vrai bruit de météore
+  (`sound.meteor()`) : souffle d'air qui file de la droite vers la gauche,
+  fin sifflement qui descend, étincelles qui crépitent, grondement lointain
+  dans le sillage.
