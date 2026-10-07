@@ -14,7 +14,7 @@
  * jamais les traverser : voir fitDigits.
  */
 import * as THREE from 'three';
-import { skin as skinTexture } from './textures.js';
+import { skin as skinTexture, skinBump, fabricBump } from './textures.js';
 
 const UPPER = 0.27;
 const FORE = 0.26;
@@ -27,23 +27,43 @@ const thumbEuler = new THREE.Euler(0, 0, 0, 'YXZ');
 
 // Peau : reflet doux (sheen) qui imite la lumière diffusée sous la peau.
 let skin = null;
-const nail = new THREE.MeshPhysicalMaterial({ color: '#f3d6cb', roughness: 0.3, clearcoat: 0.6, clearcoatRoughness: 0.4 });
+// Ongle : rosé, translucide en apparence (lueur propre), brillant.
+const nail = new THREE.MeshPhysicalMaterial({ color: '#f1cbc0', roughness: 0.34, clearcoat: 0.7, clearcoatRoughness: 0.35, emissive: new THREE.Color('#a85a4e'), emissiveIntensity: 0.22 });
+// Lumière qui traverse la peau : sur les bords (là où elle est mince), un halo
+// rosé qui s'ajoute à l'éclairage, comme les doigts à contre-jour d'une lampe.
+function skinShader(shader) {
+    shader.fragmentShader = shader.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+        float skinRim = pow(1.0 - clamp(dot(normalize(normal), normalize(vViewPosition)), 0.0, 1.0), 2.4);
+        totalEmissiveRadiance += vec3(0.62, 0.17, 0.09) * skinRim * 0.34;`);
+}
 function skinMaterial() {
     if (!skin) {
         skin = new THREE.MeshPhysicalMaterial({
             color: '#e9c2a6',
             map: skinTexture(),
-            roughness: 0.58,
+            bumpMap: skinBump(),
+            bumpScale: 0.9,
+            roughness: 0.52,
+            specularIntensity: 0.55,
             sheen: 0.8,
             sheenColor: new THREE.Color('#ff9f86'),
             sheenRoughness: 0.45,
             emissive: new THREE.Color('#5a1c10'),
             emissiveIntensity: 0.08
         });
+        skin.onBeforeCompile = skinShader;
     }
     return skin;
 }
-const sleeve = new THREE.MeshStandardMaterial({ color: '#232b4a', roughness: 0.88 });
+const sleeve = new THREE.MeshPhysicalMaterial({
+    color: '#232b4a',
+    bumpMap: fabricBump(),
+    bumpScale: 0.6,
+    roughness: 0.86,
+    sheen: 0.25,
+    sheenColor: new THREE.Color('#33406e'),
+    sheenRoughness: 0.6
+});
 const lining = new THREE.MeshStandardMaterial({ color: '#d9d0bc', roughness: 0.9 });
 
 // Un doigt : trois phalanges articulées (les os de la main sculptée).
@@ -124,10 +144,10 @@ function buildHand(side, detail) {
     hand.add(mirror);
 
     const defs = [
-        { x: -0.023, lengths: [0.034, 0.021, 0.018], radius: 0.0078, spread: -0.07 },
-        { x: -0.0075, lengths: [0.038, 0.024, 0.019], radius: 0.008, spread: -0.02 },
-        { x: 0.008, lengths: [0.036, 0.022, 0.018], radius: 0.0076, spread: 0.03 },
-        { x: 0.0225, lengths: [0.028, 0.018, 0.016], radius: 0.0068, spread: 0.09 }
+        { x: -0.023, lengths: [0.034, 0.021, 0.018], radius: 0.0083, spread: -0.07 },
+        { x: -0.0075, lengths: [0.038, 0.024, 0.019], radius: 0.0085, spread: -0.02 },
+        { x: 0.008, lengths: [0.036, 0.022, 0.018], radius: 0.0081, spread: 0.03 },
+        { x: 0.0225, lengths: [0.028, 0.018, 0.016], radius: 0.0073, spread: 0.09 }
     ];
     const fingers = defs.map((def) => {
         const f = finger(def.lengths, def.radius);
@@ -141,7 +161,7 @@ function buildHand(side, detail) {
     thumbBase.position.set(-0.028, -0.008, -0.022);
     thumbBase.rotation.order = 'YXZ';
     mirror.add(thumbBase);
-    const thumb = finger([0.034, 0.027, 0.022], 0.0095);
+    const thumb = finger([0.034, 0.027, 0.022], 0.0102);
     thumbBase.add(thumb.root);
 
     // Pose de référence, et repère de chaque os dans celui de la main.
@@ -153,13 +173,14 @@ function buildHand(side, detail) {
     const rest = bones.map((b) => new THREE.Matrix4().multiplyMatrices(toHand, b.matrixWorld));
     const chains = [...fingers, thumb].map((f, i) => {
         const e = rest[1 + i * 3].elements;
-        return { o: [e[12], e[13], e[14]], R: [[e[0], e[1], e[2]], [e[4], e[5], e[6]], [e[8], e[9], e[10]]], lengths: f.joints.map((j) => j.userData.length), radius: i < 4 ? defs[i].radius : 0.0095 };
+        return { o: [e[12], e[13], e[14]], R: [[e[0], e[1], e[2]], [e[4], e[5], e[6]], [e[8], e[9], e[10]]], lengths: f.joints.map((j) => j.userData.length), radius: i < 4 ? defs[i].radius : 0.0102 };
     });
 
     if (!handSkin) {
         // Même peau que l'avant-bras, nuancée par sommet (jointures, plis, lignes de la main).
         handSkin = skinMaterial().clone();
         handSkin.vertexColors = true;
+        handSkin.onBeforeCompile = skinShader;
     }
     const skin = new THREE.SkinnedMesh(new THREE.BufferGeometry(), handSkin);
     skin.bind(new THREE.Skeleton(bones, rest.map((m) => m.clone().invert())), new THREE.Matrix4());

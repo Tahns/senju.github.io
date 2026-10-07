@@ -663,3 +663,7 @@ complet + captures), publiée (PR fusionnée, déploiement vérifié).
   (`sound.meteor()`) : souffle d'air qui file de la droite vers la gauche,
   fin sifflement qui descend, étincelles qui crépitent, grondement lointain
   dans le sillage.
+- **Mains à la première personne plus réalistes** : peau avec un micro-relief
+  (pores, fines rides en losanges), halo rosé sur les bords des doigts (la
+  lumière qui traverse la peau), doigts un peu plus pleins, ongles rosés et
+  brillants, manche en tissu sergé (relief de trame) au lieu d'un aplat.
